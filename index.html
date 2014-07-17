@@ -1,0 +1,409 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!-- Third Party Style Sheets -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/select2.css" />
+    <link rel="stylesheet" href="css/bootstrap-duallistbox.css" />
+    <!-- Our Style Sheets -->
+    <!-- Third Party JavaScript -->
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/select2.min.js"></script>
+    <script src="js/jquery.bootstrap-duallistbox.js"></script>
+    <!-- Our JavaScript -->
+    <style>
+        .select2-container {
+            width: 200px;
+        }
+
+        .column {
+            float: left;
+            width: 33%;
+        }
+        .permissions {
+            display: none;
+        }
+        .box1, .box2 {
+            /*width: 40%;
+            float: left;*/
+        } 
+        .moveall {
+            content: string('Give All');
+        }
+        .removeall {
+            content: string('Remove All');
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>User Permissions </h1>
+        Select a user: <div id="users"></div>
+        <div class="userInfo">
+            <table>
+                <tr>
+                    <td align="right">Display Name: </td>
+                    <td><input class="name" type="text" /></td>
+                </tr>
+                <tr>
+                    <td align ="right">Username: </td>
+                    <td><input class="login" type="text" /></td>
+                </tr>
+                <tr>
+                    <td align="right">Email: </td>
+                    <td><input class="email" type="text" /></td>
+                </tr>
+            </table>
+            <button type="button" class="getPermissionBtn btn btn-primary">
+                Get Permissions
+            </button>
+            <button id="submit" type="button" class="savePermissionBtn btn btn-primary">
+                Save Permissions
+            </button>
+            <div class="notify"></div>
+        </div>
+        <select class="permissions" multiple="multiple"></select>
+    </div>
+
+    <script>
+        var userArr = [], userPermissions = {}, newPermissions = {}, permSelect,
+            notification_map = {
+                wait: 'Please wait...',
+                save: 'Saving...',
+                error: 'Error!',
+                complete: 'Complete!'
+            }, url = '';
+
+        $(document).ready(function () {
+            $('.notify').text(notification_map.wait);
+            getUsers(url, function (results) {
+                // addUser(results, results.length, 0, console.log('done!'));
+                $("#users").select2({
+                    id: function (e) { return e.name + '|' + e.login + '|' + e.email },
+                    data: {
+                        results: results,
+                        text: function (item) {
+                            return item.name;
+                        },
+                        name: function (item) {
+                            return item.name;
+                        },
+                        login: function (item) {
+                            return item.login;
+                        },
+                        email: function (item) {
+                            return item.email;
+                        }
+                    },
+                    formatSelection: format,
+                    formatResult: format
+                });
+            });
+            getPermissions(url, false, function (results) {
+                addPermission($('.permissions'), results, results.length, 0, function () {
+                    permSelect = $('.permissions').bootstrapDualListbox({
+                        nonSelectedListLabel: 'Available Permissions',
+                        selectedListLabel: 'User Permissions',
+                        preserveSelectionOnMove: 'moved',
+                        moveOnSelect: true,
+                        nonSelectedFilter: '',
+                        selectorMinimalHeight: 500,
+                        callback: function () {
+                            $('.notify').text(notification_map.complete);
+                            $('.moveall').html('Give All &rarr;');
+                            $('.removeall').html('&larr; Remove All');
+                            $('.filter').css({
+                                'background': 'url("images/search.png") no-repeat right',
+                                'background-size': '28px 28px'
+                            });
+                        }
+                    });
+                });
+            });
+        });
+
+        function format(item) { return item.name; }
+        // Begin Utility Method /printError/
+        printError = function (XMLHttpRequest, textStatus, errorThrown) {
+            $('.notify').text(notification_map.error + '\n' + "There was an error: " + errorThrown + " " + textStatus + '\n' + XMLHttpRequest.responseText);
+            console.log("There was an error: " + errorThrown + " " + textStatus);
+            console.log(XMLHttpRequest.responseText);
+        };
+        // End Utility Method /printError/
+        addUser = function (arr, max, index, callback) {
+            var name, email, login;
+
+            name = arr[index].name;
+            email = arr[index].email;
+            login = arr[index].login;
+
+            $('<li> ' + name + '</li>').appendTo($('.users'));
+
+            index++;
+            if (index < max) {
+                setTimeout(function () {
+                    addUser(arr, max, index, callback);
+                }, 10);
+
+            } else if (callback) {
+                callback();
+            }
+        };
+        addPermission = function ($target, arr, max, index, callback) {
+            var name, email;
+
+            name = arr[index].name;
+            description = arr[index].description;
+          
+            $('<Option value=' + name.replace(/\s/g, '_') + '>' + name + '</Option>').appendTo($target);
+
+            index++;
+            if (index < max) {
+                setTimeout(function () {
+                    addPermission($target, arr, max, index, callback);
+                }, 10);
+
+            } else if (callback) {
+                callback();
+            }
+        };
+        //returns an object of all permissions and
+        //their values equal to whether or not the user has
+        //the permission
+        getPermissions = function (url, username, callback) {
+            var results = [], soapEnv, body, soapAction;
+
+            if (username) {
+                body = '<GetGroupCollectionFromUser xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                        <userLoginName>'+ username + '</userLoginName>\
+                      </GetGroupCollectionFromUser>';
+                soapAction = "http://schemas.microsoft.com/sharepoint/soap/directory/GetGroupCollectionFromUser";
+            } else {
+                body = ' <GetGroupCollectionFromSite xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/" />';
+                soapAction = "http://schemas.microsoft.com/sharepoint/soap/directory/GetGroupCollectionFromSite";
+            }
+
+            soapEnv =
+              '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                     <soap:Body>\
+                    '+ body + '\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+
+
+            $.ajax({
+                url: url + "/_vti_bin/UserGroup.asmx",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('SOAPAction', soapAction);
+                },
+                type: "POST",
+                dataType: "xml",
+                data: soapEnv,
+                error: printError,
+                complete: function (xData, status) {
+                    $(xData.responseText).find("group").each(function () {
+                        var $this = $(this)[0],
+                        name, description;
+
+                        name = $this.getAttribute('name');
+                        description = $this.getAttribute('description');
+                        results.push({ name: name, description: description });
+                    });
+
+                    if (callback) {
+                        callback(results);
+                    }
+                },
+                contentType: "text/xml; charset=\"utf-8\""
+            });
+        };
+        // End Utility Method /getWebs/
+
+        // Begin Utility Method /getUsers/
+        //returns a list of users from a site
+        getUsers = function (url, callback) {
+            var results = [],
+
+            // Create the SOAP request
+             soapEnv =
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                <soap:Body>\
+                  <GetUserCollectionFromSite xmlns="http://schemas.microsoft.com/sharepoint/soap/" />\
+                </soap:Body>\
+            </soap:Envelope>';
+
+
+            $.ajax({
+                url: url + "/_vti_bin/UserGroup.asmx",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/GetUserCollectionFromSite");
+                },
+                type: "POST",
+                dataType: "xml",
+                data: soapEnv,
+                error: printError,
+                complete: function (xData, status) {
+                    $(xData.responseText).find("user").each(function () {
+                        var $this = $(this)[0],
+                        name, email, login;
+
+                        name = $this.getAttribute('name');
+                        email = $this.getAttribute('email');
+                        login = $this.getAttribute('loginname');
+
+                        results.push({ name: name, email: email, login: login });
+                    });
+
+                    if (callback) {
+                        callback(results);
+                    }
+                },
+                contentType: "text/xml; charset=\"utf-8\""
+            });
+        };
+        // End Utility Method /getUsers/
+
+        //adds a user to a group
+        addUserToGroup = function (url, groupName, user, callback) {
+            var results = [],
+                groupName = groupName,
+                name = user.name,
+                login = user.login,
+                email = user.email,
+                description = user.description || '',
+                // Create the SOAP request
+                 soapEnv =
+                    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                    <soap:Body>\
+                        <AddUserToGroup xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                            <groupName>'+groupName+'</groupName>\
+                            <userName>'+name+'</userName>\
+                            <userLoginName>'+login+'</userLoginName>\
+                            <userEmail>'+email+'</userEmail>\
+                            <userNotes>' + description + '</userNotes>\
+                        </AddUserToGroup>\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+
+            $.ajax({
+                url: url + "/_vti_bin/UserGroup.asmx",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/AddUserToGroup");
+                },
+                type: "POST",
+                dataType: "xml",
+                data: soapEnv,
+                error: printError,
+                complete: function (xData, status) {
+                    if (callback) {
+                        callback(results);
+                    }
+                },
+                contentType: "text/xml; charset=\"utf-8\""
+            });
+        };
+        // End Utility Method /addUserToGroup/
+
+        // Begin utility method /removeUserFromGroup/
+        removeUserFromGroup = function (url, groupName, user, callback) {
+            var results = [],
+                groupName = groupName,
+                login = user.login,
+                // Create the SOAP request
+                 soapEnv =
+                    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                    <soap:Body>\
+                        <RemoveUserFromGroup xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                            <groupName>'+ groupName + '</groupName>\
+                            <userLoginName>'+ login + '</userLoginName>\
+                        </RemoveUserFromGroup>\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+
+            $.ajax({
+                url: url + "/_vti_bin/UserGroup.asmx",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/RemoveUserFromGroup");
+                },
+                type: "POST",
+                dataType: "xml",
+                data: soapEnv,
+                error: printError,
+                complete: function (xData, status) {
+                    if (callback) {
+                        callback(results);
+                    }
+                },
+                contentType: "text/xml; charset=\"utf-8\""
+            });
+        };
+        // End Utility Method /removeUserFromGroup/
+
+        $('#users').on('change', function (e) {
+            var $this = $(this),
+                name = $this.select2('data').name,
+                email = $this.select2('data').email,
+                login = $this.select2('data').login;
+
+            $('.name').val(name);
+            $('.email').val(email);
+            $('.login').val(login);
+        });
+
+        $('.getPermissionBtn').on('click', function (e) {
+            getPermissions(url, $('.login').val(), function (results) {
+                var newPerms = [];
+                    // addPermission($('.user-permissions'), results, results.length, 0, console.log('done!'));
+                    for (var i = 0; i < results.length; i++) {
+                        var name = results[i].name;
+                        name = name.replace(/\s/g, '_');
+                        newPerms.push(name);
+                        userPermissions[name] = true;
+                    }
+                    $('.permissions').val(newPerms);
+                    $('.permissions').bootstrapDualListbox('refresh');
+                });
+        });
+
+        $("#submit").on('click', function () {
+            var permissions = $('.permissions').val(), i, oldPermission,
+                user = {
+                   name : $('.name').val(),
+                    email: $('.email').val(),
+                    login: $('.login').val(),
+                    description: $('.description').val()
+                }
+            $('.notify').text(notification_map.save);
+            //add permissions
+            for (i = 0; i < permissions.length; i++) {
+                var permission = permissions[i];
+                newPermissions[permission] = true;
+                permission = permission.replace(/_/g, ' ');
+              
+                addUserToGroup(url, permission, user, function () { $('.notify').text(notification_map.complete); });
+            }
+            //remove permissions
+            for (oldPermission in userPermissions) {      
+                if (!newPermissions.hasOwnProperty(oldPermission)) {
+                    oldPermission = oldPermission.replace(/_/g, ' ');
+                    removeUserFromGroup(url, oldPermission, user, function () { $('.notify').text(notification_map.complete); });
+                }
+            }
+            userPermissions = {};
+            userPermissions = newPermissions;
+            newPermissions = {};
+
+          
+        });
+    </script>
+</body>
+</html>
