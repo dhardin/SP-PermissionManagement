@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta charset="utf-8" />
-    <title></title>
+    <title>User Permissions</title>
     <!-- Third Party Style Sheets -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -39,6 +39,9 @@
         .removeall {
             content: string('Remove All');
         }
+        .userInfo tr td:first-child {
+           text-align:right;
+        }
     </style>
 </head>
 <body>
@@ -48,15 +51,15 @@
         <div class="userInfo">
             <table>
                 <tr>
-                    <td align="right">Display Name: </td>
+                    <td>Display Name: </td>
                     <td><input class="name" type="text" /></td>
                 </tr>
                 <tr>
-                    <td align ="right">Username: </td>
+                    <td>Username: </td>
                     <td><input class="login" type="text" /></td>
                 </tr>
                 <tr>
-                    <td align="right">Email: </td>
+                    <td>Email: </td>
                     <td><input class="email" type="text" /></td>
                 </tr>
             </table>
@@ -78,7 +81,15 @@
                 save: 'Saving...',
                 error: 'Error!',
                 complete: 'Complete!'
-            }, url = '';
+            }, url = 'https://members.lcmp.csd.disa.mil/sites/JLTV',
+            state_map = {
+                pendingSaves: 0,
+                pendingRemoves: 0,
+                failed: {
+                    saves: [],
+                    removes: []
+                }
+            };
 
         $(document).ready(function () {
             $('.notify').text(notification_map.wait);
@@ -111,13 +122,15 @@
                         nonSelectedListLabel: 'Available Permissions',
                         selectedListLabel: 'User Permissions',
                         preserveSelectionOnMove: 'moved',
-                        moveOnSelect: true,
+                        moveOnSelect: false,
                         nonSelectedFilter: '',
-                        selectorMinimalHeight: 500,
+                        selectorMinimalHeight: 300,
                         callback: function () {
                             $('.notify').text(notification_map.complete);
-                            $('.moveall').html('Give All &rarr;');
-                            $('.removeall').html('&larr; Remove All');
+                            $('.moveall').html('Give All &rarr;&rarr;');
+                            $('.removeall').html('&larr;&larr; Remove All');
+                            $('.move').html('Give Selected &rarr;');
+                            $('.remove').html('&larr; Remove Selected');
                             $('.filter').css({
                                 'background': 'url("images/search.png") no-repeat right',
                                 'background-size': '28px 28px'
@@ -206,7 +219,17 @@
                 type: "POST",
                 dataType: "xml",
                 data: soapEnv,
-                error: printError,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    printError(XMLHttpRequest, textStatus, errorThrown)
+                    this.tryCount++;
+                    if (this.tryCount <= this.retryLimit) {
+                        //try again
+                        $.ajax(this);
+                        return;
+                    } else if (callback) {
+                        callback(textStatus);
+                    }
+                },
                 complete: function (xData, status) {
                     $(xData.responseText).find("group").each(function () {
                         var $this = $(this)[0],
@@ -248,7 +271,17 @@
                 type: "POST",
                 dataType: "xml",
                 data: soapEnv,
-                error: printError,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    printError(XMLHttpRequest, textStatus, errorThrown)
+                    this.tryCount++;
+                    if (this.tryCount <= this.retryLimit) {
+                        //try again
+                        $.ajax(this);
+                        return;
+                    } else if (callback) {
+                        callback(textStatus);
+                    }
+                },
                 complete: function (xData, status) {
                     $(xData.responseText).find("user").each(function () {
                         var $this = $(this)[0],
@@ -301,10 +334,22 @@
                 type: "POST",
                 dataType: "xml",
                 data: soapEnv,
-                error: printError,
+                tryCount: 0,
+                retryLimit: 0,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    printError(XMLHttpRequest, textStatus, errorThrown)
+                    this.tryCount++;
+                    if (this.tryCount <= this.retryLimit) {
+                        //try again
+                        $.ajax(this);
+                        return;
+                    } else if (callback) {
+                        callback(textStatus);
+                    }
+                },
                 complete: function (xData, status) {
                     if (callback) {
-                        callback(results);
+                        callback({ groupName: groupName, status: status });
                     }
                 },
                 contentType: "text/xml; charset=\"utf-8\""
@@ -337,10 +382,20 @@
                 type: "POST",
                 dataType: "xml",
                 data: soapEnv,
-                error: printError,
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    printError(XMLHttpRequest, textStatus, errorThrown)
+                    this.tryCount++;
+                    if (this.tryCount <= this.retryLimit) {
+                        //try again
+                        $.ajax(this);
+                        return;
+                    } else if (callback) {
+                        callback(textStatus);
+                    }
+                },
                 complete: function (xData, status) {
                     if (callback) {
-                        callback(results);
+                        callback({ groupName: groupName, status: status });
                     }
                 },
                 contentType: "text/xml; charset=\"utf-8\""
@@ -375,32 +430,84 @@
         });
 
         $("#submit").on('click', function () {
-            var permissions = $('.permissions').val(), i, oldPermission,
+            var permissions = $('.permissions').val(), i, numOldPermission, oldPermission,
                 user = {
-                   name : $('.name').val(),
+                    name: $('.name').val(),
                     email: $('.email').val(),
                     login: $('.login').val(),
                     description: $('.description').val()
-                }
+                };
+
             $('.notify').text(notification_map.save);
-            //add permissions
-            for (i = 0; i < permissions.length; i++) {
-                var permission = permissions[i];
-                newPermissions[permission] = true;
-                permission = permission.replace(/_/g, ' ');
-              
-                addUserToGroup(url, permission, user, function () { $('.notify').text(notification_map.complete); });
+
+            //check to see if the user has any permissions selected
+            if (permissions !== null){
+                //add permissions
+                state_map.pendingSaves = permissions.length;
+                for (i = 0; i < permissions.length; i++) {
+                    var permission = permissions[i];
+                    newPermissions[permission] = true;
+                    permission = permission.replace(/_/g, ' ');
+                    addUserToGroup(url, permission, user, function (results) {
+                        var status = results.status,
+                            permssion = results.groupName;
+
+                        if (status == 'error') {
+                            state_map.failed.saves.push(permission);
+                        } else {
+                            //notify on save
+                            $('.notify').text("Saved " + permission);
+                        }
+                     
+                        state_map.pendingSaves--;
+
+                        //notify on complete
+                        if (state_map.pendingSaves == 0) {
+                            $('.notify').text(notification_map.complete);
+                            if (state_map.pendingRemoves == 0) {
+                                $('.notify').text('Failed Saves: ' + state_map.failed.saves.toString() + '\nFailed Removes: ' + state_map.failed.removes.toString());
+                            }
+                        }
+                    });
+                }
             }
+
             //remove permissions
-            for (oldPermission in userPermissions) {      
+            numOldPermission = Object.keys(userPermissions).length;
+            i = 0;
+            for (oldPermission in userPermissions) {
+                i++;
                 if (!newPermissions.hasOwnProperty(oldPermission)) {
+                    state_map.pendingRemoves++;
                     oldPermission = oldPermission.replace(/_/g, ' ');
-                    removeUserFromGroup(url, oldPermission, user, function () { $('.notify').text(notification_map.complete); });
+                    removeUserFromGroup(url, oldPermission, user, function (results) {
+                        var status = results.status,
+                         permssion = results.groupName;
+
+                        if (status == 'error') {
+                            state_map.failed.removes.push(permssion);
+                        } else {
+                            //notify on remove
+                            $('.notify').text("Removed " + permssion);
+                        }
+
+                     
+                        state_map.pendingRemoves--;
+
+                        //notify on complete
+                        if (state_map.pendingRemoves == 0) {
+                            $('.notify').text(notification_map.complete);
+                            if (state_map.pendingSaves == 0) {
+                                $('.notify').text('Failed Saves: ' + state_map.failed.saves.toString() + '\nFailed Removes: ' + state_map.failed.removes.toString());
+                            }
+                        }
+                    });
                 }
             }
             userPermissions = {};
             userPermissions = newPermissions;
             newPermissions = {};
+       
 
           
         });
