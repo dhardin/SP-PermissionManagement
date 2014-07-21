@@ -81,13 +81,13 @@
                 save: 'Saving...',
                 error: 'Error!',
                 complete: 'Complete!'
-            }, url = 'https://members.lcmp.csd.disa.mil/sites/JLTV',
+            }, url = '',
             state_map = {
                 pendingSaves: 0,
                 pendingRemoves: 0,
                 failed: {
-                    saves: [],
-                    removes: []
+                    add: [],
+                    remove: []
                 }
             };
 
@@ -382,6 +382,8 @@
                 type: "POST",
                 dataType: "xml",
                 data: soapEnv,
+                tryCount: 0,
+                retryLimit: 0,
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
                     printError(XMLHttpRequest, textStatus, errorThrown)
                     this.tryCount++;
@@ -390,7 +392,7 @@
                         $.ajax(this);
                         return;
                     } else if (callback) {
-                        callback(textStatus);
+                        callback({ status: textStatus });
                     }
                 },
                 complete: function (xData, status) {
@@ -402,6 +404,67 @@
             });
         };
         // End Utility Method /removeUserFromGroup/
+
+        // Begin Utility Method /modifyPermissions/
+        modifyPermissions = function (permissionArr, index, user, url, operation, callback) {
+            var permission;
+            if (!(permissionArr instanceof Array)) {
+                return false;
+            }
+            if (index < permissionArr.length) {
+                permission =  permissionArr[index].replace(/_/g, ' ');
+                switch (operation) {
+                    case 'add':
+                        addUserToGroup(url, permission, user, function (results) {
+                            onModifyPermissionComplete({ operation: operation, status: results.status, permission: permission});
+                        });
+                        break;
+                    case 'remove':
+                        removeUserFromGroup(url, permission, user, function (results) {
+                            onModifyPermissionComplete({ operation: operation, status: results.status, permission: permission });
+                        });
+                        break;
+                    default:
+                        break;
+                }
+                index++;
+                modifyPermissions(permissionArr, index, user, url, operation, callback);
+            } else if (callback) {
+                callback();
+            }
+
+        }
+        // End Utility method /modifyPermissions/
+
+        // Begin DOM method /onModifyPermissionComplete/
+        onModifyPermissionComplete = function (result_map) {
+            var operation = result_map.operation,
+                status = result_map.status,
+                permission = result_map.permission,
+                notifyText = "";
+
+            state_map.pendingRemoves -= (operation == 'remove' ? 1: 0);
+            state_map.pendingSaves -= (operation == 'add' ? 1 :0);
+
+            if (status == 'error') {
+                state_map.failed[operation].push(permission);
+      
+            } else {
+                $('.notify').text((operation == 'add' ? 'Saved ' : 'Removed ') + permission);
+            }
+
+            if (!state_map.pendingSaves && !state_map.pendingRemoves) {
+                notifyText += (state_map.failed.add.length > 0 ? 'Failed Saves: ' + state_map.failed.add.toString() + '\n' : '');
+                notifyText += (state_map.failed.remove.length > 0 ? 'Failed Removes: ' + state_map.failed.remove.toString() + '\n' : '');
+                notifyText += notification_map.complete;
+
+                $('.notify').html(notifyText);
+                userPermissions = {};
+                userPermissions = newPermissions;
+                newPermissions = {};
+            }
+        };
+        // End DOM method /onModifyPermissionComplete/
 
         $('#users').on('change', function (e) {
             var $this = $(this),
@@ -430,7 +493,10 @@
         });
 
         $("#submit").on('click', function () {
-            var permissions = $('.permissions').val(), i, numOldPermission, oldPermission,
+            var permissions = $('.permissions').val() || [],
+                addPermissions = [],
+                removePermissions = [],
+                i, oldPermission,
                 user = {
                     name: $('.name').val(),
                     email: $('.email').val(),
@@ -438,77 +504,39 @@
                     description: $('.description').val()
                 };
 
-            $('.notify').text(notification_map.save);
+            //get permissions that the user wishes to remove
+            //remove permissions
+            i = 0;
 
-            //check to see if the user has any permissions selected
-            if (permissions !== null){
-                //add permissions
-                state_map.pendingSaves = permissions.length;
-                for (i = 0; i < permissions.length; i++) {
-                    var permission = permissions[i];
-                    newPermissions[permission] = true;
-                    permission = permission.replace(/_/g, ' ');
-                    addUserToGroup(url, permission, user, function (results) {
-                        var status = results.status,
-                            permssion = results.groupName;
-
-                        if (status == 'error') {
-                            state_map.failed.saves.push(permission);
-                        } else {
-                            //notify on save
-                            $('.notify').text("Saved " + permission);
-                        }
-                     
-                        state_map.pendingSaves--;
-
-                        //notify on complete
-                        if (state_map.pendingSaves == 0) {
-                            $('.notify').text(notification_map.complete);
-                            if (state_map.pendingRemoves == 0) {
-                                $('.notify').text('Failed Saves: ' + state_map.failed.saves.toString() + '\nFailed Removes: ' + state_map.failed.removes.toString());
-                            }
-                        }
-                    });
+            //determine permissions that the user is saving
+            for (i = 0; i < permissions.length; i++) {
+                newPermissions[permissions[i]] = true;
+                if (!userPermissions.hasOwnProperty(permissions[i])){
+                    addPermissions.push(permissions[i]);
                 }
             }
 
-            //remove permissions
-            numOldPermission = Object.keys(userPermissions).length;
-            i = 0;
+            //determine permissions that the user is removing
             for (oldPermission in userPermissions) {
                 i++;
                 if (!newPermissions.hasOwnProperty(oldPermission)) {
-                    state_map.pendingRemoves++;
-                    oldPermission = oldPermission.replace(/_/g, ' ');
-                    removeUserFromGroup(url, oldPermission, user, function (results) {
-                        var status = results.status,
-                         permssion = results.groupName;
-
-                        if (status == 'error') {
-                            state_map.failed.removes.push(permssion);
-                        } else {
-                            //notify on remove
-                            $('.notify').text("Removed " + permssion);
-                        }
-
-                     
-                        state_map.pendingRemoves--;
-
-                        //notify on complete
-                        if (state_map.pendingRemoves == 0) {
-                            $('.notify').text(notification_map.complete);
-                            if (state_map.pendingSaves == 0) {
-                                $('.notify').text('Failed Saves: ' + state_map.failed.saves.toString() + '\nFailed Removes: ' + state_map.failed.removes.toString());
-                            }
-                        }
-                    });
+                    removePermissions.push(oldPermission);
                 }
             }
-            userPermissions = {};
-            userPermissions = newPermissions;
-            newPermissions = {};
-       
 
+           
+
+            state_map.pendingSaves = addPermissions.length;
+            state_map.pendingRemoves = removePermissions.length;
+
+            if (addPermissions.length > 0 || removePermissions.length > 0) {
+                $('.notify').text(notification_map.save);
+            }
+            //add permissions first
+            modifyPermissions(addPermissions, 0, user, url, 'add', function () {
+                //once we complete adding permissions, go ahead and remove permissions
+                modifyPermissions(removePermissions, 0, user, url, 'remove');
+            });
           
         });
     </script>
