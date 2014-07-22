@@ -70,7 +70,7 @@
             <button id="submit" type="button" class="savePermissionBtn btn btn-primary">
                 Save Permissions
             </button>
-            <div class="notify"></div>
+            <div class="notify alert alert-info" role="alert"></div>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                     0%
@@ -83,10 +83,10 @@
     <script>
         var userArr = [], userPermissions = {}, newPermissions = {}, permSelect,
             notification_map = {
-                wait: 'Please wait...',
-                save: 'Saving...',
-                error: 'Error!',
-                complete: 'Complete!'
+                wait: '<Strong>Please wait...</Strong>',
+                save: '<Strong>Saving </Strong>',
+                error: '<Strong>Error!</Strong>',
+                complete: '<Strong>Complete!</Strong>'
             }, url = 'https://members.lcmp.csd.disa.mil/sites/JLTV',
             state_map = {
                 totalPermissions: 0,
@@ -103,11 +103,18 @@
                     add: [],
                     remove: []
                 }
+            },
+            alert_map = {
+                success: 'alert-success',
+                info: 'alert-info',
+                warning: 'alert-warning',
+                danger: 'alert-danger'
             };
 
         $(document).ready(function () {
             $('#submit').prop('disabled', true);
-            $('.notify').text(notification_map.wait);
+            changeAlert($('.notify'), "info");
+            $('.notify').html(notification_map.wait);
             getUsers(url, function (results) {
                 // addUser(results, results.length, 0, console.log('done!'));
                 $("#users").select2({
@@ -142,7 +149,8 @@
                         nonSelectedFilter: '',
                         selectorMinimalHeight: 300,
                         callback: function () {
-                            $('.notify').text(notification_map.complete);
+                            $('.notify').html(notification_map.complete);
+                            changeAlert($('.notify'), "success");
                             $('.moveall').html('Give All &rarr;&rarr;');
                             $('.removeall').html('&larr;&larr; Remove All');
                             $('.move').html('Give Selected &rarr;');
@@ -157,7 +165,23 @@
             });
         });
 
-        function format(item) { return item.name; }
+        function format(item) {
+            return item.name;
+        }
+
+        // Begin DOM method /changeAlert/
+        changeAlert = function ($target, alert) {
+            var alertKey;
+            if (alert_map.hasOwnProperty(alert)) {
+                $target.addClass(alert_map[alert]);
+            }
+            for (alertKey in alert_map){
+                if (alert != alertKey) {
+                    $target.removeClass(alert_map[alertKey]);
+                }
+            }
+        }
+        // End DOM mehtod /changeAlert/
         // Begin Utility Method /printError/
         printError = function (XMLHttpRequest, textStatus, errorThrown) {
             console.log("There was an error: " + errorThrown + " " + textStatus);
@@ -470,9 +494,12 @@
 
             if (status == 'error') {
                 state_map.failed[operation].push(permission);
+                changeAlert($('.notify'), "warning");
+                $('.notify').html((operation == 'add' ? '<Strong>Failed Save</Strong> ' : '<Strong>Failed Remove</Strong> ') + permission);
       
             } else {
-                $('.notify').text((operation == 'add' ? 'Saved ' : 'Removed ') + permission);
+                changeAlert($('.notify'), "info");
+                $('.notify').html((operation == 'add' ? '<Strong>Saved</Strong> ' : '<Strong>Removed</Strong> ') + permission);
                 state_map.success[operation].push(permission);
                 //if (operation == 'add') {
                 //    userPermissions[permission.replace(/\s/g, '_')] = true;
@@ -486,10 +513,11 @@
                                   .css('width', state_map.currentProgress + '%')
                                   .text(state_map.currentProgress + '%');
                 }
-               
-                notifyText += (state_map.failed.add.length > 0 ? 'Failed Saves: ' + state_map.failed.add.toString() + '\n' : '');
-                notifyText += (state_map.failed.remove.length > 0 ? 'Failed Removes: ' + state_map.failed.remove.toString() + '\n' : '');
-                notifyText += notification_map.complete;
+
+                notifyText += notification_map.complete + '\n';
+                notifyText += (state_map.failed.add.length > 0 ? '<Strong>Failed Saves</Strong> ' + state_map.failed.add.toString() + '\n' : '');
+                notifyText += (state_map.failed.remove.length > 0 ? '<Strong>Failed Removes</Strong> ' + state_map.failed.remove.toString() : '');
+
                 state_map.pendingRemoves = 0;
                 state_map.pendingSaves = 0;
                 state_map.failed.add = [];
@@ -497,6 +525,13 @@
                 state_map.success.add = [];
                 state_map.success.remove = [];
                 $('.notify').html(notifyText);
+
+                if (state_map.failed.add.length > 0 || state_map.failed.remove.length > 0) {
+                    changeAlert($('.notify'), "danger");
+                } else {
+                    changeAlert($('.notify'), "complete");
+                }
+
                 $('#submit').prop('disabled', false);
                 $('.getPermissionBtn').prop('disabled', false);
                 $('.getPermissionBtn').click();
@@ -576,7 +611,8 @@
             state_map.progressUpdateRatio = 100 / state_map.totalUpdates;
 
             if (addPermissions.length > 0 || removePermissions.length > 0) {
-                $('.notify').text(notification_map.save);
+                $('.notify').html(notification_map.save);
+                changeAlert($('.notify'), "info");
                 $('.progress-bar')
                      .attr('aria-valuenow', 0)
                      .css('width', '0%');
