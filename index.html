@@ -42,12 +42,17 @@
         .userInfo tr td:first-child {
            text-align:right;
         }
+        .lock {
+            border: 1px solid #000;
+            border-radius: 50%;
+            padding: 0.5em;
+        }
       
     </style>
 </head>
 <body>
     <div>
-        <h1>User Permissions </h1>
+        <h1><span class="lock glyphicon glyphicon-lock"></span> Permission Management</h1>
         Select a user: <div id="users"></div>
         <div class="userInfo">
             <table>
@@ -87,7 +92,7 @@
                 save: '<Strong>Saving </Strong>',
                 error: '<Strong>Error!</Strong>',
                 complete: '<Strong>Complete!</Strong>'
-            }, url = 'https://members.lcmp.csd.disa.mil/sites/JLTV',
+            }, url = '',
             state_map = {
                 totalPermissions: 0,
                 pendingSaves: 0,
