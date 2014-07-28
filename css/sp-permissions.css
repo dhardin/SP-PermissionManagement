@@ -1,0 +1,39 @@
+   .select2-container {
+            width: 200px;
+        }
+
+        .column {
+            float: left;
+            width: 33%;
+        }
+        .permissions {
+            display: none;
+        }
+        .box1, .box2 {
+            /*width: 40%;
+            float: left;*/
+        } 
+        .moveall {
+            content: string('Give All');
+        }
+        .removeall {
+            content: string('Remove All');
+        }
+        .userInfo tr td:first-child {
+           text-align:right;
+        }
+        .lock {
+            border: 1px solid #000;
+            border-radius: 50%;
+            padding: 0.5em;
+        }
+
+        .progress, .results {
+            display: none;
+        }
+
+        .results {
+            height: 10%;
+            overflow-y:scroll;
+        }
+      
