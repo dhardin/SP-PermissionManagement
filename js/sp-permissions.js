@@ -34,11 +34,14 @@ var spPermissions = (function () {
                                 + '<td><input class="user-email" type="text" /></td>'
                             + '</tr>'
                         + '</table>'
-                        + '<button type="button" class="get-permissions-btn btn btn-primary">'
+                        + '<button type="button" class="get-permissions-btn btn btn-lg btn-primary">'
                             + 'Get Permissions'
                         + '</button>'
-                        + '<button type="button" class="save-permissions-btn btn btn-primary">'
+                        + '<button type="button" class="save-permissions-btn btn btn-lg btn-primary">'
                             + 'Save Permissions'
+                        + '</button>'
+                        + '<button type="button" class="purge-user-btn btn btn-lg btn-danger">'
+                            + '&#9760; Purge User'
                         + '</button>'
                         + '<div class="notify alert alert-info" role="alert">'
                          + '<span class="message"></span>'
@@ -100,13 +103,23 @@ var spPermissions = (function () {
         initModule, initSelect2, setJqueryMap, getData, getWebs, getLists, printError, addUser, addPermission,
         getPermissions, getUsers, addUserToGroup, removeUserFromGroup, modifyPermissions, format,
         changeAlert, completeModifyPermission, populatePermissions, onUserChange, onGetBtnClick, onSaveBtnClick,
+        onPurgeBtnClick, reset;
 
     //----------------- END MODULE SCOPE VARIABLES ---------------
     //----------------- BEGIN UTILITY METHODS --------------------
+    // Begin Utility Method /reset/
+    reset = function(){
+        jqueryMap.$permissions.val('');
+        jqueryMap.$main.find('.filter').val('');
+        jqueryMap.$savePermissionsBtn.prop('disabled', true);
+         jqueryMap.$purgeUserBtn.prop('disabled', true);
+    };
+    // End Utility Method /reset/
+
     // Begin Utility Method /format/
     format = function (item) {
         return item.name;
-    }
+    };
     // End Utility Method /format/
 
     // Begin Utility Method /printError/
@@ -380,6 +393,52 @@ var spPermissions = (function () {
     };
     // End Utility Method /removeUserFromGroup/
 
+    // Begin utility method /removeUserFromWeb/
+    removeUserFromWeb = function (url, user, callback) {
+        var results = [],
+            login = user.login,
+            // Create the SOAP request
+             soapEnv =
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                    <soap:Body>\
+                        <RemoveUserFromSite xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                            <userLoginName>'+ login + '</userLoginName>\
+                        </RemoveUserFromSite>\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+
+        $.ajax({
+            url: url + "/_vti_bin/UserGroup.asmx",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/RemoveUserFromSite");
+            },
+            type: "POST",
+            dataType: "xml",
+            data: soapEnv,
+            tryCount: 0,
+            retryLimit: 0,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                printError(XMLHttpRequest, textStatus, errorThrown)
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                } else if (callback) {
+                    callback({ status: textStatus });
+                }
+            },
+            complete: function (xData, status) {
+                if (callback) {
+                    callback({ status: status });
+                }
+            },
+            contentType: "text/xml; charset=\"utf-8\""
+        });
+    };
+    // End Utility Method /removeUserFromWeb/
+
     // Begin Utility Method /modifyPermissions/
     modifyPermissions = function (permissionArr, index, user, url, operation, callback) {
         var permission;
@@ -430,6 +489,7 @@ var spPermissions = (function () {
             $progressBar: $container.find('.progress-bar'),
             $getPermissionsBtn: $container.find('.get-permissions-btn'),
             $savePermissionsBtn: $container.find('.save-permissions-btn'),
+            $purgeUserBtn: $container.find('.purge-user-btn'),
             $notify: $container.find('.notify'),
             $notifyMessage: $container.find('.message'),
             $results: $container.find('.results'),
@@ -619,6 +679,7 @@ var spPermissions = (function () {
             jqueryMap.$permissions.val(newPerms);
             jqueryMap.$permissions.bootstrapDualListbox('refresh');
             jqueryMap.$savePermissionsBtn.prop('disabled', false);
+            jqueryMap.$purgeUserBtn.prop('disabled', false);
         });
     };
 
@@ -676,6 +737,7 @@ var spPermissions = (function () {
 
             jqueryMap.$savePermissionsBtn.prop('disabled', true);
             jqueryMap.$getPermissionsBtn.prop('disabled', true);
+            jqueryMap.$purgeUserBtn.prop('disabled', true);
         }
         //add permissions first
         modifyPermissions(addPermissions, 0, user, settings_map.url, 'add', function () {
@@ -683,6 +745,24 @@ var spPermissions = (function () {
             modifyPermissions(removePermissions, 0, user, settings_map.url, 'remove');
         });
     };
+
+    onPurgeBtnClick = function (e) {
+        var username =  jqueryMap.$username.val();
+        jqueryMap.$progressBar
+                         .attr('aria-valuenow', 0)
+                         .css('width', '0%');
+        jqueryMap.$progress.show();
+        state_map.pendingSaves = 0;
+        state_map.pendingRemoves = 1;
+        removeUserFromWeb(settings_map.url,{login: username}, function(results){
+            state_map.currentProgress = 0;
+            state_map.progressUpdateRatio = 100;
+            status = results.status;
+
+            completeModifyPermission({operation: 'remove', status: status, permission: 'All'});
+            reset();
+        });
+    }
     //--------------------- END EVENT HANLDERS -----------------
 
     //--------------------- END DOM METHODS --------------------
@@ -701,7 +781,7 @@ var spPermissions = (function () {
         state_map.$container = $container;
 
         setJqueryMap();
-
+        jqueryMap.$purgeUserBtn.prop('disabled', true);
         jqueryMap.$savePermissionsBtn.prop('disabled', true);
         changeAlert(jqueryMap.$notify, "info");
         jqueryMap.$notifyMessage.html(config_map.notification_map.wait);
@@ -722,6 +802,8 @@ var spPermissions = (function () {
         jqueryMap.$getPermissionsBtn.on('click', onGetBtnClick);
 
         jqueryMap.$savePermissionsBtn.on('click', onSaveBtnClick);
+
+        jqueryMap.$purgeUserBtn.on('click', onPurgeBtnClick);
     };
 
     return { initModule: initModule };
