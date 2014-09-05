@@ -88,11 +88,13 @@ var spPermissions = (function () {
             currentProgress: 0,
             failed: {
                 add: [],
-                remove: []
+                remove: [],
+                purge: []
             },
             success: {
                 add: [],
-                remove: []
+                remove: [],
+                purge: []
             }
         },
         settings_map = {
@@ -543,7 +545,7 @@ var spPermissions = (function () {
             //}
         }
 
-        if (!state_map.pendingSaves && !state_map.pendingRemoves) {
+        if (!state_map.pendingSaves && !state_map.pendingRemoves || operation == 'purge') {
             if (state_map.currentProgress < 100) {
                 state_map.currentProgress = 100;
                 jqueryMap.$progressBar.attr('aria-valuenow', state_map.currentProgress)
@@ -562,8 +564,10 @@ var spPermissions = (function () {
             state_map.pendingSaves = 0;
             state_map.failed.add = [];
             state_map.failed.remove = [];
+            state_map.failed.purge = [];
             state_map.success.add = [];
             state_map.success.remove = [];
+            state_map.success.purge = [];
             jqueryMap.$notifyMessage.html(config_map.notification_map.complete);
 
             if (state_map.failed.add.length > 0 || state_map.failed.remove.length > 0) {
@@ -582,7 +586,9 @@ var spPermissions = (function () {
          
             jqueryMap.$savePermissionsBtn.prop('disabled', false);
             jqueryMap.$getPermissionsBtn.prop('disabled', false);
-            jqueryMap.$getPermissionsBtn.click();
+            if(operation != 'purge'){
+                jqueryMap.$getPermissionsBtn.click();
+            }
         }
     };
     // End DOM method /completeModifyPermission/
@@ -759,7 +765,7 @@ var spPermissions = (function () {
             state_map.progressUpdateRatio = 100;
             status = results.status;
 
-            completeModifyPermission({operation: 'remove', status: status, permission: 'All'});
+            completeModifyPermission({operation: 'purge', status: status, permission: 'All'});
             reset();
         });
     }
