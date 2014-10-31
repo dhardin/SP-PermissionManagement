@@ -22,7 +22,7 @@ app.Library = Backbone.Collection.extend({
             return this;
         }
 
-        regex = new RegExp(text, "gi");
+        regex = new RegExp(text, "i");
 
         return _(this.filter(function(data) {
             for (key in data.attributes){
