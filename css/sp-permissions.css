@@ -1,3 +1,43 @@
+  body, div{overflow: none !important;}
+  #main{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .navbar-brand,
+.navbar-nav li a {
+    line-height: 50px;
+    height: 50px;
+    padding-top: 0;
+}
+   #logo {
+    width: 35px;
+    height: 35px;
+    padding: 5px;
+    /*background-color: #0072c6;*/
+    border-radius: 5px;
+   }
+    .list-group {
+        height: 400px;
+        background-color: #ddd;
+    }
+ .btn-group {
+    width: 100%;
+ }
+ 
+   .removeAllSelect, .addAllSelect
+   {
+        width: 40%;
+
+   }
+   .addSingleSelect, .removeSingleSelect 
+   {
+    width: 60%;
+  
+   }
    .select2-container {
             width: 200px;
         }

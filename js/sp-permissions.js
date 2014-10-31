@@ -15,44 +15,6 @@ var spPermissions = (function () {
     //----------------- BEGIN MODULE SCOPE VARIABLES ---------------
     var
         config_map = {
-            main_html: String() 
-                + '<div class="sp-permission-container">'
-                    + '<h1><span class="lock glyphicon glyphicon-lock"></span> Permission Management</h1>'
-                    + 'Select a user: <div class="users"></div>'
-                    + '<div class="userInfo">'
-                        + '<table>'
-                            + '<tr>'
-                                + '<td>Display Name: </td>'
-                                + '<td><input class="user-name" type="text" /></td>'
-                            + '</tr>'
-                            + '<tr>'
-                                + '<td>Username: </td>'
-                                + '<td><input class="user-username" type="text" /></td>'
-                            + '</tr>'
-                            + '<tr>'
-                                + '<td>Email: </td>'
-                                + '<td><input class="user-email" type="text" /></td>'
-                            + '</tr>'
-                        + '</table>'
-                        + '<button type="button" class="get-permissions-btn btn btn-lg btn-primary">'
-                            + 'Get Permissions'
-                        + '</button>'
-                        + '<button type="button" class="save-permissions-btn btn btn-lg btn-primary">'
-                            + 'Save Permissions'
-                        + '</button>'
-                        + '<button type="button" class="purge-user-btn btn btn-lg btn-danger">'
-                            + '&#9760; Purge User'
-                        + '</button>'
-                        + '<div class="notify alert alert-info" role="alert">'
-                         + '<span class="message"></span>'
-                         + '<div class="results well"></div>'
-                         + '<div class="progress">'
-                            + '<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>'
-                         + '</div>'
-                        + '</div>'
-                    + '</div>'
-                    + '<select class="permissions" multiple="multiple"></select>'
-                + '</div>',
             settings_map : {
                 url: true,
                 height: true
@@ -596,21 +558,7 @@ var spPermissions = (function () {
     // Begin DOM method /initSelect2/
     initSelect2 = function($target, arr){
         $target.select2({
-            id: function (e) { return e.name + '|' + e.login + '|' + e.email },
-            data: {
-                results: arr,
-                text: function (item) {
-                    return item.name;
-                },
-                name: function (item) {
-                    return item.name;
-                },
-                login: function (item) {
-                    return item.login;
-                },
-                email: function (item) {
-                    return item.email;
-                }
+                id: function (e) { return e.name}
             },
             formatSelection: format,
             formatResult: format
@@ -660,15 +608,11 @@ var spPermissions = (function () {
     // End DOM method /populatePermissions/
 
     //--------------------- BEGIN EVENT HANDLERS ---------------
-    onUserChange = function(e){
+    onUserGroupChange = function(e){
         var $this = $(this),
-              name = $this.select2('data').name,
-              email = $this.select2('data').email,
-              login = $this.select2('data').login;
+              name = $this.select2('data').name;
 
-        jqueryMap.$name.val(name);
-        jqueryMap.$email.val(email);
-        jqueryMap.$username.val(login);
+
     }
 
     onGetBtnClick = function(e){
@@ -773,43 +717,41 @@ var spPermissions = (function () {
 
     //--------------------- END DOM METHODS --------------------
 
-    initModule = function ($container, options) {
-        var $main = $(config_map.main_html);
-
+    initModule = function ($container) {
         settings_map.url = options.url || "";
-
 
         if (settings_map.url.length == 0) {
             return;
         }
-        state_map.$main = $main;
-        $main.appendTo($container);
+
         state_map.$container = $container;
 
         setJqueryMap();
-        jqueryMap.$purgeUserBtn.prop('disabled', true);
-        jqueryMap.$savePermissionsBtn.prop('disabled', true);
-        changeAlert(jqueryMap.$notify, "info");
-        jqueryMap.$notifyMessage.html(config_map.notification_map.wait);
+       // jqueryMap.$purgeUserBtn.prop('disabled', true);
+       // jqueryMap.$savePermissionsBtn.prop('disabled', true);
+       // changeAlert(jqueryMap.$notify, "info");
+      //  jqueryMap.$notifyMessage.html(config_map.notification_map.wait);
 
         //Get users to populate select2 dropdown
+       
+
         getUsers(settings_map.url, function (results) {
-            initSelect2(jqueryMap.$users, results);
+            initSelect2(jqueryMap.$userGroup, results);
         });
+
 
         //get site collection permissions to populate dual list box
-        getPermissions(settings_map.url, false, function (results) {
-            populatePermissions(jqueryMap.$permissions, results);
-        });
+      //  getPermissions(settings_map.url, false, function (results) {
+        //    populatePermissions(jqueryMap.$permissions, results);
+      //  });
 
 
-        jqueryMap.$users.on('change', onUserChange);
+        jqueryMap.$userGroup.on('change', onUserGroupChange);
+       // jqueryMap.$getPermissionsBtn.on('click', onGetBtnClick);
 
-        jqueryMap.$getPermissionsBtn.on('click', onGetBtnClick);
+       // jqueryMap.$savePermissionsBtn.on('click', onSaveBtnClick);
 
-        jqueryMap.$savePermissionsBtn.on('click', onSaveBtnClick);
-
-        jqueryMap.$purgeUserBtn.on('click', onPurgeBtnClick);
+      //  jqueryMap.$purgeUserBtn.on('click', onPurgeBtnClick);
     };
 
     return { initModule: initModule };
