@@ -10,10 +10,10 @@ app.AppView = {
 		this.currentView = view;
 		this.currentView.render();
 
-	 	$('#main').html(this.currentView.el);
+	 $('#main').html(this.currentView.el);
 	}
 };
-
+Backbone.pubSub = _.extend({}, Backbone.Events);
 Backbone.View.prototype.close = function(){
 	this.remove();
 	this.unbind();

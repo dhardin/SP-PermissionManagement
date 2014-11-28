@@ -2,12 +2,10 @@ var app = app || {};
 
 app.UserView = Backbone.View.extend({
 	template: _.template($('#user-list-item-template').html()),
+	tagName: 'li',
 
 	events: {
-		'click #select': 'select',
-		'mouseup': 'edit',
-		'click #deleteChartBtn': 'deleteChart',
-		'drop': 'onSortChange'
+		'click': 'select'
 	},
 
 	initialize: function (options) {
@@ -15,8 +13,8 @@ app.UserView = Backbone.View.extend({
 	},
 
 	select: function(e){
-		this.$item.addClass('active');
-	}
+		 Backbone.pubSub.trigger('user:select', this.model);
+	},
 
 	edit: function(e){
 		var username = this.model.username;
@@ -25,21 +23,9 @@ app.UserView = Backbone.View.extend({
 		//save();
 	},
 
-	deleteChart: function(e) {
-		// Delete model
-		this.model.destroy();
-		// Delete view
-		this.remove();
-
-	//	save();
-	},
-
-	onSortChange: function (e, index) {
-		this.$el.trigger('update-sort', [this.model, index]);
-	},
-
 	render: function () {
 		this.$el.html(this.template(this.model.toJSON()));
+		this.$el.attr('role', 'presentation');
 
 		return this;
 	}

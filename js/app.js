@@ -1,46 +1,99 @@
 var app = app || {};
 
-charts = [
+var user_data = [
 	{
-		title: 'Chart 1',
-		list_guid: '',
-		url: '',
-		chartType: 'bar',
-		rank: '1',
-		data: [
-			{team: 'A', miles: 103},
-			{team: 'B', miles: 234},
-			{team: 'C', miles: 451},
-			{team: 'D', miles: 144},
-			{team: 'E', miles: 74},
-			{team: 'F', miles: 231},
-			],
-        dataColumn1: 'miles',
-        dataColumn2: '',
-        nameColumn: 'team',
+		name: 'Hardin, Dustin',
+		username: 'dustin.hardin',
+		email: 'dustin.hardin@example.com',
+		permissions: ['Admin']
 	},
 	{
-		title: 'Chart 2',
-		list_guid: '',
-		url: '',
-		chartType: 'dot',
-		rank: '2'
-	},
-	{
-		title: 'Chart 3',
-		list_guid: '',
-		url: '',
-		chartType: 'pie',
-		rank: '3'
+		name: 'Doe, John',
+		username: 'john.doe',
+		email: 'john.doe@example.com',
+		permissions: ['Visitors']
+	}, {
+		name: 'Doe, Jane',
+		username: 'jane.doe',
+		email: 'jane.doe@example.com'
 	}
+		
 ];
 
-var isTesting = false;
+var group_data = [
+	{
+		name: 'Admin',
+		users: ['dustin.hardin'],
+		selected: true
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	},{
+		name: 'Admin',
+		users: ['dustin.hardin']
+	},{
+		name: 'Visitors',
+		users: ['john.doe']
+	}
+]
+
+var isTesting = true;
 
 if (isTesting){
-	spData.getData(app.config.dataArr, 0, function(results){
-		app.LibraryCollection = new app.Library(results);
-	});
+	//initialize data
+	app.UserCollection = new app.LibraryUser(user_data);
+	app.GroupCollection = new app.LibraryGroup(group_data);
+	app.GroupSelectedCollection = new app.LibraryGroup([]);
+
+	//set views
 } else {
-	app.LibraryCollection = new app.Library(charts);
+	
 }

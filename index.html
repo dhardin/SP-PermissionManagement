@@ -7,22 +7,15 @@
     <!-- Third Party Style Sheets -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/select2.css" />
-    <link rel="stylesheet" href="css/bootstrap-duallistbox.css" />
     <!-- Our Style Sheets -->
     <link rel="stylesheet" href="css/sp-permissions.css" />
     <!-- Third Party JavaScript -->
     <!-- Latest compiled and minified JavaScript -->
-    <script src="js/jquery-1.11.0.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/select2.min.js"></script>
-    <script src="js/jquery.bootstrap-duallistbox.js"></script>
+    <script src="lib/jquery.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="lib/underscore.js"></script>
     <script type="text/javascript" src="lib/backbone.js"></script>
-    <script type="text/javascript" src="lib/pie/pie_uncompressed.js"></script>
-    <script type="text/javascript" src="lib/html5shiv/html5shiv.js"></script>
     <!-- Our JavaScript -->
-    <script src="js/sp-permissions.js"></script>
     <style>
      
     </style>
@@ -50,37 +43,7 @@
         </div> <!-- /.container-fluid -->
     </nav>
 
-    <div id="main">
-        <div id="user-group-input"></div>
-        <div class="notify alert alert-info" role="alert">
-            <span class="message"></span>
-            <div class="results well"></div>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6">
-             <div class="btn-group">
-                <button type="button" class="btn btn-default addSingleSelect btn-primary">&rarr; Give Selected</button>
-                <button type="button" class="btn btn-default addAllSelect btn-primary">&rarr;&rarr; Give All</button>
-               
-            </div>
-             <div id="availableList" class="list-group"></div>
-          </div>
-          <div class="col-md-6">
-              <div class="btn-group">
-                <button type="button" class="btn btn-default removeAllSelect btn-warning">&larr;&larr; Remove All</button>
-                <button type="button" class="btn btn-default removeSingleSelect btn-warning">&larr; Remove Selected</button>
-            </div>
-            <div id="selectedList" class="list-group"></div>
-          </div>
-        </div>
-       
-    </div>
+    <div id="main"></div>
 
     <!-- TEMPLATES -->
     <script type="text/template" id="main-template">
@@ -90,54 +53,96 @@
         <div class="right"><h1>Groups</h1></div>
     </div>
     </script>
+
+
+
     <script type="text/template" id="user-template">
-        Select a user: <div class="users"></div>
-        <table>
+        <div id="user"></div>
+        <div class="notify alert alert-info" role="alert">
+            <span class="message"></span>
+            <div class="results well"></div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    0%
+                </div>
+            </div>
+        </div>
+        <div id="permissions"></div>
+    </script>
+
+    <script type="text/template" id="group-list-item-template">
+        <a class="list-group-item"><%=name%></a>
+    </script>
+      <script type="text/template" id="user-list-item-template">
+        <a class="user" role="menuitem" tabindex="-1"><%=name%></a>
+    </script>
+
+    <script type="text/template" id="collection-template">
+    </script>
+
+    <script type="text/template" id="user-edit-template">
+           <table>
             <tr>
                 <td>Display Name: </td>
-                <td><input class="user-name" type="text" value="<%=name%>"/></td>
+                <td> 
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="user-search-button" data-toggle="dropdown" aria-expanded="true">
+                            <div id="name-container">
+                             <span class="user-attr" id="name"><%=name%></span>
+                             <span class="caret"></span>
+                            </div>
+                            <div class="search-container">
+                                <input class="search" type="text"/>
+                                <span class="icon icon-search"></span>
+                            </div>
+                         
+                        </button>
+                        <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td>Username: </td>
-                <td><input class="user-username" type="text" value="<%=username%>"/></td>
+                <td><span class="user-attr" id="username"><%=username%></span></td>
             </tr>
             <tr>
                 <td>Email: </td>
-                <td><input class="user-email" type="text" value="<%=email%>" /></td>
+                <td><span class="user-attr" id="email" ><%=email%></span></td>
             </tr>
         </table>
         <div class="btn-group btn-group-lg">
           <button type="button" class="btn btn-default get-permissions-btn">Get Permissions</button>
           <button type="button" class="btn btn-default save-permissions-btn">Save Permissions</button>
-          <button type="button" class="btn btn-default purge-user-btn">&#9760; Purge User</button>
+          <button type="button" class="btn btn-default purge-user-btn"><span class="icon icon-skull"></span> Purge User</button>
         </div>
     </script>
 
-    <script type="text/template" id="list-item-template">
-        <a href="#" class="list-group-item"><%=name%></a>
-    </script>
-
-    <script type="text/template" id="group-library-template">
-        
-    </script>
-    <script type="text/template" id="user-library-template">
-       
-    </script>
-
-    <script type="text/template" id="group-template">
-        Select a group: <div class="groups"></div>
-        <div class="btn-group btn-group-lg">
-          <button type="button" class="btn btn-default get-users-btn">Get Users</button>
-          <button type="button" class="btn btn-default save-users-btn">Save Users</button>
-          <button type="button" class="btn btn-default purge-group-btn">&#9760; Purge Group</button>
+    <script type="text/template" id="user-permission-select-template">
+          <div class="row">
+          <div class="col-md-6">
+              <div class="search-container">
+                    <input class="search permissions_available" type="text"/>
+                    <span class="icon icon-search"></span>
+             </div>
+             <div class="btn-group">
+                <button type="button" class="btn btn-default addSingleSelect btn-primary" data-method="single">&rarr; Give Selected</button>
+                <button type="button" class="btn btn-default addAllSelect btn-primary"  data-method="all">&rarr;&rarr; Give All</button>
+            </div>
+             <div id="group-available" class="list-group"></div>
+          </div>
+          <div class="col-md-6">
+              <div class="search-container">
+                    <input class="search permissions_selected" type="text"/>
+                    <span class="icon icon-search"></span>
+              </div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default removeAllSelect btn-warning" data-method="single">&larr;&larr; Remove All</button>
+                <button type="button" class="btn btn-default removeSingleSelect btn-warning" data-method="all">&larr; Remove Selected</button>
+            </div>
+            <div id="group-selected" class="list-group"></div>
+          </div>
         </div>
     </script>
-
-   <!-- <script type="text/JavaScript">
-        $(document).ready(function () {
-            spPermissions.initModule($('#sp-permissions'), { url: "https://members.lcmp.csd.disa.mil/sites/JLTV/" });
-        });
-    </script> -->
 
     <!-- Models -->
     <script src="js/models/user.js"></script>
@@ -146,11 +151,14 @@
      <script src="js/models/library_users.js"></script>
     <!-- Views -->
     <script src="js/views/user.js"></script>
+     <script src="js/views/user.edit.js"></script>
+      <script src="js/views/user.permissions.js"></script>
+      <script src="js/views/user.permission-selector.js"></script>
     <script src="js/views/group.js"></script>
-    <script src="js/views/user-edit.js"></script>
-    <script src="js/views/group-edit.js"></script>
-    <script src="js/views/library_users.js"></script>
-    <script src="js/views/library_groups.js"></script>
+    <script src="js/views/library.js"></script>
+     <script src="js/views/library.permissions_available.js"></script>
+      <script src="js/views/library.permissions_selected.js"></script>
+       <script src="js/views/library.users.js"></script>
     <script src="js/views/app.js"></script>
     <!-- Application -->
     <script src="js/app.js"></script>

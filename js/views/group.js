@@ -1,39 +1,25 @@
 var app = app || {};
 
-app.ChartView = Backbone.View.extend({
-	template: _.template($('#chart-list-item-template').html()),
+app.GroupView = Backbone.View.extend({
+	template: _.template($('#group-list-item-template').html()),
 
 	events: {
-		'click #editChartBtn': 'editChart',
-		'mouseup': 'editChart',
-		'click #deleteChartBtn': 'deleteChart',
-		'drop': 'onSortChange'
+		'click': 'select'
 	},
 
 	initialize: function (options) {
 
 	},
-
-	editChart: function(e){
-		var cid = this.model.cid;
-		app_router.navigate('edit/' + cid, { trigger: true });
-		//package collection as strinified array
-		//save();
+	select: function(e){
+		var selected = this.model.get('selected');
+		if(selected){
+			this.$el.find('a').removeClass('selected');
+		} else {
+			this.$el.find('a').addClass('selected');
+		}
+		this.model.set('selected', !selected);
 	},
-
-	deleteChart: function(e) {
-		// Delete model
-		this.model.destroy();
-		// Delete view
-		this.remove();
-
-	//	save();
-	},
-
-	onSortChange: function (e, index) {
-		this.$el.trigger('update-sort', [this.model, index]);
-	},
-
+	
 	render: function () {
 		this.$el.html(this.template(this.model.toJSON()));
 

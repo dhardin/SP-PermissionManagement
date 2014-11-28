@@ -1,6 +1,6 @@
 var app = app || {};
 
-app.Library = Backbone.Collection.extend({
+app.LibraryGroup = Backbone.Collection.extend({
     model: app.Group,
     comparator: function (property) {
         return selectedStrategy.apply(myModel.get(property));
@@ -15,23 +15,35 @@ app.Library = Backbone.Collection.extend({
     initialize: function () {
         this.changeSort("name"); 
     },
-    search: function (text) {
-        var regex, key;
+     search: function (options) {
+        var regex,
+            key = options.key || false,
+            val = options.val || '',
+            collection;
 
-        if (text.length == 0) {
+        if (val.length == 0) {
             return this;
         }
 
-        regex = new RegExp(text, "i");
+        regex = new RegExp(val, "i");
 
-        return _(this.filter(function(data) {
-            for (key in data.attributes){
+        collection = _(this.filter(function(data) {
+            if(key){
                 if (regex.test(data.attributes[key])){
-                    return true;
+                        return true;
+                }
+            } else {
+                 for (key in data.attributes){
+                    if (regex.test(data.attributes[key])){
+                        return true;
+                    }
                 }
             }
+           
             return false;
         }));
 
-    }                                                                          
+        return collection;
+
+    }                                                                                      
 });

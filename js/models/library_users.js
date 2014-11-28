@@ -1,39 +1,49 @@
 var app = app || {};
 
-app.Library = Backbone.Collection.extend({
-    model: app.Chart,
+app.LibraryUser = Backbone.Collection.extend({
+    model: app.User,
     comparator: function (property) {
         return selectedStrategy.apply(myModel.get(property));
     },
     strategies: {
-        title: function (chart) { return chart.get("title"); }, 
-        type: function (chart) { return chart.get("type"); },
-        rank: function(chart){return chart.get('rank');}
+        name: function (group) { return group.get("name"); }
     },
     changeSort: function (sortProperty) {
         this.comparator = this.strategies[sortProperty];
         this.trigger('sortList');
     },
     initialize: function () {
-        this.changeSort("rank"); 
+        this.changeSort("name"); 
     },
-    search: function (text) {
-        var regex, key;
+    search: function (options) {
+        var regex,
+            key = options.key || false,
+            val = options.val || '',
+            collection;
 
-        if (text.length == 0) {
+        if (val.length == 0) {
             return this;
         }
 
-        regex = new RegExp(text, "gi");
+        regex = new RegExp(val, "i");
 
-        return _(this.filter(function(data) {
-            for (key in data.attributes){
+        collection = _(this.filter(function(data) {
+            if(key){
                 if (regex.test(data.attributes[key])){
-                    return true;
+                        return true;
+                }
+            } else {
+                 for (key in data.attributes){
+                    if (regex.test(data.attributes[key])){
+                        return true;
+                    }
                 }
             }
+           
             return false;
         }));
+
+        return collection;
 
     }                                                                          
 });

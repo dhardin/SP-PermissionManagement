@@ -1,10 +1,7 @@
   body, div{overflow: none !important;}
   #main{
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    padding: 15px;
+    margin-top: 50px;
   }
 
   .navbar-brand,
@@ -23,6 +20,23 @@
     .list-group {
         height: 400px;
         background-color: #ddd;
+        overflow-y: scroll;
+    }
+    .list-group-item{
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -kthml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select:none;
+      -user-select: none;
+      cursor: pointer;
+    }
+
+    #group-available .list-group-item.selected  {
+      background-color: rgb(223,240,216)!important;
+    }
+    #group-selected  .list-group-item.selected  {
+      background-color: rgb(242,222,222)!important;
     }
  .btn-group {
     width: 100%;
@@ -38,42 +52,52 @@
     width: 60%;
   
    }
-   .select2-container {
-            width: 200px;
-        }
 
-        .column {
-            float: left;
-            width: 33%;
-        }
-        .permissions {
-            display: none;
-        }
-        .box1, .box2 {
-            /*width: 40%;
-            float: left;*/
-        } 
-        .moveall {
-            content: string('Give All');
-        }
-        .removeall {
-            content: string('Remove All');
-        }
-        .userInfo tr td:first-child {
-           text-align:right;
-        }
-        .lock {
-            border: 1px solid #000;
-            border-radius: 50%;
-            padding: 0.5em;
-        }
+.alert{
+  visibility: hidden;
+}
 
-        .progress, .results {
-            display: none;
-        }
+#permissions .search {
+  width: 96%;
+}
 
-        .results {
-            height: 10%;
-            overflow-y:scroll;
-        }
-      
+.search-container {
+  background-color: white;
+  padding: 2px;
+  border-radius: 7px;
+  border: 2px solid #dadada;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
+#user .search-container{
+  display: none;
+}
+
+.search{
+  border: none;
+    outline: none;
+}
+.icon {
+   background-repeat: no-repeat;
+   background-position: 0px 0px;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 22px;
+    line-height: 22px;
+    vertical-align: text-bottom;
+    width: 22px;
+    background-size: contain;
+}
+
+.icon.icon-skull{
+  background-image: url('../img/skull.gif');
+
+}
+.icon.icon-search{
+  background-image: url('../img/search.gif');
+}
+
+#users li{
+  cursor: pointer;
+}
