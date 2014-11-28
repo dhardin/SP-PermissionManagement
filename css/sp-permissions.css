@@ -101,3 +101,17 @@
 #users li{
   cursor: pointer;
 }
+#user .well {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.info-header {
+ color: #777;
+ font-size: 1.1em;
+ font-weight: bold;
+}
+.info-text {
+ color: #777;
+ margin-left: 10px;
+}

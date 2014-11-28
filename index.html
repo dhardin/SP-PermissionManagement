@@ -81,10 +81,7 @@
     </script>
 
     <script type="text/template" id="user-edit-template">
-           <table>
-            <tr>
-                <td>Display Name: </td>
-                <td> 
+          <div class="well">
                     <div class="dropdown">
                         <button class="btn btn-default dropdown-toggle" type="button" id="user-search-button" data-toggle="dropdown" aria-expanded="true">
                             <div id="name-container">
@@ -99,17 +96,19 @@
                         </button>
                         <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
                     </div>
-                </td>
-            </tr>
-            <tr>
-                <td>Username: </td>
-                <td><span class="user-attr" id="username"><%=username%></span></td>
-            </tr>
-            <tr>
-                <td>Email: </td>
-                <td><span class="user-attr" id="email" ><%=email%></span></td>
-            </tr>
-        </table>
+               </div>
+              <div class="well">
+                <span class="info-header">Display Name</span>
+                <span class="user-attr info-text" id="name"><%=name%></span>
+              </div>
+            <div class="well">
+                <span class="info-header">Username</span>
+                <span class="user-attr info-text" id="username"><%=username%></span>
+              </div>
+               <div class="well">
+                <span class="info-header">Email</span>
+              <span class="user-attr info-text" id="email" ><%=email%></span>
+            </div>
         <div class="btn-group btn-group-lg">
           <button type="button" class="btn btn-default get-permissions-btn">Get Permissions</button>
           <button type="button" class="btn btn-default save-permissions-btn">Save Permissions</button>
