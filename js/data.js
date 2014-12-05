@@ -48,8 +48,14 @@ app.data = (function(){
                     </soap:Body>\
                 </soap:Envelope>';
 
+        //data calls assume url ends with '/'
+        //fix url if it dosn't end with '/'
+        if(!url.endsWith('/')){
+            url = url + '/';
+        }
+
         $.ajax({
-            url: url + "/_vti_bin/UserGroup.asmx",
+            url: url + "_vti_bin/UserGroup.asmx",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('SOAPAction', soapAction);
             },
@@ -92,9 +98,15 @@ app.data = (function(){
                 </soap:Body>\
             </soap:Envelope>';
 
+                //data calls assume url ends with '/'
+        //fix url if it dosn't end with '/'
+        if(!url.endsWith('/')){
+            url = url + '/';
+        }
+
 
         $.ajax({
-            url: url + "/_vti_bin/UserGroup.asmx",
+            url: url + "_vti_bin/UserGroup.asmx",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/GetUserCollectionFromSite");
             },
@@ -145,10 +157,14 @@ app.data = (function(){
                         </AddUserToGroup>\
                     </soap:Body>\
                 </soap:Envelope>';
-
+         //data calls assume url ends with '/'
+        //fix url if it dosn't end with '/'
+        if(!url.endsWith('/')){
+            url = url + '/';
+        }
 
         $.ajax({
-            url: url + "/_vti_bin/UserGroup.asmx",
+            url: url + "_vti_bin/UserGroup.asmx",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/AddUserToGroup");
             },
@@ -194,9 +210,15 @@ app.data = (function(){
                     </soap:Body>\
                 </soap:Envelope>';
 
+                    //data calls assume url ends with '/'
+        //fix url if it dosn't end with '/'
+        if(!url.endsWith('/')){
+            url = url + '/';
+        }
+
 
         $.ajax({
-            url: url + "/_vti_bin/UserGroup.asmx",
+            url: url + "_vti_bin/UserGroup.asmx",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/RemoveUserFromGroup");
             },
@@ -240,9 +262,15 @@ app.data = (function(){
                     </soap:Body>\
                 </soap:Envelope>';
 
+        //data calls assume url ends with '/'
+        //fix url if it dosn't end with '/'
+        if(!url.endsWith('/')){
+            url = url + '/';
+        }
+
 
         $.ajax({
-            url: url + "/_vti_bin/UserGroup.asmx",
+            url: url + "_vti_bin/UserGroup.asmx",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/RemoveUserFromSite");
             },

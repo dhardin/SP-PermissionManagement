@@ -6,8 +6,7 @@
      processData= function(results) {
         var data = [{}],
             attrObj = {},
-            i, j, attribute,
-            chart = this.model;
+            i, j, attribute;
 
 
         //repackage data into an array which each index
@@ -30,5 +29,5 @@
 
    return {
    		processData: processData
-   }
+   };
 });
