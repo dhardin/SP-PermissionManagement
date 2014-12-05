@@ -95,7 +95,7 @@ app.UserEditView = Backbone.View.extend({
 	getUserPermissions: function(username){
 		app.data.getPermissions(app.config.url, username, function(results){
 			//format results
-			results = app.utility.procesData(results);
+			results = app.utility.processData(results);
 			//publish results globally 
 			Backbone.pubSub.trigger('user:permissions-fetched', results);
 		});
