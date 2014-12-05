@@ -308,3 +308,7 @@ app.data = (function(){
         removeUserFromWeb: removeUserFromWeb
 	};
 })();
+
+String.prototype.endsWith = function(suffix){
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+}
