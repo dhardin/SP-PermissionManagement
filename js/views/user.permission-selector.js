@@ -16,7 +16,7 @@ app.UserPermissions = Backbone.View.extend({
 	},
 
 	initialize: function (options) {
-		Backbone.pubSub.on('user:permissions-fetched', onPermissionFetched, this);
+		Backbone.pubSub.on('user:permissions-fetched', this.onPermissionFetched, this);
 	},
 
 	select: function(e){

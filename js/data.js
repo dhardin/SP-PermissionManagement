@@ -273,6 +273,10 @@ app.data = (function(){
     // End Utility Method /removeUserFromWeb/
 
 	return {
-		getData: getData
+		getPermissions: getPermissions,
+        getUsers: getUsers, 
+        addUserToGroup: addUserToGroup,
+        removeUserFromGroup: removeUserFromGroup, 
+        removeUserFromWeb: removeUserFromWeb
 	};
 })();

@@ -1,8 +1,9 @@
  var app = app || {};
 
  app.utility = (function(){
+ 	var processData;
  // Begin Utility Method /processData/
-     processData: function(results) {
+     processData= function(results) {
         var data = [{}],
             attrObj = {},
             i, j, attribute,
