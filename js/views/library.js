@@ -3,7 +3,10 @@ var app = app || {};
 app.LibraryView = Backbone.View.extend({
 	
 	initialize: function (options){
-		this.listenTo(this.collection, 'add', function(){ this.render(this.collection);});
+		this.collection.on('add reset remove',function(){
+			this.render(this.collection);
+			}, this
+			);
 
 		this.itemView = options.itemView;
 		this.filter = options.filter || false;	
@@ -15,11 +18,8 @@ app.LibraryView = Backbone.View.extend({
 	},
 
 	render: function (collection, isFiltered) {
-		if(!collection){
-			this.$el.html(this.template());
-		}
-
 		collection = collection || this.collection;
+		this.$el.html('');
 
 		if (!isFiltered){
 			if (collection.length > 0){
@@ -49,10 +49,12 @@ app.LibraryView = Backbone.View.extend({
 	},
 
 	search: function(options){
-		if (options && options.hasOwnProperty('val')){
-			this.render(this.collection.search(options), true);	
-		} else {
-			this.render(this.collection);
+		var collection = options.collection || this.collection;
+
+		if (!options){
+			this.render();
+		}else {
+			this.render(collection.search(options), true);	
 		}
 	}
 });

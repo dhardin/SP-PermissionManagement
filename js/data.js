@@ -8,74 +8,54 @@
 //and each callback is also stored in the calling object.  This allows for us to
 //process the results asynchronously.
 //
+var app = app || {};
 
-var spData = (function(){
+app.data = (function(){
 	var stateMap = {
 		dataArr: [],
 		currentDataArrIndex: 0
 	},
-	getData, _getListItems, processData;
+	printError, getPermissions, getUsers, addUserToGroup, removeUserFromGroup, removeUserFromWeb;
 
-	getData = function(dataArr, index, callback){
-		var url, guid, viewName, type, dataCallback;
+   // Begin Utility Method /printError/
+    printError = function (XMLHttpRequest, textStatus, errorThrown) {
+        console.log("There was an error: " + errorThrown + " " + textStatus);
+        console.log(XMLHttpRequest.responseText);
+    };
+    // End Utility Method /printError/
 
-		if(!dataArr instanceof Array){
-			return;
-		}
-		if (index > dataArr.length){
-			return;
-		}
+    // Begin Utility Method /getPermissions/
+    //returns an object of all permissions and
+    //their values equal to whether or not the user has
+    //the permission
+    getPermissions = function (url, username, callback) {
+        var results = [], soapEnv, body, soapAction;
 
-		url = dataArr[index].url;
-		guid = dataArr[index].guid;
-		viewName = dataArr[index].viewName;
-		type = dataArr[index].type;
-		dataCallback = dataArr[index].callback;
-
-		stateMap.dataArr = dataArr;
-		stateMap.currentDataArrIndex = index = index || 0;
-
-		getListItems(url, guid, viewName, type, function () {
-			if (dataCallback){
-				dataCallback(results);
-			}
-			if(index == dataArr.length){
-				if(callback){
-					callback();
-				}
-			} else {
-				getData(dataArr, ++index, callback);
-			}
-		})
-
-	};
-
-	 // Begin Utility Method /_getListItems/
-    _getListItems = function (url, guid, viewName, type, callback) {
-        var results = [], soapEnv, body;
-
+        if (username) {
+            body = '<GetGroupCollectionFromUser xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                        <userLoginName>'+ username + '</userLoginName>\
+                      </GetGroupCollectionFromUser>';
+            soapAction = "http://schemas.microsoft.com/sharepoint/soap/directory/GetGroupCollectionFromUser";
+        } else {
+            body = ' <GetGroupCollectionFromSite xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/" />';
+            soapAction = "http://schemas.microsoft.com/sharepoint/soap/directory/GetGroupCollectionFromSite";
+        }
 
         soapEnv =
-            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
-                <soap:Body>\
-                    <GetListItems xmlns="http://schemas.microsoft.com/sharepoint/soap/">\
-                        <listName>'+guid+'</listName>\
-                        <viewName>'+viewName+'</viewName>\
-                    </GetListItems>\
-                </soap:Body>\
-            </soap:Envelope>';
-
-
+          '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                     <soap:Body>\
+                    '+ body + '\
+                    </soap:Body>\
+                </soap:Envelope>';
 
         $.ajax({
-            url: url + "/_vti_bin/lists.asmx",
+            url: url + "/_vti_bin/UserGroup.asmx",
             beforeSend: function (xhr) {
-                xhr.setRequestHeader('SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/GetListItems');
+                xhr.setRequestHeader('SOAPAction', soapAction);
             },
             type: "POST",
             dataType: "xml",
             data: soapEnv,
-            tryCount: 3,
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 printError(XMLHttpRequest, textStatus, errorThrown)
                 this.tryCount++;
@@ -84,12 +64,11 @@ var spData = (function(){
                     $.ajax(this);
                     return;
                 } else if (callback) {
-                    callback(textStatus);
+                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
                 }
             },
             complete: function (xData, status) {
-                var responseProperty = (type == config_map.type_map.document_library ? 'responseText' : 'responseXML'),
-                 results = $(xData[responseProperty]).find('z\\:row');
+                results = $(xData.responseText).find("group");
 
                 if (callback) {
                     callback(results);
@@ -98,37 +77,202 @@ var spData = (function(){
             contentType: "text/xml; charset=\"utf-8\""
         });
     };
-// End Utility Method /_getListItems/
+    // End Utility Method /getPermissions/
+
+    // Begin Utility Method /getUsers/
+    //returns a list of users from a site
+    getUsers = function (url, callback) {
+        var results = [],
+
+        // Create the SOAP request
+         soapEnv =
+            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                <soap:Body>\
+                  <GetUserCollectionFromSite xmlns="http://schemas.microsoft.com/sharepoint/soap/" />\
+                </soap:Body>\
+            </soap:Envelope>';
 
 
- // Begin Utility Method /processData/
-     processData: function(results) {
-        var data = [{}],
-            attrObj = {},
-            i, j, attribute,
-            chart = this.model;
+        $.ajax({
+            url: url + "/_vti_bin/UserGroup.asmx",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/GetUserCollectionFromSite");
+            },
+            type: "POST",
+            dataType: "xml",
+            data: soapEnv,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                printError(XMLHttpRequest, textStatus, errorThrown)
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                } else if (callback) {
+                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
+                }
+            },
+            complete: function (xData, status) {
+                results = $(xData.responseText).find("user");
 
-
-        //repackage data into an array which each index
-        //is an object with key value pairs
-        for (i = 0; i < results.length; i++){
-            attrObj = {};
-            if(!results[i].attributes){
-                continue;
-            }
-            for (j = 0; j < results[i].attributes.length; j++){
-                attribute = results[i].attributes[j];
-                attrObj[attribute.name] = attribute.value;
-            }
-            data.push(attrObj);
-        }
-
-        return data;
+                if (callback) {
+                    callback(results);
+                }
+            },
+            contentType: "text/xml; charset=\"utf-8\""
+        });
     };
-   // End Utility Method /processData/
+    // End Utility Method /getUsers/
+
+    // Begin Utility Method /addUserToGroup/
+    addUserToGroup = function (url, groupName, user, callback) {
+        var results = [],
+            groupName = groupName,
+            name = user.name,
+            login = user.login,
+            email = user.email,
+            description = user.description || '',
+            // Create the SOAP request
+             soapEnv =
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                    <soap:Body>\
+                        <AddUserToGroup xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                            <groupName>'+ groupName + '</groupName>\
+                            <userName>'+ name + '</userName>\
+                            <userLoginName>'+ login + '</userLoginName>\
+                            <userEmail>'+ email + '</userEmail>\
+                            <userNotes>' + description + '</userNotes>\
+                        </AddUserToGroup>\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+
+        $.ajax({
+            url: url + "/_vti_bin/UserGroup.asmx",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/AddUserToGroup");
+            },
+            type: "POST",
+            dataType: "xml",
+            data: soapEnv,
+            tryCount: 0,
+            retryLimit: 0,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                printError(XMLHttpRequest, textStatus, errorThrown)
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                } else if (callback) {
+                   callback({type: 'error', data: {status: textStatus, error: errorThrown}});
+                }
+            },
+            complete: function (xData, status) {
+                if (callback) {
+                    callback({type: 'success', data: xData});
+                }
+            },
+            contentType: "text/xml; charset=\"utf-8\""
+        });
+    };
+    // End Utility Method /addUserToGroup/
+
+    // Begin utility method /removeUserFromGroup/
+    removeUserFromGroup = function (url, groupName, user, callback) {
+        var results = [],
+            groupName = groupName,
+            login = user.login,
+            // Create the SOAP request
+             soapEnv =
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                    <soap:Body>\
+                        <RemoveUserFromGroup xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                            <groupName>'+ groupName + '</groupName>\
+                            <userLoginName>'+ login + '</userLoginName>\
+                        </RemoveUserFromGroup>\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+
+        $.ajax({
+            url: url + "/_vti_bin/UserGroup.asmx",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/RemoveUserFromGroup");
+            },
+            type: "POST",
+            dataType: "xml",
+            data: soapEnv,
+            tryCount: 0,
+            retryLimit: 0,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                printError(XMLHttpRequest, textStatus, errorThrown)
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                } else if (callback) {
+                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
+                }
+            },
+            complete: function (xData, status) {
+                if (callback) {
+                    callback({type: 'success', data: xData});
+                }
+            },
+            contentType: "text/xml; charset=\"utf-8\""
+        });
+    };
+    // End Utility Method /removeUserFromGroup/
+
+    // Begin utility method /removeUserFromWeb/
+    removeUserFromWeb = function (url, user, callback) {
+        var results = [],
+            login = user.login,
+            // Create the SOAP request
+             soapEnv =
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                    <soap:Body>\
+                        <RemoveUserFromSite xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                            <userLoginName>'+ login + '</userLoginName>\
+                        </RemoveUserFromSite>\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+
+        $.ajax({
+            url: url + "/_vti_bin/UserGroup.asmx",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/RemoveUserFromSite");
+            },
+            type: "POST",
+            dataType: "xml",
+            data: soapEnv,
+            tryCount: 0,
+            retryLimit: 0,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                printError(XMLHttpRequest, textStatus, errorThrown)
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                } else if (callback) {
+                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
+                }
+            },
+            complete: function (xData, status) {
+                if (callback) {
+                    callback({type: 'success', data: xData});
+                }
+            },
+            contentType: "text/xml; charset=\"utf-8\""
+        });
+    };
+    // End Utility Method /removeUserFromWeb/
 
 	return {
-		getData: getData,
-        processData: processData
+		getData: getData
 	};
 })();

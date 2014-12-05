@@ -19,8 +19,6 @@ app.UserView = Backbone.View.extend({
 	edit: function(e){
 		var username = this.model.username;
 		app_router.navigate('edit/' + username, { trigger: false });
-		//package collection as strinified array
-		//save();
 	},
 
 	render: function () {

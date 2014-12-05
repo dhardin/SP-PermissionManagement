@@ -22,68 +22,17 @@ var user_data = [
 
 var group_data = [
 	{
+		id: '1',
 		name: 'Admin',
 		users: ['dustin.hardin'],
-		selected: true
+		active: true
 	},{
+		id: '2',
 		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	},{
-		name: 'Admin',
-		users: ['dustin.hardin']
-	},{
-		name: 'Visitors',
-		users: ['john.doe']
-	}
-]
+		users: ['john.doe', 'jane.doe'],
+		active: true
+	},
+];
 
 var isTesting = true;
 
@@ -91,7 +40,10 @@ if (isTesting){
 	//initialize data
 	app.UserCollection = new app.LibraryUser(user_data);
 	app.GroupCollection = new app.LibraryGroup(group_data);
-	app.GroupSelectedCollection = new app.LibraryGroup([]);
+	group_data.forEach(function(model, index){
+		model.active = false;
+	});
+	app.GroupSelectedCollection = new app.LibraryGroup(group_data);
 
 	//set views
 } else {

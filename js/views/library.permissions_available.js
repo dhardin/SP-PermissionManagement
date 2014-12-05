@@ -5,6 +5,6 @@ app.LibraryPermissionsAvailableView = app.LibraryView.extend({
 
 	initialize: function (options){
 		Backbone.pubSub.on('library_permissions_available:search', this.search, this);
-			app.LibraryView.prototype.initialize.apply(this, [options]); 
+		app.LibraryView.prototype.initialize.apply(this, [options]); 
 	}
 });

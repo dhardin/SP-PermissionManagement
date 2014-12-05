@@ -1,6 +1,6 @@
 var app = app || {};
 
 app.config = {
-	type_map: {documentLibrary: 'documentLibrary', list: 'list'},
+	url: 'https://members.lcmp.csd.disa.mil/sites/jltv/',
 	tryCount: 3
 };

@@ -30,13 +30,12 @@
       -ms-user-select:none;
       -user-select: none;
       cursor: pointer;
+      border-width: 2px;
     }
 
-    #group-available .list-group-item.selected  {
-      background-color: rgb(223,240,216)!important;
-    }
-    #group-selected  .list-group-item.selected  {
-      background-color: rgb(242,222,222)!important;
+    .list-group-item.selected  {
+      background-color: rgb(100,200,100)!important;
+      border-color: rgb(200,255,200)!important;
     }
  .btn-group {
     width: 100%;
@@ -44,13 +43,16 @@
  
    .removeAllSelect, .addAllSelect
    {
-        width: 40%;
+        width: 33%;
 
    }
    .addSingleSelect, .removeSingleSelect 
    {
-    width: 60%;
+    width: 33%;
   
+   }
+   .clearSelected {
+    width: 33%;
    }
 
 .alert{
@@ -96,6 +98,15 @@
 }
 .icon.icon-search{
   background-image: url('../img/search.gif');
+}
+
+.icon.invert {
+     -webkit-filter: invert(100%);
+-moz-filter: invert(100%);
+-ms-filter: invert(100%);
+-o-filter: invert(100%);
+filter: invert(100%);
+}
 }
 
 #users li{

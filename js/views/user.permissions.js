@@ -3,11 +3,14 @@ var app = app || {};
 app.EditUserPermissionsView = Backbone.View.extend({
 	template: _.template($('#user-template').html()),
 
-	events:{
 
+	events:{
+		'click #user-search-button': 'onUserSearchClick',
+		'blur #user-search-container': 'onUserSearchBlur'
 	},
 
 	initialize: function(){
+		
 	},
 
 	render: function () {
@@ -27,7 +30,5 @@ app.EditUserPermissionsView = Backbone.View.extend({
 
 		this.UserEditView.render();
 		this.UserPermissionsView.render();
-
-		return this;
 	}
 });
