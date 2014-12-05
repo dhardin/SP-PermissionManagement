@@ -107,9 +107,9 @@ app.UserEditView = Backbone.View.extend({
 			this.$users.show();
 			this.$user_search.focus();
 		} else {
-			that.$name_container.show();
-			that.$user_search_container.hide();
-			that.$users.hide();
+			this.$name_container.show();
+			this.$user_search_container.hide();
+			this.$users.hide();
 		}
 	}
 });
