@@ -126,3 +126,10 @@ filter: invert(100%);
  color: #777;
  margin-left: 10px;
 }
+
+.library-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%);
+}

@@ -72,11 +72,6 @@ app.UserPermissions = Backbone.View.extend({
 								.where({selected:true});
 				//add each model from the temp collection to the  collection
 				this.setPermissions(tempCollection, selectedPermissionsCollection, true);
-			    /*tempCollection.forEach(function(model,index){
-			    		model.set({active: false, selected: false});
-			    	selectedPermissionsCollection.get(model.id).set({active: true, selected: true});
-				});*/
-
 				break;
 			case 'all':
 				//fetch all models that are currently displayed (i.e., "active")
@@ -85,10 +80,6 @@ app.UserPermissions = Backbone.View.extend({
 				//set each model in temp collection to have selected state = true
 				//and add model to collection
 				this.setPermissions(tempCollection, selectedPermissionsCollection, true);
-			   /* tempCollection.forEach(function(model,index){
-			    		model.set({active: false, selected: false});
-			    	selectedPermissionsCollection.get(model.id).set({active: true, selected: true});
-				});*/
 				break;
 
 			default:
@@ -113,11 +104,6 @@ app.UserPermissions = Backbone.View.extend({
 								.where({selected:true});
 				//add each model from the temp collection to the  collection
 				this.setPermissions(tempCollection, availablePermissionCollection, true);
-			   /* tempCollection.forEach(function(model,index){
-			    	model.set({active: false, selected: false});
-			    	availablePermissionCollection.get(model.id).set({active: true, selected: true});
-				});*/
-
 				break;
 			case 'all':
 				//fetch all models that are currently displayed (i.e., "active")
@@ -126,10 +112,6 @@ app.UserPermissions = Backbone.View.extend({
 				//set each model in temp collection to have selected state = true
 				//and add model to collection
 				this.setPermissions(tempCollection, availablePermissionCollection, true);
-			    /*tempCollection.forEach(function(model,index){
-			    	model.set({active: false, selected: false});
-			    	availablePermissionCollection.get(model.id).set({active: true, selected: true});
-				});*/
 				break;
 			default:
 				break;
@@ -146,12 +128,8 @@ app.UserPermissions = Backbone.View.extend({
 			}
 
 		if($(e.currentTarget).hasClass('permissions_available')){
-			//filteredCollection = new Backbone.Collection(availPermissions.where(searchOptions));
-			//this.libraryViewGroupAvailable.render(filteredCollection, true);
 			Backbone.pubSub.trigger('library_permissions_available:search', searchOptions);
 		} else {
-				//filteredCollection = new Backbone.Collection(selectedPermission.where(searchOptions));
-			//this.libraryViewGroupSelected.render(filteredCollection, true);
 			Backbone.pubSub.trigger('library_permissions_selected:search', searchOptions);
 		}
 	},

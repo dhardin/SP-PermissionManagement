@@ -27,7 +27,7 @@ app.LibraryView = Backbone.View.extend({
 					this.renderItem(item);
 				}, this);
 			} else {
-				this.$el.html($('#noChartsTemplate').html());
+				this.$el.html($('#noItemsTemplate').html());
 			}
 		} else {
 			var totalItems = this.collection.length,

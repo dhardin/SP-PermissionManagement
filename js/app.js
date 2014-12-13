@@ -3,6 +3,8 @@ var app = app || {};
 app.testing = false;
 
 app.state_map = {
+	fetchingUsers: false,
+	fetchingGroups: false,
 	fetchingData : false,
 	dataLoadCallback : false,
 	filterOptions : false
@@ -57,6 +59,8 @@ if (app.testing){
 	
 } else {
 	app.state_map.fetchingData = true;
+	app.state_map.fetchingUsers = true;
+	app.state_map.fetchingGroups = true;
 	//fetch user data and once complete, set user list.
 	app.data.getUsers(app.config.url, function(users){
 		var key, i, temp_user, user, new_key, userArr = [];
@@ -76,6 +80,14 @@ if (app.testing){
 
 		//initialize data
 		app.UserCollection = new app.LibraryUser(user_data);
+		app.state_map.fetchingUsers = false;
+		//complete callback if completed with data calls
+		if(!app.state_map.fetchingGroups){
+			app.state_map.fetchingData = false;
+			if(app.state_map.dataLoadCallback){
+				app.state_map.dataLoadCallback();
+			}
+		}
 	});
 	//fetch group data and once complete, set group listings
 	app.data.getUsers(app.config.url, function(groups){
@@ -99,5 +111,13 @@ if (app.testing){
 			model.active = false;
 		});
 		app.GroupSelectedCollection = new app.LibraryGroup(groupArr);
+		app.fetchingGroups = false;
+			//complete callback if completed with data calls
+		if(!app.state_map.fetchingUsers){
+			app.state_map.fetchingData = false;
+			if(app.state_map.dataLoadCallback){
+				app.state_map.dataLoadCallback();
+			}
+		}
 	});
 }
