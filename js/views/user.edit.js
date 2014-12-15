@@ -46,6 +46,7 @@ app.UserEditView = Backbone.View.extend({
 		this.$name = this.$('#name');
 		this.$name_container = this.$('#name-container');
 		this.$messages = this.$('.messages');
+		this.$notify = this.$('.notify');
 
 		if(this.model.get('name') == '') {
 			this.$name.text('Select a name');
@@ -135,11 +136,19 @@ app.UserEditView = Backbone.View.extend({
 
 		//add user permissions
 		if(add_permissions_arr.length > 0){
-			app.data.modifyPermissions(add_permissions_arr, 0, user, app.config.url, 'add', this.processPermissionModify);
+			(function(that){
+				app.data.modifyPermissions(add_permissions_arr, 0, user, app.config.url, 'add', function(results){
+					that.processPermissionModify(results);
+				});
+			})(this);
 		}
 		//remove user permissions
 		if(remove_permissions_arr.length > 0){
-			app.data.modifyPermissions(remove_permissions_arr, 0,  user, app.config.url, 'remove', this.processPermissionModify);
+			(function(that){
+				app.data.modifyPermissions(remove_permissions_arr, 0,  user, app.config.url, 'remove', function(results){
+					that.processPermissionModify(results);
+				});
+			})(this);
 		}
 	},
 
@@ -163,7 +172,7 @@ app.UserEditView = Backbone.View.extend({
 			this.state_map.fail[operation].push(permission);
 			message = 'Unable to ' + operation + ' ' + permission + '.'
 		}
-		this.updateProgress(operation)
+		this.updateProgress(operation);
 		this.$messages.append('<li>'+ message + '</li>');
 	},
 	permissionModifyComplete: function(){
