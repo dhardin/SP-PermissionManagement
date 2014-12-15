@@ -34,8 +34,8 @@
     }
 
     .list-group-item.selected  {
-      background-color: rgb(100,200,100)!important;
-      border-color: rgb(200,255,200)!important;
+      background-color: #D9EDF7!important;
+      border-color: #31709C!important;
     }
  .btn-group {
     width: 100%;
@@ -56,6 +56,10 @@
    }
 
 .alert{
+  
+
+}
+.hidden{
   visibility: hidden;
 }
 
@@ -107,8 +111,9 @@
 -o-filter: invert(100%);
 filter: invert(100%);
 }
+#users{
+  overflow-y: scroll;
 }
-
 #users li{
   cursor: pointer;
 }
@@ -132,4 +137,11 @@ filter: invert(100%);
   top: 50%;
   left: 50%;
   transform: translateY(-50%);
+}
+.notify {
+  height: 3em;
+  overflow-y: auto;
+}
+.messages li{
+  list-style-type: none;
 }

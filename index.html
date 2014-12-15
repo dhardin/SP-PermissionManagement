@@ -58,22 +58,8 @@
 
     <script type="text/template" id="user-template">
         <div id="user"></div>
-        <div class="notify alert"  role="alert">
-            <span class="message">
-              <div class="error">
-                <h4>Oh snap!  You got an error!</h4>
-                <p></p>
-              </div>
-              <div class="saving">
-                <h4>Saving</h4>
-                <p>...please be patient...</p>
-              </div>
-              <div class="success">
-                <h4>Success</h4>
-                <p>Whew!  All in a days work :]</p>
-              </div>
-            </span>
-            <div class="results well"></div>
+        <div class="notify alert hidden"  role="alert">
+            <ul class="messages"></ul>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                     0%
@@ -116,7 +102,7 @@
               </div>
             <div class="well">
                 <span class="info-header">Username</span>
-                <span class="user-attr info-text" id="username"><%=username%></span>
+                <span class="user-attr info-text" id="loginname"><%=loginname%></span>
               </div>
                <div class="well">
                 <span class="info-header">Email</span>
@@ -179,6 +165,7 @@
     <script src="js/views/library.permissions_available.js"></script>
     <script src="js/views/library.permissions_selected.js"></script>
      <script src="js/views/library.users.js"></script>
+        <script src="js/views/fetchingData.js"></script>
     <script src="js/views/app.js"></script>
     <!-- Application -->
     <script src="js/data.js"></script>

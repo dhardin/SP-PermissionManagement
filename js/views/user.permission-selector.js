@@ -17,6 +17,8 @@ app.UserPermissions = Backbone.View.extend({
 
 	initialize: function (options) {
 		Backbone.pubSub.on('user:permissions-fetched', this.onPermissionFetched, this);
+		Backbone.pubSub.on('user:selected', this.onUserSelect, this);
+		Backbone.pubSub.on('user:save-permissions', this.onUserPermissionsSave, this);
 	},
 
 	select: function(e){
@@ -27,16 +29,22 @@ app.UserPermissions = Backbone.View.extend({
 		this.$el.html(this.template(this.model.toJSON()));
 		
 		//initialize our target elements
-	
-	
 		this.$groupAvailable = this.$('#group-available');
 		this.$groupSelected = this.$('#group-selected');
 
-		this.libraryViewGroupSelected =  new app.LibraryPermissionsSelectedView({el: this.$groupSelected[0], collection: app.GroupSelectedCollection, itemView: app.GroupView});
-		this.libraryViewGroupAvailable =  new app.LibraryPermissionsAvailableView({el: this.$groupAvailable[0], collection: app.GroupCollection, itemView: app.GroupView, filter: {key: 'selected', val: true}});
+		this.libraryViewGroupSelected =  new app.LibraryPermissionsSelectedView({
+			el: this.$groupSelected[0], 
+			collection: app.GroupSelectedCollection, 
+			itemView: app.GroupView
+		});
+		this.libraryViewGroupAvailable =  new app.LibraryPermissionsAvailableView({
+			el: this.$groupAvailable[0], 
+			collection: app.GroupCollection, 
+			itemView: app.GroupView, 
+			filter: {key: 'selected', val: true}
+		});
 	
 		//append views to elements
-	
 		this.libraryViewGroupSelected.render();
 		this.libraryViewGroupAvailable.render();
 		
@@ -44,21 +52,32 @@ app.UserPermissions = Backbone.View.extend({
 		return this;
 	},
 	onPermissionFetched: function(permissions){
-		var permissionsModelArr = [],
-			permissionsCollection =  new Backbone.Collection([]),
+		var tempCollection,
 			selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
 			availablePermissionCollection =  this.libraryViewGroupAvailable.collection;
 
-		//build an array of matching permissions
+		//select permissions in available permissions collection
 		permissions.forEach(function(obj){
-			availablePermissionsModelArr = availablePermissionCollection.get(obj.id);
+			availablePermissionCollection.get(obj.id).set({selected:true});
 		});
 
 		//set collection to matching permissions array
-		permissionsCollection.reset(permissionsModelArr);
+		tempCollection = availablePermissionCollection
+								.where({selected:true});
 
-		//set permissions
-		this.setPermissions(selectedPermissionsCollection, permissionsCollection, true);
+		//set permissions and don't select (i.e., hightlight) set permissions
+		this.setPermissions(tempCollection, selectedPermissionsCollection, false);
+	},
+	onUserSelect: function(e){
+		this.clearPermissions();
+	},
+	onUserPermissionsSave: function(e){
+		var selectedPermissionsCollection = this.libraryViewGroupSelected.collection.where({active: true}),
+			selectedPermissionsArr = selectedPermissionsCollection.map(function(model){
+										return model.get('name');
+									});
+		Backbone.pubSub.trigger('user:selected-permissions-fetched', selectedPermissionsArr);
+
 	},
 	onAddPermissionClick: function(e){
 		var method = $(e.target).attr('data-method'), tempCollection, collection = [],
@@ -86,10 +105,18 @@ app.UserPermissions = Backbone.View.extend({
 				break;
 		};
 	},
-	setPermissions: function(collection, permission_collection, setSelected){
-		 permission_collection.forEach(function(model,index){
+	clearPermissions: function(){
+		var tempCollection = this.libraryViewGroupSelected.collection
+								.where({active:true}),
+		 	availablePermissionCollection =  this.libraryViewGroupAvailable.collection;
+
+		 	this.setPermissions(tempCollection, availablePermissionCollection, false);
+
+	},
+	setPermissions: function(from_collection, target_collection, setSelected){
+		 from_collection.forEach(function(model,index){
 			    	model.set({active: false, selected: false});
-			    	collection.get(model.id).set({active: true, selected: setSelected});
+			    	target_collection.get(model.id).set({active: true, selected: setSelected});
 				});
 	},
 	onRemovePermissionClick: function(e){

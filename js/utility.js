@@ -4,7 +4,7 @@
  	var processData;
  // Begin Utility Method /processData/
      processData= function(results) {
-        var data = [{}],
+        var data = [],
             attrObj = {},
             i, j, attribute;
 
@@ -20,7 +20,9 @@
                 attribute = results[i].attributes[j];
                 attrObj[attribute.name] = attribute.value;
             }
+          
             data.push(attrObj);
+          
         }
 
         return data;

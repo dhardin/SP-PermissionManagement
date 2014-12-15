@@ -15,7 +15,7 @@ app.data = (function(){
 		dataArr: [],
 		currentDataArrIndex: 0
 	},
-	printError, getPermissions, getUsers, addUserToGroup, removeUserFromGroup, removeUserFromWeb;
+	printError, getPermissions, getUsers, addUserToGroup, removeUserFromGroup, modifyPermissions, removeUserFromWeb;
 
    // Begin Utility Method /printError/
     printError = function (XMLHttpRequest, textStatus, errorThrown) {
@@ -135,13 +135,46 @@ app.data = (function(){
         });
     };
     // End Utility Method /getUsers/
+      // Begin Utility Method /modifyPermissions/
+    modifyPermissions = function (permissionArr, index, user, url, operation, callback) {
+        var permission;
+        if (!(permissionArr instanceof Array)) {
+            return false;
+        }
+        if (index < permissionArr.length) {
+            permission = permissionArr[index];
+            index++;
+            switch (operation) {
+                case 'add':
+                    addUserToGroup(url, permission, user, function (results) {
+                        if(callback){
+                             callback({ operation: operation, type: results.type, data: results.data, permission: permission });
+                        }
+                        modifyPermissions(permissionArr, index, user, url, operation, callback);
+                    });
+                    break;
+                case 'remove':
+                    removeUserFromGroup(url, permission, user, function (results) {
+                       if(callback){
+                             callback({ operation: operation, type: results.type, data: results.data, permission: permission });
+                        }
+                        modifyPermissions(permissionArr, index, user, url, operation, callback);
+                    });
+                    break;
+                default:
+                    break;
+            }
 
+        } 
+
+    };
+    // End Utility method /modifyPermissions/
     // Begin Utility Method /addUserToGroup/
     addUserToGroup = function (url, groupName, user, callback) {
         var results = [],
             groupName = groupName,
             name = user.name,
-            login = user.login,
+            login = user.loginname,
             email = user.email,
             description = user.description || '',
             // Create the SOAP request
@@ -305,7 +338,8 @@ app.data = (function(){
         getUsers: getUsers, 
         addUserToGroup: addUserToGroup,
         removeUserFromGroup: removeUserFromGroup, 
-        removeUserFromWeb: removeUserFromWeb
+        removeUserFromWeb: removeUserFromWeb,
+        modifyPermissions: modifyPermissions
 	};
 })();
 

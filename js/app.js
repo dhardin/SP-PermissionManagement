@@ -14,18 +14,18 @@ app.state_map = {
 var user_data = [
 	{
 		name: 'Hardin, Dustin',
-		username: 'dustin.hardin',
+		loginname: 'dustin.hardin',
 		email: 'dustin.hardin@example.com',
 		permissions: ['Admin']
 	},
 	{
 		name: 'Doe, John',
-		username: 'john.doe',
+		loginname: 'john.doe',
 		email: 'john.doe@example.com',
 		permissions: ['Visitors']
 	}, {
 		name: 'Doe, Jane',
-		username: 'jane.doe',
+		loginname: 'jane.doe',
 		email: 'jane.doe@example.com'
 	}
 		
@@ -45,7 +45,17 @@ var group_data = [
 	},
 ];
 
-app.testing = true;
+app.DataFetched = function(){
+	console.log('data fetched!');
+	if(!app.state_map.fetchingUsers && !app.state_map.fetchingGroups){
+		app.state_map.fetchingData = false;
+		if(app.state_map.dataLoadCallback){
+			app.state_map.dataLoadCallback();
+		}
+	}
+}
+
+app.testing = false;
 
 if (app.testing){
 	//initialize data
@@ -64,60 +74,25 @@ if (app.testing){
 	//fetch user data and once complete, set user list.
 	app.data.getUsers(app.config.url, function(users){
 		var key, i, temp_user, user, new_key, userArr = [];
-		users = app.utility.processResults(users);
-		for(i = 0; i < users.length; i++){
-			temp_user = users[i];
-			user = {};
-			for (key in app.property_map.users){
-				new_key = app.property_map.users[key];
-				if (temp_user.hasOwnProperty(key)){
-					user[new_key] = temp_user[key];
-				}
-			}
-			//add user to user array
-			userArr.push(user);
-		}
+		users = app.utility.processData(users);
 
 		//initialize data
-		app.UserCollection = new app.LibraryUser(user_data);
+		app.UserCollection = new app.LibraryUser(users);
 		app.state_map.fetchingUsers = false;
-		//complete callback if completed with data calls
-		if(!app.state_map.fetchingGroups){
-			app.state_map.fetchingData = false;
-			if(app.state_map.dataLoadCallback){
-				app.state_map.dataLoadCallback();
-			}
-		}
+		app.DataFetched();
 	});
 	//fetch group data and once complete, set group listings
-	app.data.getUsers(app.config.url, function(groups){
+	app.data.getPermissions(app.config.url,'', function(groups){
 		var key, i, temp_group, group, new_key, groupArr = [];
-		groups = app.utility.processResults(groups);
-		for(i = 0; i < groups.length; i++){
-			temp_user = groups[i];
-			group = {};
-			for (key in app.property_map.groups){
-				new_key = app.property_map.groups[key];
-				if (temp_user.hasOwnProperty(key)){
-					group[new_key] = temp_user[key];
-				}
-			}
-			//add group to group array
-			groupArr.push(group);
-		}
-
-		app.GroupCollection = new app.LibraryGroup(groupArr);
-		groupArr.forEach(function(model, index){
+		groups = app.utility.processData(groups);
+		
+		app.GroupCollection = new app.LibraryGroup(groups);
+		groups.forEach(function(model, index){
 			model.active = false;
 		});
-		app.GroupSelectedCollection = new app.LibraryGroup(groupArr);
-		app.fetchingGroups = false;
-			//complete callback if completed with data calls
-		if(!app.state_map.fetchingUsers){
-			app.state_map.fetchingData = false;
-			if(app.state_map.dataLoadCallback){
-				app.state_map.dataLoadCallback();
-			}
-		}
+		app.GroupSelectedCollection = new app.LibraryGroup(groups);
+		app.state_map.fetchingGroups = false;
+		app.DataFetched();
 	});
 }
+
