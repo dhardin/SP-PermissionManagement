@@ -18,41 +18,33 @@
     border-radius: 5px;
    }
     .list-group {
-        height: 400px;
+      
         background-color: #ddd;
         overflow-y: scroll;
     }
     .list-group-item{
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -kthml-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select:none;
-      -user-select: none;
-      cursor: pointer;
-      border-width: 2px;
+      
     }
 
     .list-group-item.selected  {
-      background-color: #D9EDF7!important;
-      border-color: #31709C!important;
+
     }
  .btn-group {
-    width: 100%;
+    
  }
  
    .removeAllSelect, .addAllSelect
    {
-        width: 33%;
+        
 
    }
    .addSingleSelect, .removeSingleSelect 
    {
-    width: 33%;
+    
   
    }
    .clearSelected {
-    width: 33%;
+    
    }
 
 .alert{
@@ -64,35 +56,28 @@
 }
 
 #permissions .search {
-  width: 96%;
 }
 
 .search-container {
-  background-color: white;
-  padding: 2px;
-  border-radius: 7px;
-  border: 2px solid #dadada;
-  border-color: #9ecaed;
-  box-shadow: 0 0 10px #9ecaed;
+
 }
 
 #user .search-container{
-  display: none;
+  
 }
 
 .search{
-  border: none;
-    outline: none;
+ 
 }
 .icon {
    background-repeat: no-repeat;
    background-position: 0px 0px;
     background-repeat: no-repeat;
     display: inline-block;
-    height: 22px;
-    line-height: 22px;
+    height: 15px;
+    line-height: 15px;
     vertical-align: text-bottom;
-    width: 22px;
+    width: 15px;
     background-size: contain;
 }
 
@@ -117,31 +102,21 @@ filter: invert(100%);
 #users li{
   cursor: pointer;
 }
-#user .well {
-  margin-top: 0;
-  margin-bottom: 0;
-}
+
 
 .info-header {
- color: #777;
- font-size: 1.1em;
- font-weight: bold;
+ 
 }
 .info-text {
- color: #777;
- margin-left: 10px;
+
 }
 
 .library-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateY(-50%);
+  
 }
 .notify {
-  height: 3em;
-  overflow-y: auto;
+ 
 }
 .messages li{
-  list-style-type: none;
+ 
 }

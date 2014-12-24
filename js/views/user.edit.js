@@ -7,8 +7,8 @@ app.UserEditView = Backbone.View.extend({
 
 	events: {
 		'keyup .search': 'onUsersKeyUp',
-		'blur .search-container' : 'onUserSearchBlur',
-		'click #user-search-button': 'onUserSearchClick',
+		//'blur .search-container' : 'onUserSearchBlur',
+		'click #user-select-btn': 'onUserSelectBtnClick',
 		'click .save-permissions-btn': 'onSaveClick'
 	},
 
@@ -85,6 +85,14 @@ app.UserEditView = Backbone.View.extend({
 	onUserSearchClick: function(e){
 		e.stopPropagation();
 		this.toggleUserDropdown();
+	},
+
+	onUserSelectBtnClick:function (e) {
+		(function(that){
+			setTimeout(function(){
+				that.$user_search.focus();
+			},0);
+		})(this);
 	},
 
 	onUserSearchBlur: function(e){

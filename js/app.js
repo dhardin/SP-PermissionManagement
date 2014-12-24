@@ -55,7 +55,7 @@ app.DataFetched = function(){
 	}
 }
 
-app.testing = false;
+app.testing = true;
 
 if (app.testing){
 	//initialize data
