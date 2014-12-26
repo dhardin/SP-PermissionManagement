@@ -8,7 +8,8 @@ app.GroupView = Backbone.View.extend({
 	},
 
 	initialize: function (options) {
-	this.model.on('change', this.render, this);
+		this.model.on('change', this.render, this);
+		Backbone.pubSub.on('group:select', this.select, this);
 	},
 	select: function(e){
 		var selected = this.model.get('selected');

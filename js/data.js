@@ -31,6 +31,8 @@ app.data = (function(){
     getPermissions = function (url, username, callback) {
         var results = [], soapEnv, body, soapAction;
 
+        username = username.replace('/', '\\');
+
         if (username) {
             body = '<GetGroupCollectionFromUser xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
                         <userLoginName>'+ username + '</userLoginName>\
@@ -69,9 +71,7 @@ app.data = (function(){
                     //try again
                     $.ajax(this);
                     return;
-                } else if (callback) {
-                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
-                }
+                } 
             },
             complete: function (xData, status) {
                 results = $(xData.responseText).find("group");
@@ -138,6 +138,7 @@ app.data = (function(){
       // Begin Utility Method /modifyPermissions/
     modifyPermissions = function (permissionArr, index, user, url, operation, callback) {
         var permission;
+
         if (!(permissionArr instanceof Array)) {
             return false;
         }
@@ -174,7 +175,7 @@ app.data = (function(){
         var results = [],
             groupName = groupName,
             name = user.name,
-            login = user.loginname,
+            login = user.loginname.replace('/', '\\'),
             email = user.email,
             description = user.description || '',
             // Create the SOAP request
@@ -213,13 +214,11 @@ app.data = (function(){
                     //try again
                     $.ajax(this);
                     return;
-                } else if (callback) {
-                   callback({type: 'error', data: {status: textStatus, error: errorThrown}});
                 }
             },
             complete: function (xData, status) {
                 if (callback) {
-                    callback({type: 'success', data: xData});
+                    callback({type: (status != 'error' ? 'success' : 'error'), data: xData});
                 }
             },
             contentType: "text/xml; charset=\"utf-8\""
@@ -231,7 +230,7 @@ app.data = (function(){
     removeUserFromGroup = function (url, groupName, user, callback) {
         var results = [],
             groupName = groupName,
-            login = user.login,
+           login = user.loginname.replace('/', '\\'),
             // Create the SOAP request
              soapEnv =
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
@@ -267,13 +266,11 @@ app.data = (function(){
                     //try again
                     $.ajax(this);
                     return;
-                } else if (callback) {
-                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
-                }
+                } 
             },
             complete: function (xData, status) {
                 if (callback) {
-                    callback({type: 'success', data: xData});
+                     callback({type: (status != 'error' ? 'success' : 'error'), data: xData});
                 }
             },
             contentType: "text/xml; charset=\"utf-8\""
@@ -284,7 +281,7 @@ app.data = (function(){
     // Begin utility method /removeUserFromWeb/
     removeUserFromWeb = function (url, user, callback) {
         var results = [],
-            login = user.login,
+            login = user.loginname.replace('/', '\\'),
             // Create the SOAP request
              soapEnv =
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
@@ -319,13 +316,11 @@ app.data = (function(){
                     //try again
                     $.ajax(this);
                     return;
-                } else if (callback) {
-                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
                 }
             },
             complete: function (xData, status) {
                 if (callback) {
-                    callback({type: 'success', data: xData});
+                    callback({type: (status != 'error' ? 'success' : 'error'), data: xData});
                 }
             },
             contentType: "text/xml; charset=\"utf-8\""

@@ -71,14 +71,6 @@
 
     <script type="text/template" id="user-template">
         <div id="user"></div>
-        <div class="notify alert hidden" role="alert">
-            <ul class="messages"></ul>
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    0%
-                </div>
-            </div>
-        </div>
         <div id="permissions"></div>
     </script>
 
@@ -97,60 +89,70 @@
     </script>
 
     <script type="text/template" id="user-edit-template">
-        <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="button dropdown" id="user-select-btn">Select a User</button>
+        <button data-dropdown="users-dropdown" aria-controls="users-dropdown" aria-expanded="false" class="button dropdown" id="user-select-btn">Select a User</button>
         <br>
-        <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true" tabindex="-1">
+        <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
             <li>
-                <div class="search-container">
-                    <input class="search" type="text" />
-
-                </div>
+                <input class="search" type="text" />
                 <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
             </li>
         </ul>
 
-        <div class="well">
-            <span class="info-header">Display Name</span>
-            <span class="user-attr info-text" id="name"><%=name%></span>
+        <div class="row">
+            <div id="user-info" class="small-12 medium-6 columns">
+                <label>Display Name
+                    <input class="user-attr" type="text" id="name" value="<%=name%>" disabled/>
+                </label>
+                <label>Display Name
+                    <input class="user-attr" type="text" id="loginname" value="<%=loginname%>" disabled/>
+                </label>
+                 <label>Username
+                    <input class="user-attr" type="text" id="email" value="<%=email%>" disabled/>
+                </label>
+            </div>
+             <div id="console" class="small-12 medium-6 columns"> 
+                <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
+                    <code class="messages" disabled></code>
+                </label>
+                <div class="progress small-0 large-100">
+                    <span class="current-progress">0%</span>
+                    <span  class="meter" style="width:0%"></span>
+                </div>
+            </div>
         </div>
-        <div class="well">
-            <span class="info-header">Username</span>
-            <span class="user-attr info-text" id="loginname"><%=loginname%></span>
-        </div>
-        <div class="well">
-            <span class="info-header">Email</span>
-            <span class="user-attr info-text" id="email"><%=email%></span>
-        </div>
-        <ul class="button-group even-2">
-            <li><a class="button save-permissions-btn">Save Permissions</a></li>
-           <li><a class="button purge-user-btn"><span class="icon icon-skull invert"></span> Purge User</a></li>
+        <ul class="button-group even-3">
+            <li><a class="button save-permissions-btn">Save Permissions</a>
+            </li>
+            <li><a class="button alert purge-user-btn"><span class="icon icon-skull invert"></span> Purge User</a>
+            </li>
+            <li><a class="button info export-permissions">Export Permissions</a></li>
         </ul>
     </script>
 
     <script type="text/template" id="user-permission-select-template">
         <div class="row">
-            <div class="small-12 medium-6 columns">
-                <input class="search permissions_available" type="text" />
-                <!-- A default button-group -->
-                <ul class="button-group even-3">
-                    <li><a class="button clearSelected" data-method="single">Clear Selected</a>
+            <div class="small-12 large-6 columns permission-controls">
+                <ul class="button-group even-3 ">
+                    <li><a class="button clearSelected" data-method="single">Clear</br>Selected</a>
                     </li>
-                    <li><a class="button addSingleSelect" data-method="single">Give Selected</a>
+                    <li><a class="button addSingleSelect" data-method="single">Give</br>Selected</a>
                     </li>
-                    <li><a class="button addAllSelect" data-method="all">Give All</a>
+                    <li><a class="button addAllSelect" data-method="all">Give</br>All</a>
                     </li>
                 </ul>
+                <input class="search permissions_available" type="text" />
                 <div id="group-available" class="list-group"></div>
             </div>
-            <div class="small-12 medium-6 columns">
-                <input class="search permissions_selected" type="text" />
-            <ul class="button-group even-3">
-                    <li><a class="button removeAllSelect" data-method="all">Remove All</a>
+            <div class="small-12 large-6 columns permission-controls">
+                <ul class="button-group even-3 ">
+                    <li><a class="button removeAllSelect" data-method="all">Remove</br>All</a>
                     </li>
-                    <li><a class="button removeSingleSelect" data-method="single">Remove Selected</a>
+                    <li><a class="button removeSingleSelect" data-method="single">Remove</br>Selected</a>
                     </li>
-                    <li><a class="button clearSelected" data-method="single">Clear Selected</a></li>
+                    <li><a class="button clearSelected" data-method="single">Clear</br>Selected</a>
+                    </li>
                 </ul>
+                <input class="search permissions_selected" type="text" />
                 <div id="group-selected" class="list-group"></div>
             </div>
         </div>
@@ -160,6 +162,9 @@
         <div class="text-center library-message">
             <p>Fetching data...</p>
         </div>
+    </script>
+
+    <script type="text/javascript" id="noItemsTemplate">
     </script>
 
     <!-- Models -->
@@ -186,7 +191,9 @@
     <script src="js/app.js"></script>
     <!-- Router -->
     <script src="js/routes/routes.js"></script>
-   <script>$(document).foundation();</script>
+    <script>
+    $(document).foundation();
+    </script>
 </body>
 
 </html>

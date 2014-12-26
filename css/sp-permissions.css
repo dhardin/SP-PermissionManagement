@@ -1,15 +1,5 @@
   body, div{overflow: none !important;}
-  #main{
-    padding: 15px;
-    margin-top: 50px;
-  }
-
-  .navbar-brand,
-.navbar-nav li a {
-    line-height: 50px;
-    height: 50px;
-    padding-top: 0;
-}
+ 
    #logo {
     width: 35px;
     height: 35px;
@@ -18,57 +8,14 @@
     border-radius: 5px;
    }
     .list-group {
-      
+        max-height: 300px;
+        overflow-y: auto;
         background-color: #ddd;
-        overflow-y: scroll;
     }
-    .list-group-item{
-      
-    }
-
-    .list-group-item.selected  {
-
-    }
- .btn-group {
-    
- }
- 
-   .removeAllSelect, .addAllSelect
-   {
-        
-
-   }
-   .addSingleSelect, .removeSingleSelect 
-   {
-    
-  
-   }
-   .clearSelected {
-    
-   }
-
-.alert{
-  
-
-}
 .hidden{
   visibility: hidden;
 }
 
-#permissions .search {
-}
-
-.search-container {
-
-}
-
-#user .search-container{
-  
-}
-
-.search{
- 
-}
 .icon {
    background-repeat: no-repeat;
    background-position: 0px 0px;
@@ -90,33 +37,114 @@
 }
 
 .icon.invert {
-     -webkit-filter: invert(100%);
--moz-filter: invert(100%);
--ms-filter: invert(100%);
--o-filter: invert(100%);
-filter: invert(100%);
+   -webkit-filter: invert(100%);
+  -moz-filter: invert(100%);
+  -ms-filter: invert(100%);
+  -o-filter: invert(100%);
+  filter: invert(100%);
 }
 #users{
   overflow-y: scroll;
+  margin-left: 0;
+  max-height: 20em;
 }
 #users li{
   cursor: pointer;
+  padding: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+
 }
 
+#users li:hover{
+  background-color: #eee !important;
+}
 
-.info-header {
+#users li:hover{
  
-}
-.info-text {
+};
 
+.permission-controls input{
+  margin-top: -15px;
+  margin-bottom: 0px;
 }
 
-.library-message {
-  
+
+
+.list-group-item {
+ display:block;
+ border: 1px solid #ccc
 }
+
+.list-group-item.selected{
+  background-color: #a0d3e8;
+  border-color: #61b6d9;
+}
+
+
+
+#users-dropdown{
+   background-color: #fff;
+}
+
+#users-dropdown li:hover{
+   background-color: #fff;
+}
+
+.messages {
+  overflow: auto;
+  height: 100%;
+}
+
+.progress {
+  position: relative;
+  background-color: #ddd;
+   height: 15%;
+   margin-top:5%;
+}
+.current-progress {
+  position: absolute;
+   left: 50%;
+   color: #fff;
+   font-weight: bold;
+}
+
 .notify {
- 
+  height: 222px;
 }
-.messages li{
- 
+
+#user-info, #console {
+  height: 222px;
+}
+
+#console-label {
+  height:68%;
+}
+
+.messages {
+    font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
+    font-size: 95%;
+    line-height: 140%;
+    white-space: pre;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -o-pre-wrap;
+    background: #faf8f0;
+    display: block;
+    padding: 0.5em 1em;
+    border: 1px solid #bebab0;
+    overflow: auto;
+    cursor: default;
+}
+
+.console-date {
+  font-weight: bold;
+}
+
+.messages .success {
+  color: #43AC6A;
+}
+
+.messages .error {
+  color: #f04124;
 }

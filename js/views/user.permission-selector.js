@@ -47,9 +47,15 @@ app.UserPermissions = Backbone.View.extend({
 		//append views to elements
 		this.libraryViewGroupSelected.render();
 		this.libraryViewGroupAvailable.render();
-		
+	    //this.$groupAvailable.selectable();
+	   // this.$groupSelected.selectable();
 
+	   //this.$groupAvailable.on( "selectableselected", this.onPermissionSelect);
+	    //this.$groupSelected.on( "selectableselected", this.onPermissionSelect);
 		return this;
+	},
+	onPermissionSelect: function(e, el){
+ 		//Backbone.pubSub.trigger('group:select', $(el));
 	},
 	onPermissionFetched: function(permissions){
 		var tempCollection,
@@ -90,7 +96,7 @@ app.UserPermissions = Backbone.View.extend({
 				tempCollection = availablePermissionCollection
 								.where({selected:true});
 				//add each model from the temp collection to the  collection
-				this.setPermissions(tempCollection, selectedPermissionsCollection, true);
+				this.setPermissions(tempCollection, selectedPermissionsCollection, false);
 				break;
 			case 'all':
 				//fetch all models that are currently displayed (i.e., "active")
@@ -98,7 +104,7 @@ app.UserPermissions = Backbone.View.extend({
 								.where({active:true});
 				//set each model in temp collection to have selected state = true
 				//and add model to collection
-				this.setPermissions(tempCollection, selectedPermissionsCollection, true);
+				this.setPermissions(tempCollection, selectedPermissionsCollection, false);
 				break;
 
 			default:
@@ -130,7 +136,7 @@ app.UserPermissions = Backbone.View.extend({
 				tempCollection = selectedPermissionsCollection
 								.where({selected:true});
 				//add each model from the temp collection to the  collection
-				this.setPermissions(tempCollection, availablePermissionCollection, true);
+				this.setPermissions(tempCollection, availablePermissionCollection, false);
 				break;
 			case 'all':
 				//fetch all models that are currently displayed (i.e., "active")
@@ -138,7 +144,7 @@ app.UserPermissions = Backbone.View.extend({
 								.where({active:true});
 				//set each model in temp collection to have selected state = true
 				//and add model to collection
-				this.setPermissions(tempCollection, availablePermissionCollection, true);
+				this.setPermissions(tempCollection, availablePermissionCollection, false);
 				break;
 			default:
 				break;
