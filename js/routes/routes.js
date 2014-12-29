@@ -12,7 +12,7 @@ var Router = Backbone.Router.extend({
 	  },
 	
 	editUser: function  (loginname) {
-			app.state_map.fetchId = loginname.replace('\\', '/');
+			app.state_map.fetchId = (loginname != null ? loginname.replace('\\', '/') : "");
 	   if(app.state_map.fetchingData){ 
 			var fetchingDataView =  new app.FetchingDataView();
 		   	this.AppView.showView(fetchingDataView);

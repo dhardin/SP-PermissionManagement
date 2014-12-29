@@ -103,7 +103,6 @@ app.UserEditView = Backbone.View.extend({
 	},
 
 	onUserSelectBtnClick:function (e) {
-	
 		(function(that){
 			setTimeout(function(){
 				that.$user_search.focus();
@@ -155,9 +154,9 @@ app.UserEditView = Backbone.View.extend({
 
         this.$messages.append('<span class="console-date">'
         						+ app.utility.getDateTime() 
-        						+ '</span><div>Modifying [' 
+        						+ '</span><div>Modifying ' 
         						+ user.name 
-        						+ ']\'s permissions</div>');
+        						+ '\'s permissions</div>');
 		//add user permissions
 		if(add_permissions_arr.length > 0){
 			(function(that){
@@ -201,9 +200,9 @@ app.UserEditView = Backbone.View.extend({
 
 	        this.$messages.append('<span class="console-date">'
 	        						+ app.utility.getDateTime() 
-	        						+ '</span><div>Modifying [' 
+	        						+ '</span><div>Modifying ' 
 	        						+ user.name 
-	        						+ ']\'s permissions</div>');
+	        						+ '\'s permissions</div>');
 		});
 	},
 
@@ -265,9 +264,9 @@ app.UserEditView = Backbone.View.extend({
 		var user = this.model;
 		this.$messages.append('<span class="console-date">'
 								+ app.utility.getDateTime() 
-								+ '</span><div>Completed modifying [' 
-								+ user.get('name')
-								+ ']\'s permissions</div>');
+								+ '<span><div>Completed modifying ' 
+								+ user.name 
+								+ '\'s permissions</div>');
 		this.$messages.scrollTop(this.$messages[0].scrollHeight);
 
 		this.userSelect(user, true);
@@ -318,18 +317,15 @@ app.UserEditView = Backbone.View.extend({
 
 		//update message
 		this.$messages.append('<span class="console-date">'+ app.utility.getDateTime() 
-								+ '</span><div>Fetching ['+this.model.get('name') +']\'s permissions</div>');
-		this.$messages.scrollTop(this.$messages[0].scrollHeight);
+								+ '</span><div>Fetching user permissions</div>');
 		//update progress bar
         this.$progress_meter.width('0%');
         this.$progress_text.text('0%');
 		//publish user selected event
 		//set router
-		if(options && options.route){
+		if(options.route){
 			app.router.navigate('edit/' + user.attributes.loginname.replace('/', '\\'), false);
 			Backbone.pubSub.trigger('user:selected');
-		} else {
-			app.router.navigate('edit/' + user.attributes.loginname.replace('/', '\\'), false);
 		}
 		
 	},
@@ -343,8 +339,7 @@ app.UserEditView = Backbone.View.extend({
 				//publish results globally 
 				Backbone.pubSub.trigger('user:permissions-fetched', results);
 				that.$messages.append('<span class="console-date">'+ app.utility.getDateTime() 
-								+ '</span><div>Completed fetching ['+that.model.get('name') +']\'s permissions</div>');
-				that.$messages.scrollTop(that.$messages[0].scrollHeight);
+								+ '</span><div>Completed fetching user permissions</div>');
 				that.$progress_meter.width('100%');
         		that.$progress_text.text('100%');
 			});

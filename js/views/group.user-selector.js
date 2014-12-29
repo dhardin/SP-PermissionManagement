@@ -3,55 +3,51 @@ var app = app || {};
 app.UserPermissions = Backbone.View.extend({
 	template: _.template($('#item-select-template').html()),
 	tagName: 'div',
-	className: 'user-permissions',
+	className: 'group-users',
 
 	events: {
-		'click .addSingleSelect' : 'onAddPermissionClick',
-		'click .addAllSelect' : 'onAddPermissionClick',
-		'click .removeSingleSelect' : 'onRemovePermissionClick',
-		'click .removeAllSelect' : 'onRemovePermissionClick',
+		'click .addSingleSelect' : 'onAddUserClick',
+		'click .addAllSelect' : 'onAddUserClick',
+		'click .removeSingleSelect' : 'onRemoveUserClick',
+		'click .removeAllSelect' : 'onRemoveUserClick',
 		'keyup .search.permissions_available' : 'onSearch',
 		'keyup .search.permissions_selected' : 'onSearch',
-		'click #user-search-button' : 'onUserSearchClick'
+		'click #group-search-button' : 'onGroupSearchClick'
 	},
 
 	initialize: function (options) {
-		Backbone.pubSub.on('user:permissions-fetched', this.onPermissionFetched, this);
-		Backbone.pubSub.on('user:selected', this.onUserSelect, this);
-		Backbone.pubSub.on('user:save-permissions', this.onUserPermissionsSave, this);
+		Backbone.pubSub.on('group:users-fetched', this.onPermissionFetched, this);
+		Backbone.pubSub.on('group:selected', this.onUserSelect, this);
+		Backbone.pubSub.on('group:save-users', this.onUserPermissionsSave, this);
 	},
 
 	select: function(e){
-		 Backbone.pubSub.trigger('user:select', this.model);
+		 Backbone.pubSub.trigger('group:select', this.model);
 	},
 
 	render: function () {
 		this.$el.html(this.template(this.model.toJSON()));
 		
 		//initialize our target elements
-		this.$groupAvailable = this.$('#group-available');
-		this.$groupSelected = this.$('#group-selected');
+		this.$usersAvailable = this.$('#users-available');
+		this.$usersSelected = this.$('#users-selected');
 
-		this.libraryViewGroupSelected =  new app.LibraryPermissionsSelectedView({
-			el: this.$groupSelected[0], 
+		this.libraryViewUserSelected =  new app.LibraryUsersSelectedView({
+			el: this.$usersSelected[0], 
 			collection: app.GroupSelectedCollection, 
-			itemView: app.GroupView
+			itemView: app.UserView
 		});
-		this.libraryViewGroupAvailable =  new app.LibraryPermissionsAvailableView({
-			el: this.$groupAvailable[0], 
+		this.libraryViewUserAvailable =  new app.LibraryUsersAvailableView({
+			el: this.$usersAvailable[0], 
 			collection: app.GroupCollection, 
-			itemView: app.GroupView, 
+			itemView: app.UserView, 
 			filter: {key: 'selected', val: true}
 		});
 	
 		//append views to elements
-		this.libraryViewGroupSelected.render();
-		this.libraryViewGroupAvailable.render();
-	    //this.$groupAvailable.selectable();
-	   // this.$groupSelected.selectable();
-
-	   //this.$groupAvailable.on( "selectableselected", this.onPermissionSelect);
-	    //this.$groupSelected.on( "selectableselected", this.onPermissionSelect);
+		this.libraryViewUserSelected.render();
+		this.libraryViewUserAvailable.render();
+	   
 		return this;
 	},
 	onPermissionSelect: function(e, el){
@@ -59,16 +55,16 @@ app.UserPermissions = Backbone.View.extend({
 	},
 	onPermissionFetched: function(permissions){
 		var tempCollection,
-			selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
-			availablePermissionCollection =  this.libraryViewGroupAvailable.collection;
+			selectedUsersCollection = this.libraryViewUsersSelected.collection,
+			availableUsersCollection =  this.libraryViewUsersAvailable.collection;
 
 		//select permissions in available permissions collection
 		permissions.forEach(function(obj){
-			availablePermissionCollection.get(obj.id).set({selected:true});
+			availableUsersCollection.get(obj.id).set({selected:true});
 		});
 
 		//set collection to matching permissions array
-		tempCollection = availablePermissionCollection
+		tempCollection = availableUsersCollection
 								.where({selected:true});
 
 		//set permissions and don't select (i.e., hightlight) set permissions

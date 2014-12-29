@@ -112,7 +112,7 @@
             </div>
              <div id="console" class="small-12 medium-6 columns"> 
                 <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
-                    <code class="messages" disabled></code>
+                    <div class="messages"></div>
                 </label>
                 <div class="progress small-0 large-100">
                     <span class="current-progress">0%</span>
@@ -126,6 +126,42 @@
             <li><a class="button alert purge-user-btn"><span class="icon icon-skull invert"></span> Purge User</a>
             </li>
             <li><a class="button info export-permissions">Export Permissions</a></li>
+        </ul>
+    </script>
+
+     <script type="text/template" id="group-edit-template">
+        <button data-dropdown="group-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown" id="group-select-btn">Select a Group</button>
+        <br>
+        <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
+            <li>
+                <input class="search" type="text" />
+                <ul id="groups" class="dropdown-menu" role="menu" aria-labelledby="group-search-button"></ul>
+            </li>
+        </ul>
+
+        <div class="row">
+            <div id="group-info" class="small-12 medium-6 columns">
+                <label>Name
+                    <input class="group-attr" type="text" id="name" value="<%=name%>"/>
+                </label>
+                <label>Description
+                    <textarea class="group-attr" id="description" value="<%=description%>"></textarea>
+                </label>
+            </div>
+             <div id="console" class="small-12 medium-6 columns"> 
+                <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
+                    <div class="messages"></div>
+                </label>
+                <div class="progress small-0 large-100">
+                    <span class="current-progress">0%</span>
+                    <span  class="meter" style="width:0%"></span>
+                </div>
+            </div>
+        </div>
+        <ul class="button-group even-3">
+            <li><a class="button save-changes-btn">Save Changes</a>
+            </li>
+            <li><a class="button info export-users">Export Users</a></li>
         </ul>
     </script>
 
@@ -158,6 +194,34 @@
         </div>
     </script>
 
+ <script type="text/template" id="group-user-select-template">
+        <div class="row">
+            <div class="small-12 large-6 columns user-controls">
+                <ul class="button-group even-3 ">
+                    <li><a class="button clearSelected" data-method="single">Clear</br>Selected</a>
+                    </li>
+                    <li><a class="button addSingleSelect" data-method="single">Give</br>Selected</a>
+                    </li>
+                    <li><a class="button addAllSelect" data-method="all">Give</br>All</a>
+                    </li>
+                </ul>
+                <input class="search users_available" type="text" />
+                <div id="users-available" class="list-group"></div>
+            </div>
+            <div class="small-12 large-6 columns user-controls">
+                <ul class="button-group even-3 ">
+                    <li><a class="button removeAllSelect" data-method="all">Remove</br>All</a>
+                    </li>
+                    <li><a class="button removeSingleSelect" data-method="single">Remove</br>Selected</a>
+                    </li>
+                    <li><a class="button clearSelected" data-method="single">Clear</br>Selected</a>
+                    </li>
+                </ul>
+                <input class="search users_selected" type="text" />
+                <div id="users-selected" class="list-group"></div>
+            </div>
+        </div>
+    </script>
     <script type="text/template" id="fetchingDataTemplate">
         <div class="text-center library-message">
             <p>Fetching data...</p>
@@ -178,9 +242,14 @@
     <script src="js/views/user.permissions.js"></script>
     <script src="js/views/user.permission-selector.js"></script>
     <script src="js/views/group.js"></script>
+     <script src="js/views/group.edit.js"></script>
+    <script src="js/views/group.users.js"></script>
+    <script src="js/views/group.user-selector.js"></script>
     <script src="js/views/library.js"></script>
     <script src="js/views/library.permissions_available.js"></script>
     <script src="js/views/library.permissions_selected.js"></script>
+    <script src="js/views/library.users_available.js"></script>
+    <script src="js/views/library.users_selected.js"></script>
     <script src="js/views/library.users.js"></script>
     <script src="js/views/fetchingData.js"></script>
     <script src="js/views/app.js"></script>

@@ -18,7 +18,7 @@
             }
             for (j = 0; j < results[i].attributes.length; j++){
                 attribute = results[i].attributes[j];
-                attrObj[attribute.name] = attribute.value.replace('\\', '/');
+                attrObj[attribute.name.toLowerCase()] = attribute.value.replace('\\', '/');
             }
           
             data.push(attrObj);
