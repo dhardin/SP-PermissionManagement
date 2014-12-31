@@ -52,7 +52,7 @@ app.data = (function(){
 
         //data calls assume url ends with '/'
         //fix url if it dosn't end with '/'
-        if(!url.endsWith('/')){
+        if(!app.utility.endsWith(url, '/')){
             url = url + '/';
         }
 
@@ -100,7 +100,7 @@ app.data = (function(){
 
                 //data calls assume url ends with '/'
         //fix url if it dosn't end with '/'
-        if(!url.endsWith('/')){
+        if(!app.utility.endsWith(url, '/')){
             url = url + '/';
         }
 
@@ -154,7 +154,7 @@ app.data = (function(){
 
                 //data calls assume url ends with '/'
         //fix url if it dosn't end with '/'
-        if(!url.endsWith('/')){
+        if(!app.utility.endsWith(url, '/')){
             url = url + '/';
         }
 
@@ -224,6 +224,43 @@ app.data = (function(){
 
     };
     // End Utility method /modifyPermissions/
+    
+  // Begin Utility Method /modifyUsers/
+    modifyUsers = function (userArr, index, group, url, operation, callback) {
+        var user, groupName = group.name;
+
+        if (!(userArr instanceof Array)) {
+            return false;
+        }
+        if (index < userArr.length) {
+            user = userArr[index];
+            index++;
+            switch (operation) {
+                case 'add':
+                    addUserToGroup(url, groupName, user, function (results) {
+                        if(callback){
+                             callback({ operation: operation, type: results.type, data: results.data, user: user.name });
+                        }
+                        modifyUsers(userArr, index, group, url, operation, callback);
+                    });
+                    break;
+                case 'remove':
+                    removeUserFromGroup(url, groupName, user, function (results) {
+                       if(callback){
+                             callback({ operation: operation, type: results.type, data: results.data, user: user.name  });
+                        }
+                        modifyUsers(userArr, index, group, url, operation, callback);
+                    });
+                    break;
+                default:
+                    break;
+            }
+
+        } 
+
+    };
+    // End Utility method /modifyUsers/
+
     // Begin Utility Method /addUserToGroup/
     addUserToGroup = function (url, groupName, user, callback) {
         var results = [],
@@ -247,7 +284,7 @@ app.data = (function(){
                 </soap:Envelope>';
          //data calls assume url ends with '/'
         //fix url if it dosn't end with '/'
-        if(!url.endsWith('/')){
+        if(!app.utility.endsWith(url, '/')){
             url = url + '/';
         }
 
@@ -298,7 +335,7 @@ app.data = (function(){
 
                     //data calls assume url ends with '/'
         //fix url if it dosn't end with '/'
-        if(!url.endsWith('/')){
+        if(!app.utility.endsWith(url, '/')){
             url = url + '/';
         }
 
@@ -348,7 +385,7 @@ app.data = (function(){
 
         //data calls assume url ends with '/'
         //fix url if it dosn't end with '/'
-        if(!url.endsWith('/')){
+        if(!app.utility.endsWith(url, '/')){
             url = url + '/';
         }
 
@@ -381,6 +418,71 @@ app.data = (function(){
         });
     };
     // End Utility Method /removeUserFromWeb/
+    
+    // Begin utility method /updateGroupInfo/
+      updateGroupInfo = function (url, group, options, callback) {
+        var results = [],
+            updates = "",
+            soapEnv = "";
+            if(!options){
+                return false;
+            }
+
+            if(options.groupName){
+                updates += '<oldGroupName>' + group + '</oldGroupName>';
+                updates += '<groupName>' + options.groupName + '</groupName>';
+            } else {
+                updates += '<groupName>'+group+'</groupName>';
+            }
+
+            if(options.description){
+                updates += '<description>' + options.description + '</description>';
+            }
+            // Create the SOAP request
+             soapEnv =
+                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                    <soap:Body>\
+                        <UpdateGroupInfo xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
+                           '+updates+'\
+                        </UpdateGroupInfo>\
+                    </soap:Body>\
+                </soap:Envelope>';
+
+        //data calls assume url ends with '/'
+        //fix url if it dosn't end with '/'
+        if(!app.utility.endsWith(url, '/')){
+            url = url + '/';
+        }
+
+
+        $.ajax({
+            url: url + "_vti_bin/UserGroup.asmx",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/UpdateGroupInfo");
+            },
+            type: "POST",
+            dataType: "xml",
+            data: soapEnv,
+            tryCount: 0,
+            retryLimit: 0,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                printError(XMLHttpRequest, textStatus, errorThrown)
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+            },
+            complete: function (xData, status) {
+                if (callback) {
+                    callback({type: (status != 'error' ? 'success' : 'error'), data: xData});
+                }
+            },
+            contentType: "text/xml; charset=\"utf-8\""
+        });
+    };
+    // End utility method /updateGroupInfo/
 
 	return {
 		getPermissions: getPermissions,
@@ -389,10 +491,8 @@ app.data = (function(){
         addUserToGroup: addUserToGroup,
         removeUserFromGroup: removeUserFromGroup, 
         removeUserFromWeb: removeUserFromWeb,
-        modifyPermissions: modifyPermissions
+        modifyPermissions: modifyPermissions,
+        modifyUsers: modifyUsers,
+        updateGroupInfo: updateGroupInfo
 	};
 })();
-
-String.prototype.endsWith = function(suffix){
-    return this.indexOf(suffix, this.length - suffix.length) !== -1;
-}

@@ -10,9 +10,10 @@ app.UserPermissions = Backbone.View.extend({
 		'click .addAllSelect' : 'onAddPermissionClick',
 		'click .removeSingleSelect' : 'onRemovePermissionClick',
 		'click .removeAllSelect' : 'onRemovePermissionClick',
-		'keyup .search.permissions_available' : 'onSearch',
-		'keyup .search.permissions_selected' : 'onSearch',
-		'click #user-search-button' : 'onUserSearchClick'
+		'keyup .permissions_available .search' : 'onSearch',
+		'keyup .permissions_selected .search' : 'onSearch',
+		'click #user-search-button' : 'onUserSearchClick',
+		'click .search-clear': 'onSearchClear'
 	},
 
 	initialize: function (options) {
@@ -50,6 +51,11 @@ app.UserPermissions = Backbone.View.extend({
 
 		return this;
 	},
+	  onSearchClear: function(e){
+	  	var $search = $(e.currentTarget).siblings('.search');
+        $search.val('');
+        $search.trigger('keyup');
+    },
 	onPermissionSelect: function(e, el){
  		//Backbone.pubSub.trigger('group:select', $(el));
 	},
@@ -71,7 +77,9 @@ app.UserPermissions = Backbone.View.extend({
 		this.setPermissions(tempCollection, selectedPermissionsCollection, false);
 	},
 	onUserSelect: function(e){
-		this.clearPermissions();
+		if(this.libraryViewGroupSelected){
+			this.clearPermissions();
+		}
 	},
 	onUserPermissionsSave: function(e){
 		var selectedPermissionsCollection = this.libraryViewGroupSelected.collection.where({active: true}),
@@ -149,6 +157,7 @@ app.UserPermissions = Backbone.View.extend({
 	onSearch: function(e){
 		  var val = $(e.currentTarget).val(),
             options,
+            $search_clear = $(e.currentTarget).siblings('.search-clear'),
             searchAllAttributes = false;
 
         //check for search operand character '~'
@@ -158,13 +167,18 @@ app.UserPermissions = Backbone.View.extend({
             searchAllAttributes = true;
         }
 
+       if(val.length > 0 ){
+             $search_clear.removeClass('hidden');
+        } else {
+            $search_clear.addClass('hidden');
+        }
         options = (searchAllAttributes ? {
             val: val
         } : {
             key: 'name',
             val: val
         });
-		if($(e.currentTarget).hasClass('permissions_available')){
+		if($(e.currentTarget).parents('.permissions_available').length){
 			Backbone.pubSub.trigger('library_permissions_available:search', options);
 		} else {
 			Backbone.pubSub.trigger('library_permissions_selected:search', options);

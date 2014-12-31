@@ -8,9 +8,10 @@ app.GroupEditView = Backbone.View.extend({
     events: {
         'keyup .search': 'onGroupsKeyUp',
         'click #groups-select-btn': 'onGroupSelectBtnClick',
-        'click .save-users-btn': 'onSaveClick',
+        'click .save-changes-btn': 'onSaveClick',
         'click #clear-console': 'onClearConsoleClick',
-        'click .export-users': 'onExportBtnClick'
+        'click .export-users': 'onExportBtnClick',
+        'click .search-clear': 'onSearchClear'
     },
 
     initialize: function(options) {
@@ -53,6 +54,8 @@ app.GroupEditView = Backbone.View.extend({
         this.$progress_meter = this.$('.meter');
         this.$progressbar = this.$('.progress');
         this.$progress_text = this.$('.current-progress');
+        this.$search_clear = this.$('.search-clear');
+        this.$search = this.$('.search');
 
         if (this.model.get('name') == '') {
             this.$name.text('Select a Group');
@@ -85,6 +88,12 @@ app.GroupEditView = Backbone.View.extend({
             searchAllAttributes = true;
         }
 
+        if(val.length > 0 ){
+             this.$search_clear.removeClass('hidden');
+        } else {
+            this.$search_clear.addClass('hidden');
+        }
+
         options = (searchAllAttributes 
 		        	? { val: val }
 		        	: {
@@ -95,94 +104,7 @@ app.GroupEditView = Backbone.View.extend({
         Backbone.pubSub.trigger('library_groups:search', options);
     },
 
-    onGroupSelectBtnClick: function(e) {
-        (function(that) {
-            setTimeout(function() {
-                that.$group_search.focus();
-            }, 0);
-        })(this);
-    },
-
-    onGroupsKeyUp: function(e) {
-        this.search();
-    },
-    onSelectedPermissionsFetched: function(selected_permissions) {
-        var group_users = new Backbone.Collection(this.model.get('users')),
-            add_users_arr = [],
-            remove_users_arr = [],
-            group = this.model.attributes;
-
-
-
-        //iterate through selected permissions
-        selected_permissions.forEach(function(permission) {
-            //check if permissions is in user permissions
-            //user_permission_index = group_users_arr.indexOf(permission);
-            user_permission = group_users.findWhere({
-                name: permission
-            });
-            if (typeof user_permission !== 'undefined') {
-                //remove permission from user permissions
-                group_users.remove(user_permission);
-
-            } else {
-                //add permission to add permission array
-                add_users_arr.push(permission);
-            }
-        });
-        this.state_map.group_users = group_users;
-        //set remove permissions to the remaining user permissions...for contextual reasons
-        remove_users_arr = group_users.map(function(obj) {
-                return obj.get('name');
-            }),
-
-            //set state map variables
-            this.state_map.pendingSaves = add_users_arr.length;
-        this.state_map.pendingRemoves = remove_users_arr.length;
-        this.state_map.totalUpdates = this.state_map.pendingRemoves + this.state_map.pendingSaves;
-        this.state_map.progressUpdateRatio = 100 / this.state_map.totalUpdates;
-        if (add_users_arr.length == 0 && remove_users_arr.length == 0) {
-            return;
-        }
-
-        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Modifying ' + group.name + '\'s users</div>');
-        //add group users
-        if (add_users_arr.length > 0) {
-            (function(that) {
-                app.data.modifyUsers(add_users_arr, 0, group, app.config.url, 'add', function(results) {
-                    that.processPermissionModify(results);
-                });
-            })(this);
-        }
-        //remove group users
-        if (remove_users_arr.length > 0) {
-            (function(that) {
-                app.data.modifyUsers(remove_users_arr, 0, group, app.config.url, 'remove', function(results) {
-                    that.processPermissionModify(results);
-                });
-            })(this);
-        }
-    },
-
-    onSaveClick: function(e) {
-        this.resetStateMap();
-        //update progress bar
-        this.$progress_meter.width('0%');
-        this.$progress_text.text('0%');
-        //publish user selected event
-        Backbone.pubSub.trigger('group:save-users');
-    },
-
-    onClearConsoleClick: function(e) {
-        this.clearConsole();
-    },
-
-    onExportBtnClick: function(e) {
-        var users = this.model.get('users');
-        app.utility.JSONToCSVConvertor(users, this.model.get('name') + ' Users', true);
-    },
-
-    clearConsole: function() {
+      clearConsole: function() {
         this.$messages.html('');
     },
 
@@ -199,10 +121,10 @@ app.GroupEditView = Backbone.View.extend({
 
         if (type == 'success') {
             this.state_map.success[operation].push(user);
-            message = user + ' succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
+            message = '['+user + '] succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
         } else { //error
             this.state_map.failed[operation].push(user);
-            message = 'Unable to ' + operation + ' ' + user + '.'
+            message = 'Unable to ' + operation + ' [' + user + '].'
         }
         this.updateProgress(operation);
         this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div class="' + (class_map[type] ? class_map[type] : class_map.error) + '">' + message + '</div>');
@@ -269,6 +191,7 @@ app.GroupEditView = Backbone.View.extend({
             Backbone.pubSub.trigger('group:selected');
         } else {
             app.router.navigate('edit/group/' + group.get('name'), false);
+            Backbone.pubSub.trigger('group:selected');
         }
 
     },
@@ -289,5 +212,138 @@ app.GroupEditView = Backbone.View.extend({
                 that.$progress_text.text('100%');
             });
         })(this);
+    },
+
+    saveGroupInfoUpdates: function(){
+        var isUpdating = false, updates = {},
+            attribute, val,
+            group = this.model,
+            update_map = {
+                'name': 'oldGroupName',
+                'description': 'description'
+            }
+        
+        this.$group_attributes.each(function(i, el) {
+            val = $(el).val();
+            //check if an attribute changed
+            if(group.get(el.id) != val){
+                if(update_map[el.id]){
+                    isUpdating = true;
+                    attribute = update_map[el.id];
+                    updates[attribute] = val;
+                }
+            }
+        });
+
+        //return if no updates
+        if (!isUpdating){
+            return;
+        }
+
+        //save updates
+        (function (that){
+            app.data.updateGroupInfo(app.config.url, group.get('name'), updates, function(){
+                that.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Succesfully updated [' + group.get('name') + ']\'s info</div>');
+                that.$messages.scrollTop(that.$messages[0].scrollHeight);
+            });
+        })(this);
+
+    },
+      onSearchClear: function(e){
+        this.$search.val('');
+        this.$search.trigger('keyup');
+         e.stopPropagation();
+          this.$user_search.focus();
+    },
+
+    onGroupSelectBtnClick: function(e) {
+        (function(that) {
+            setTimeout(function() {
+                that.$group_search.focus();
+            }, 0);
+        })(this);
+    },
+
+    onGroupsKeyUp: function(e) {
+        this.search();
+    },
+    onSelectedUsersFetched: function(selected_users) {
+        var group_users = new Backbone.Collection(this.model.get('users')),
+            add_users_arr = [],
+            remove_users_arr = [],
+            group_user,
+            group = this.model.attributes;
+
+
+
+        //iterate through selected permissions
+        selected_users.forEach(function(user) {
+            //check if permissions is in user permissions
+            group_user = group_users.findWhere({
+                loginname: user.get('loginname')
+            });
+            if (typeof group_user !== 'undefined') {
+                //remove permission from user permissions
+                group_users.remove(group_user);
+
+            } else {
+                //add permission to add permission array
+                add_users_arr.push(user.attributes);
+            }
+        });
+        this.state_map.group_users = group_users;
+        //set remove permissions to the remaining user permissions...for contextual reasons
+        remove_users_arr = group_users.map(function(obj){
+            return obj.attributes;
+        });
+
+            //set state map variables
+            this.state_map.pendingSaves = add_users_arr.length;
+        this.state_map.pendingRemoves = remove_users_arr.length;
+        this.state_map.totalUpdates = this.state_map.pendingRemoves + this.state_map.pendingSaves;
+        this.state_map.progressUpdateRatio = 100 / this.state_map.totalUpdates;
+        if (add_users_arr.length == 0 && remove_users_arr.length == 0) {
+            return;
+        }
+
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Modifying ' + group.name + '\'s users</div>');
+        //add group users
+        if (add_users_arr.length > 0) {
+            (function(that) {
+                app.data.modifyUsers(add_users_arr, 0, group, app.config.url, 'add', function(results) {
+                    that.processUserModify(results);
+                });
+            })(this);
+        }
+        //remove group users
+        if (remove_users_arr.length > 0) {
+            (function(that) {
+                app.data.modifyUsers(remove_users_arr, 0, group, app.config.url, 'remove', function(results) {
+                    that.processUserModify(results);
+                });
+            })(this);
+        }
+    },
+
+    onSaveClick: function(e) {
+        this.resetStateMap();
+        //update progress bar
+        this.$progress_meter.width('0%');
+        this.$progress_text.text('0%');
+        //publish user selected event
+        Backbone.pubSub.trigger('group:save-users');
+
+        this.saveGroupInfoUpdates();
+    },
+
+    onClearConsoleClick: function(e) {
+        this.clearConsole();
+    },
+
+    onExportBtnClick: function(e) {
+        var users = this.model.get('users');
+        app.utility.JSONToCSVConvertor(users, this.model.get('name') + ' Users', true);
     }
+
+  
 });

@@ -104,7 +104,10 @@
         <br>
         <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
             <li>
-                <input class="search" type="text" />
+                <div class="search-container">
+                    <input class="search" type="text" />
+                    <a class="search-clear hidden">X</a>
+                </div>
                 <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
             </li>
         </ul>
@@ -145,14 +148,17 @@
         <br>
         <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
             <li>
+            <div class="search-container">
                 <input class="search" type="text" />
+                <a class="search-clear hidden">X</a>
+            </div>
                 <ul id="groups" class="dropdown-menu" role="menu" aria-labelledby="group-search-button"></ul>
             </li>
         </ul>
         <div class="row">
             <div id="group-info" class="small-12 medium-6 columns">
                 <label>Name
-                    <input class="group-attr" type="text" id="name" value="<%=name%>" disabled/>
+                    <input class="group-attr" type="text" id="name" value="<%=name%>"/>
                 </label>
                 <label>Description
                     <textarea class="group-attr" id="description" value="<%=description%>"></textarea>
@@ -186,7 +192,10 @@
                     <li><a class="button addAllSelect" data-method="all">Give</br>All</a>
                     </li>
                 </ul>
-                <input class="search permissions_available" type="text" />
+                <div class="search-container permissions_available">
+                    <input class="search " type="text" />
+                    <a class="search-clear hidden">X</a>
+                </div>
                 <div id="group-available" class="list-group"></div>
             </div>
             <div class="small-12 large-6 columns permission-controls">
@@ -198,7 +207,10 @@
                     <li><a class="button clearSelected" data-method="single">Clear</br>Selected</a>
                     </li>
                 </ul>
-                <input class="search permissions_selected" type="text" />
+                <div class="search-container permissions_selected">
+                    <input class="search " type="text" />
+                    <a class="search-clear hidden">X</a>
+                </div>
                 <div id="group-selected" class="list-group"></div>
             </div>
         </div>
@@ -215,7 +227,10 @@
                     <li><a class="button addAllSelect" data-method="all">Give</br>All</a>
                     </li>
                 </ul>
-                <input class="search users_available" type="text" />
+                <div class="search-container users_available">
+                    <input class="search " type="text" />
+                    <a class="search-clear hidden">X</a>
+                </div>
                 <div id="users-available" class="list-group"></div>
             </div>
             <div class="small-12 large-6 columns user-controls">
@@ -227,7 +242,10 @@
                     <li><a class="button clearSelected" data-method="single">Clear</br>Selected</a>
                     </li>
                 </ul>
-                <input class="search users_selected" type="text" />
+                <div class="search-container users_selected">
+                    <input class="search " type="text" />
+                    <a class="search-clear hidden">X</a>
+                </div>
                 <div id="users-selected" class="list-group"></div>
             </div>
         </div>

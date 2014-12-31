@@ -10,14 +10,15 @@ app.GroupUsers = Backbone.View.extend({
 		'click .addAllSelect' : 'onAddUserClick',
 		'click .removeSingleSelect' : 'onRemoveUserClick',
 		'click .removeAllSelect' : 'onRemoveUserClick',
-		'keyup .search.users_available' : 'onSearch',
-		'keyup .search.users_selected' : 'onSearch'
+		'keyup .users_available .search' : 'onSearch',
+		'keyup .users_selected .search' : 'onSearch',
+		'click .search-clear': 'onSearchClear'
 	},
 
 	initialize: function (options) {
-		Backbone.pubSub.on('group:users-fetched', this.onPermissionFetched, this);
-		Backbone.pubSub.on('group:selected', this.onUserSelect, this);
-		Backbone.pubSub.on('group:save-users', this.onUserPermissionsSave, this);
+		Backbone.pubSub.on('group:users-fetched', this.onUsersFetched, this);
+		Backbone.pubSub.on('group:selected', this.onGroupSelect, this);
+		Backbone.pubSub.on('group:save-users', this.onGroupUsersSave, this);
 	},
 
 	select: function(e){
@@ -49,16 +50,14 @@ app.GroupUsers = Backbone.View.extend({
 	   
 		return this;
 	},
-	onPermissionSelect: function(e, el){
- 		//Backbone.pubSub.trigger('group:select', $(el));
-	},
-	onPermissionFetched: function(permissions){
+
+	onUsersFetched: function(users){
 		var tempCollection,
 			selectedUsersCollection = this.libraryViewUsersSelected.collection,
 			availableUsersCollection =  this.libraryViewUsersAvailable.collection;
 
 		//select permissions in available permissions collection
-		permissions.forEach(function(obj){
+		users.forEach(function(obj){
 			availableUsersCollection.get(obj.id).set({selected:true});
 		});
 
@@ -69,16 +68,14 @@ app.GroupUsers = Backbone.View.extend({
 		//set permissions and don't select (i.e., hightlight) set permissions
 		this.setUsers(tempCollection, selectedUsersCollection, false);
 	},
-	onUserSelect: function(e){
-		this.clearPermissions();
+	onGroupSelect: function(e){
+		if(this.libraryViewUsersSelected){
+			this.clearUsers();
+		}
 	},
-	onUserPermissionsSave: function(e){
-		var selectedUsersCollection = this.libraryViewGroupSelected.collection.where({active: true}),
-			selectedUsersArr = selectedUsersCollection.map(function(model){
-										return model.get('name');
-									});
-		Backbone.pubSub.trigger('user:selected-permissions-fetched', selectedUsersArr);
-
+	onGroupUsersSave: function(e){
+		var selectedUsersCollection = this.libraryViewUsersSelected.collection.where({active: true});
+		Backbone.pubSub.trigger('group:selected-users-fetched', selectedUsersCollection);
 	},
 	onAddUserClick: function(e){
 		var method = $(e.target).attr('data-method'), tempCollection, collection = [],
@@ -145,9 +142,15 @@ app.GroupUsers = Backbone.View.extend({
 				break;
 		};
 	},
+	  onSearchClear: function(e){
+	  	var $search = $(e.currentTarget).siblings('.search');
+        $search.val('');
+        $search.trigger('keyup');
+    },
 	onSearch: function(e){
 			  var val = $(e.currentTarget).val(),
             options,
+             $search_clear = $(e.currentTarget).siblings('.search-clear'),
             searchAllAttributes = false;
 
         //check for search operand character '~'
@@ -156,7 +159,11 @@ app.GroupUsers = Backbone.View.extend({
             val = val.substring(1);
             searchAllAttributes = true;
         }
-
+        if(val.length > 0 ){
+             $search_clear.removeClass('hidden');
+        } else {
+            $search_clear.addClass('hidden');
+        }
         options = (searchAllAttributes ? {
             val: val
         } : {
@@ -164,7 +171,7 @@ app.GroupUsers = Backbone.View.extend({
             val: val
         });
 
-		if($(e.currentTarget).hasClass('users_available')){
+		if($(e.currentTarget).parents('.users_available').length){
 			Backbone.pubSub.trigger('library_users_available:search', options);
 		} else {
 			Backbone.pubSub.trigger('library_users_selected:search', options);

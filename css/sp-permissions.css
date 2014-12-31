@@ -38,9 +38,6 @@ li {
   background-image: url('../img/skull.gif');
 
 }
-.icon.icon-search{
-  background-image: url('../img/search.gif');
-}
 
 .icon.invert {
    -webkit-filter: invert(100%);
@@ -149,4 +146,28 @@ li {
 
 .messages .error {
   color: #f04124;
+}
+
+.search-container{
+  position: relative;
+}
+.search {
+  padding-right: 2.5em !important;
+  display: inline-block !important;
+}
+
+.search-clear {
+  position: absolute;
+  right: 1em;
+  top: 0.1em;
+  display: inline-block !important;
+  color: #008cba !important;
+}
+
+.search-clear:hover, .search-clear:focus{
+  color: #0078a0 !important;
+}
+
+#user-select .search-clear, #group-select .search-clear {
+  top: 0.4em;
 }

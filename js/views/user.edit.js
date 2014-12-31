@@ -11,7 +11,8 @@ app.UserEditView = Backbone.View.extend({
         'click .save-permissions-btn': 'onSaveClick',
         'click #clear-console': 'onClearConsoleClick',
         'click .export-permissions': 'onExportBtnClick',
-        'click .purge-user-btn': 'onPurgeBtnClick'
+        'click .purge-user-btn': 'onPurgeBtnClick',
+        'click .search-clear' : 'onSearchClear'
     },
 
     initialize: function(options) {
@@ -54,6 +55,8 @@ app.UserEditView = Backbone.View.extend({
         this.$progress_meter = this.$('.meter');
         this.$progressbar = this.$('.progress');
         this.$progress_text = this.$('.current-progress');
+        this.$search_clear = this.$('.search-clear');
+        this.$search = this.$('.search');
         if (this.model.get('name') == '') {
             this.$name.text('Select a User');
         }
@@ -92,6 +95,12 @@ app.UserEditView = Backbone.View.extend({
             val: val
         });
 
+        if(val.length > 0 ){
+             this.$search_clear.removeClass('hidden');
+        } else {
+            this.$search_clear.addClass('hidden');
+        }
+
         Backbone.pubSub.trigger('library_users:search', options);
     },
     onUserSelectBtnClick: function(e) {
@@ -102,7 +111,12 @@ app.UserEditView = Backbone.View.extend({
             }, 0);
         })(this);
     },
-
+    onSearchClear: function(e){
+        this.$search.val('');
+        this.$search.trigger('keyup');
+        e.stopPropagation();
+         this.$user_search.focus();
+    },
     onUsersKeyUp: function(e) {
         this.search();
     },
@@ -224,10 +238,10 @@ app.UserEditView = Backbone.View.extend({
 
         if (type == 'success') {
             this.state_map.success[operation].push(permission);
-            message = permission + ' succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
+            message = '['+ permission + '] succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
         } else { //error
             this.state_map.failed[operation].push(permission);
-            message = 'Unable to ' + operation + ' ' + permission + '.'
+            message = 'Unable to ' + operation + ' [' + permission + '].'
         }
         this.updateProgress(operation);
         this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div class="' + (class_map[type] ? class_map[type] : class_map.error) + '">' + message + '</div>');
@@ -300,6 +314,7 @@ app.UserEditView = Backbone.View.extend({
             Backbone.pubSub.trigger('user:selected');
         } else {
             app.router.navigate('edit/' + user.attributes.loginname.replace('/', '\\'), false);
+             Backbone.pubSub.trigger('user:selected');
         }
 
     },

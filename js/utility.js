@@ -119,10 +119,19 @@
     document.body.removeChild(link);
 }
    // End Utility method
+   
+   // Begin utility method /endsWith/
+   
+endsWith = function(string, suffix){
+    return string.indexOf(suffix, string.length - suffix.length) !== -1;
+}
+   // End utility method /endsWith/
 
    return {
    		processData: processData,
         getDateTime: getDateTime,
-        JSONToCSVConvertor: JSONToCSVConvertor
+        JSONToCSVConvertor: JSONToCSVConvertor,
+        endsWith: endsWith
    };
 })();
+
