@@ -11,6 +11,11 @@ app.AppView = {
 		this.currentView.render();
 
 	 $('#main').html(this.currentView.el);
+
+	   //rebind foundation events by re-calling foundation
+        setTimeout(function() {
+            $(document).foundation();
+        }, 100);
 	}
 };
 Backbone.pubSub = _.extend({}, Backbone.Events);

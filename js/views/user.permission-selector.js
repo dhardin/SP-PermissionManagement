@@ -1,7 +1,7 @@
 var app = app || {};
 
 app.UserPermissions = Backbone.View.extend({
-	template: _.template($('#item-select-template').html()),
+	template: _.template($('#user-permission-select-template').html()),
 	tagName: 'div',
 	className: 'user-permissions',
 
@@ -47,11 +47,7 @@ app.UserPermissions = Backbone.View.extend({
 		//append views to elements
 		this.libraryViewGroupSelected.render();
 		this.libraryViewGroupAvailable.render();
-	    //this.$groupAvailable.selectable();
-	   // this.$groupSelected.selectable();
 
-	   //this.$groupAvailable.on( "selectableselected", this.onPermissionSelect);
-	    //this.$groupSelected.on( "selectableselected", this.onPermissionSelect);
 		return this;
 	},
 	onPermissionSelect: function(e, el){
@@ -151,19 +147,27 @@ app.UserPermissions = Backbone.View.extend({
 		};
 	},
 	onSearch: function(e){
-		var availPermissions = this.libraryViewGroupSelected.collection,
-			selectedPermission = this.libraryViewGroupSelected.collection,
-			filteredCollection, 
-			searchOptions = {active:true, name: $(e.currentTarget).val()};
+		  var val = $(e.currentTarget).val(),
+            options,
+            searchAllAttributes = false;
 
-			if(searchOptions.name == ""){
-				searchOptions = false;
-			}
+        //check for search operand character '~'
+        if (val.indexOf('~') == 0) {
+            //set val to exclude '~'
+            val = val.substring(1);
+            searchAllAttributes = true;
+        }
 
+        options = (searchAllAttributes ? {
+            val: val
+        } : {
+            key: 'name',
+            val: val
+        });
 		if($(e.currentTarget).hasClass('permissions_available')){
-			Backbone.pubSub.trigger('library_permissions_available:search', searchOptions);
+			Backbone.pubSub.trigger('library_permissions_available:search', options);
 		} else {
-			Backbone.pubSub.trigger('library_permissions_selected:search', searchOptions);
+			Backbone.pubSub.trigger('library_permissions_selected:search', options);
 		}
 	},
 });

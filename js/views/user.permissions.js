@@ -8,11 +8,7 @@ app.EditUserPermissionsView = Backbone.View.extend({
 		'click #user-search-button': 'onUserSearchClick',
 		'blur #user-search-container': 'onUserSearchBlur'
 	},
-
-	initialize: function(){
-		
-	},
-
+	
 	render: function () {
 		this.$el.html(this.template((this.model ? this.model.toJSON() : {})));
 		this.$user = this.$('#user');
@@ -30,5 +26,6 @@ app.EditUserPermissionsView = Backbone.View.extend({
 
 		this.UserEditView.render();
 		this.UserPermissionsView.render();
+		return this;
 	}
 });

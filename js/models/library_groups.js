@@ -16,22 +16,34 @@ app.LibraryGroup = Backbone.Collection.extend({
         this.changeSort("name"); 
     },
     search: function (options) {
-        var regex, collection, key;
+          var regex,
+            key = options.key || false,
+            val = options.val || '',
+            collection;
 
-      
+        if (val.length == 0) {
+            return this;
+        }
+
+        regex = new RegExp(val, "i");
+
         collection = _(this.filter(function(data) {
-            for(key in options){
-                regex = new RegExp(options[key], "i");
+            if(key){
                 if (regex.test(data.attributes[key])){
-                    continue;
-                } else {
-                    return false;
+                        return true;
+                }
+            } else {
+                 for (key in data.attributes){
+                    if (regex.test(data.attributes[key])){
+                        return true;
+                    }
                 }
             }
-            return true;
+           
+            return false;
         }));
 
-     return collection;
+        return collection;
 
-    }                                                                                      
+    }                                                                                         
 });

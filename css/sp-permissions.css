@@ -1,5 +1,7 @@
   body, div{overflow: none !important;}
- 
+ nav{
+  max-width: inherit !important;
+ }
    #logo {
     width: 35px;
     height: 35px;
@@ -14,6 +16,10 @@
     }
 .hidden{
   visibility: hidden;
+}
+
+li {
+  list-style-type: none;
 }
 
 .icon {
@@ -43,12 +49,12 @@
   -o-filter: invert(100%);
   filter: invert(100%);
 }
-#users{
+#users, #groups{
   overflow-y: scroll;
   margin-left: 0;
   max-height: 20em;
 }
-#users li{
+#users li, #groups li{
   cursor: pointer;
   padding: 1em;
   padding-top: 0.5em;
@@ -56,13 +62,9 @@
 
 }
 
-#users li:hover{
+#users li:hover, #groups li:hover {
   background-color: #eee !important;
 }
-
-#users li:hover{
- 
-};
 
 .permission-controls input{
   margin-top: -15px;
@@ -83,11 +85,11 @@
 
 
 
-#users-dropdown{
+#users-dropdown, #groups-dropdown{
    background-color: #fff;
 }
 
-#users-dropdown li:hover{
+#users-dropdown li:hover, #groups-dropdown li:hover{
    background-color: #fff;
 }
 
@@ -113,7 +115,7 @@
   height: 222px;
 }
 
-#user-info, #console {
+#user-info, #console, #group-info {
   height: 222px;
 }
 

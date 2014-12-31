@@ -135,6 +135,60 @@ app.data = (function(){
         });
     };
     // End Utility Method /getUsers/
+    
+    // Begin utility method /getUsersFromGroup/
+     // Begin Utility Method /getUsers/
+    //returns a list of users from a site
+    getUsersFromGroup = function (url, group, callback) {
+        var results = [],
+
+        // Create the SOAP request
+         soapEnv =
+            '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
+                <soap:Body>\
+                  <GetUserCollectionFromGroup xmlns="http://schemas.microsoft.com/sharepoint/soap/" >\
+                    <groupName>' + group + '</groupName>\
+                  </GetUserCollectionFromGroup>\
+              </soap:Body>\
+            </soap:Envelope>';
+
+                //data calls assume url ends with '/'
+        //fix url if it dosn't end with '/'
+        if(!url.endsWith('/')){
+            url = url + '/';
+        }
+
+        $.ajax({
+            url: url + "_vti_bin/UserGroup.asmx",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('SOAPAction', "http://schemas.microsoft.com/sharepoint/soap/directory/GetUserCollectionFromGroup");
+            },
+            type: "POST",
+            dataType: "xml",
+            data: soapEnv,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                printError(XMLHttpRequest, textStatus, errorThrown)
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) {
+                    //try again
+                    $.ajax(this);
+                    return;
+                } else if (callback) {
+                    callback({type: 'error', data: {status: textStatus, error: errorThrown}});
+                }
+            },
+            complete: function (xData, status) {
+                results = $(xData.responseText).find("user");
+
+                if (callback) {
+                    callback(results);
+                }
+            },
+            contentType: "text/xml; charset=\"utf-8\""
+        });
+    };
+    // End Utility Method /getUsers/
+    // End utility method /getUsersFromGroup/
       // Begin Utility Method /modifyPermissions/
     modifyPermissions = function (permissionArr, index, user, url, operation, callback) {
         var permission;
@@ -331,6 +385,7 @@ app.data = (function(){
 	return {
 		getPermissions: getPermissions,
         getUsers: getUsers, 
+        getUsersFromGroup: getUsersFromGroup,
         addUserToGroup: addUserToGroup,
         removeUserFromGroup: removeUserFromGroup, 
         removeUserFromWeb: removeUserFromWeb,

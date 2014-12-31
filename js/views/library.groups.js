@@ -1,10 +1,10 @@
 var app = app || {};
 
-app.LibraryUserView = app.LibraryView.extend({
+app.LibraryGroupView = app.LibraryView.extend({
 	template: _.template($('#collection-template').html()),
 
 	initialize: function (options){
-		Backbone.pubSub.on('library_users:search', this.search, this);
+		Backbone.pubSub.on('library_groups:search', this.search, this);
 		app.LibraryView.prototype.initialize.apply(this, [options]); 
 	}
 });

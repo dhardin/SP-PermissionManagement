@@ -1,7 +1,7 @@
 var app = app || {};
 
-app.FetchingDataView = Backbone.View.extend({
-	template: _.template($('#fetchingDataTemplate').html()),
+app.SelectEditView = Backbone.View.extend({
+	template: _.template($('#main-template').html()),
 	
 	render: function () {
 		this.$el.html(this.template());

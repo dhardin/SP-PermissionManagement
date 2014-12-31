@@ -26,13 +26,14 @@
 </head>
 
 <body>
+    <div class="contain-to-grid sticky">
     <nav class="top-bar" data-topbar role="navigation">
         <ul class="title-area">
             <li class="name">
                 <h1><a href="#"><img id="logo" alt="Brand" src="img/sp_logo_white.png"> SharePoint Permissions</a></h1>
             </li>
             <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-            <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a>
+            <li class="toggle-topbar menu-icon"><a><span>Menu</span></a>
             </li>
         </ul>
 
@@ -42,29 +43,24 @@
                 <li class="has-dropdown">
                     <a href="#">Manage Permissions</a>
                     <ul class="dropdown">
-                        <li><a href="#permissions/users">Users</a>
+                        <li><a href="#edit/user">Users</a>
                         </li>
-                        <li><a href="#permissions/groups">Groups</a>
+                        <li><a href="#edit/group">Groups</a>
                         </li>
                     </ul>
                 </li>
             </ul>
         </section>
     </nav>
-
+    </div>
     <div id="main"></div>
 
     <!-- TEMPLATES -->
     <script type="text/template" id="main-template">
-        <div class="page-header">
-            <small>Manage Permissions For:</small>
-            <div class="left">
-                <h1>Users</h1>
-            </div>
-            <div class="right">
-                <h1>Groups</h1>
-            </div>
-        </div>
+       <ul class="button-group stack">
+        <li ><a href="#edit/user" class="button info"><h1>Users</h1><h1 class="subheader">Edit SharePoint User Permissions</h1></a></li>
+        <li ><a href="#edit/group" class="button secondary"><h1>Groups</h1><h1 class="subheader">Edit SharePoint Groups and User Memberships</h1></a></li> 
+       </ul>
     </script>
 
 
@@ -74,13 +70,28 @@
         <div id="permissions"></div>
     </script>
 
+    <script type="text/template" id="group-template">
+        <div id="group"></div>
+        <div id="user-select"></div>
+    </script>
+
     <script type="text/template" id="group-list-item-template">
         <a class="list-group-item">
             <%=name%>
         </a>
     </script>
+       <script type="text/template" id="user-edit-list-item-template">
+         <a class="list-group-item">
+            <%=name%>
+        </a>
+    </script>
     <script type="text/template" id="user-list-item-template">
         <a class="user" role="menuitem" tabindex="-1">
+            <%=name%>
+        </a>
+    </script>
+    <script type="text/template" id="group-select-list-item-template">
+        <a class="group" role="menuitem" tabindex="-1">
             <%=name%>
         </a>
     </script>
@@ -130,7 +141,7 @@
     </script>
 
      <script type="text/template" id="group-edit-template">
-        <button data-dropdown="group-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown" id="group-select-btn">Select a Group</button>
+       <button data-dropdown="groups-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown" id="groups-select-btn">Select a Group</button>
         <br>
         <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
             <li>
@@ -138,11 +149,10 @@
                 <ul id="groups" class="dropdown-menu" role="menu" aria-labelledby="group-search-button"></ul>
             </li>
         </ul>
-
         <div class="row">
             <div id="group-info" class="small-12 medium-6 columns">
                 <label>Name
-                    <input class="group-attr" type="text" id="name" value="<%=name%>"/>
+                    <input class="group-attr" type="text" id="name" value="<%=name%>" disabled/>
                 </label>
                 <label>Description
                     <textarea class="group-attr" id="description" value="<%=description%>"></textarea>
@@ -158,7 +168,7 @@
                 </div>
             </div>
         </div>
-        <ul class="button-group even-3">
+        <ul class="button-group even-2">
             <li><a class="button save-changes-btn">Save Changes</a>
             </li>
             <li><a class="button info export-users">Export Users</a></li>
@@ -241,17 +251,24 @@
     <script src="js/views/user.edit.js"></script>
     <script src="js/views/user.permissions.js"></script>
     <script src="js/views/user.permission-selector.js"></script>
+
     <script src="js/views/group.js"></script>
-     <script src="js/views/group.edit.js"></script>
     <script src="js/views/group.users.js"></script>
+    <script src="js/views/group.edit.js"></script>
     <script src="js/views/group.user-selector.js"></script>
+    <script src="js/views/group-user.js"></script>
+    <script src="js/views/group-select.js"></script>
+
     <script src="js/views/library.js"></script>
     <script src="js/views/library.permissions_available.js"></script>
     <script src="js/views/library.permissions_selected.js"></script>
     <script src="js/views/library.users_available.js"></script>
     <script src="js/views/library.users_selected.js"></script>
     <script src="js/views/library.users.js"></script>
+    <script src="js/views/library.groups.js"></script>
+
     <script src="js/views/fetchingData.js"></script>
+    <script src="js/views/selectEdit.js"></script>
     <script src="js/views/app.js"></script>
     <!-- Application -->
     <script src="js/data.js"></script>

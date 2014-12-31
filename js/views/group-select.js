@@ -1,7 +1,7 @@
 var app = app || {};
 
-app.UserView = Backbone.View.extend({
-	template: _.template($('#user-list-item-template').html()),
+app.GroupSelectView = Backbone.View.extend({
+	template: _.template($('#group-select-list-item-template').html()),
 	tagName: 'li',
 
 	events: {
@@ -13,12 +13,12 @@ app.UserView = Backbone.View.extend({
 	},
 
 	select: function(e){
-		 Backbone.pubSub.trigger('user:select', this.model);
+		 Backbone.pubSub.trigger('group:select', this.model);
 	},
 
 	edit: function(e){
-		var username = this.model.get('loginname');
-		app_router.navigate('edit/user/' + username, { trigger: false });
+		var name = this.model.get('name');
+		app_router.navigate('edit/group/' + name, { trigger: false });
 	},
 
 	render: function () {
