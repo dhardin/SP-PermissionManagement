@@ -217,28 +217,25 @@ app.GroupEditView = Backbone.View.extend({
     saveGroupInfoUpdates: function(){
         var isUpdating = false, updates = {},
             attribute, val,
-            group = this.model,
-            update_map = {
-                'name': 'oldGroupName',
-                'description': 'description'
-            }
+            group = this.model;
+
         
         this.$group_attributes.each(function(i, el) {
-            val = $(el).val();
-            //check if an attribute changed
-            if(group.get(el.id) != val){
-                if(update_map[el.id]){
-                    isUpdating = true;
-                    attribute = update_map[el.id];
-                    updates[attribute] = val;
-                }
-            }
+            isUpdating = true;
+            updates[el.id] = $(el).val();
         });
 
         //return if no updates
         if (!isUpdating){
             return;
         }
+
+        
+        updates['ownerType'] = (group.get('ownerisuser') ? 'user' : 'group');
+        updates['ownerIdentifier'] = ( updates['ownerType'] == 'user' 
+                                        ? app.UserCollection.findWhere({id: group.get('ownerid')}).get('loginname').replace('/', '\\')
+                                        :  app.GroupCollection.findWhere({id: group.get('ownerid')}).get('name'));
+
 
         //save updates
         (function (that){

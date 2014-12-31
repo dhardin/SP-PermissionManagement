@@ -428,16 +428,12 @@ app.data = (function(){
                 return false;
             }
 
-            if(options.groupName){
-                updates += '<oldGroupName>' + group + '</oldGroupName>';
-                updates += '<groupName>' + options.groupName + '</groupName>';
-            } else {
-                updates += '<groupName>'+group+'</groupName>';
-            }
+                updates += '<oldGroupName>' + group + '</oldGroupName>'
+                     + '<groupName>'+(options.name ? options.name : group)+'</groupName>'
+                     + '<ownerIdentifier>' + options.ownerIdentifier + '</ownerIdentifier>'
+                     + '<ownerType>' + options.ownerType + '</ownerType>'
+                     + '<description>' + options.description + '</description>';
 
-            if(options.description){
-                updates += '<description>' + options.description + '</description>';
-            }
             // Create the SOAP request
              soapEnv =
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
