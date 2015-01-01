@@ -206,7 +206,7 @@ app.UserEditView = Backbone.View.extend({
         permissionsElement += '</ul>';
         app.utility.printToNewWindow(permissionsElement);
     } else {
-    app.utility.JSONToCSVConvertor(permissions, this.model.get('name') + ' Permissions', true);
+        app.utility.JSONToCSVConvertor(permissions, this.model.get('name') + ' Permissions', true);
      }
         
     },

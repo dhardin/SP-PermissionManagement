@@ -338,8 +338,21 @@ app.GroupEditView = Backbone.View.extend({
     },
 
     onExportBtnClick: function(e) {
-        var users = this.model.get('users');
-        app.utility.JSONToCSVConvertor(users, this.model.get('name') + ' Users', true);
+        var users = this.model.get('users'),
+        ua = window.navigator.userAgent,
+        msie = ua.indexOf("MSIE "),
+        permissionsElement;
+
+        if (msie > 0) {     // If Internet Explorer, return version number
+            permissionsElement = '<h1>' + this.model.get('name') + '\'s Users</h1></ul>';
+            permissionsElement += users.reduce(function(memo, obj){
+                return (typeof memo == "string" ? memo :  '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
+            });
+            permissionsElement += '</ul>';
+            app.utility.printToNewWindow(permissionsElement);
+        } else {
+            app.utility.JSONToCSVConvertor(users, this.model.get('name') + ' Users', true);
+        }
     }
 
   
