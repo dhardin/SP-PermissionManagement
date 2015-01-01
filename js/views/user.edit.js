@@ -193,17 +193,34 @@ app.UserEditView = Backbone.View.extend({
     },
 
     onExportBtnClick: function(e) {
-        var permissions = this.model.get('permissions');
-        app.utility.JSONToCSVConvertor(permissions, this.model.get('name') + ' Permissions', true);
+        var permissions = this.model.get('permissions'),
+        ua = window.navigator.userAgent,
+         msie = ua.indexOf("MSIE "),
+         permissionsElement;
+
+    if (msie > 0) {     // If Internet Explorer, return version number
+        permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
+        permissionsElement += permissions.reduce(function(memo, obj){
+            return (typeof memo == "string" ? memo :  '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
+        });
+        permissionsElement += '</ul>';
+        app.utility.printToNewWindow(permissionsElement);
+    } else {
+    app.utility.JSONToCSVConvertor(permissions, this.model.get('name') + ' Permissions', true);
+     }
+        
     },
 
     onPurgeBtnClick: function(e) {
-        var user = this.model;
+        var user = this.model.attributes;
 
-        app.data.removeUserFromWeb(app.config.url, user, function(results) {
-
-            this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Modifying [' + user.name + ']\'s permissions</div>');
-        });
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div class="' + (class_map[type] ? class_map[type] : class_map.error) + '">' + message + '</div>');
+        this.$messages.scrollTop(this.$messages[0].scrollHeight);
+        (function(that){
+            app.data.removeUserFromWeb(app.config.url, user, function(results) {
+                this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Modifying [' + user.name + ']\'s permissions</div>');
+            });
+        })(this);
     },
 
     onRemoveUserComplete: function(results) {

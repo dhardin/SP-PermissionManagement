@@ -137,7 +137,12 @@
         <ul class="button-group even-3">
             <li><a class="button save-permissions-btn">Save Permissions</a>
             </li>
-            <li><a class="button alert purge-user-btn"><span class="icon icon-skull invert"></span> Purge User</a>
+            <li><a class="button alert" data-dropdown="purge-drop"><span class="icon icon-skull invert"></span>Purge User</a>
+                <ul id="purge-drop" class="content f-dropdown" data-dropdown-content>
+                  <li><h6>Are you sure?</h6></li>
+                  <li><a class="button purge-user-btn success">Yep!</a></li>
+                  <li><a class="button alert">Nope</a></li>
+                </ul>
             </li>
             <li><a class="button info export-permissions">Export Permissions</a></li>
         </ul>

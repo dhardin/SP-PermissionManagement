@@ -171,3 +171,18 @@ li {
 #user-select .search-clear, #group-select .search-clear {
   top: 0.4em;
 }
+
+#purge-drop li {
+  display: block;
+  width: 100%;
+}
+
+#purge-drop li:hover{
+  background-color: transparent;
+}
+
+#purge-drop li a{
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin-bottom: 5px;
+}

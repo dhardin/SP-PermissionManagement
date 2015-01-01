@@ -120,18 +120,27 @@
 }
    // End Utility method
    
+   // Begin Utility Method /printToNewWindow/
+   printToNewWindow = function(stuffToPrint){
+        var myWindow=window.open('','','fullscreen=yes,scrollbars=yes');
+        myWindow.document.write(stuffToPrint);
+        myWindow.focus();
+   };
+   // End Utility Method /printToNewWindow/
+   
    // Begin utility method /endsWith/
    
 endsWith = function(string, suffix){
     return string.indexOf(suffix, string.length - suffix.length) !== -1;
-}
+};
    // End utility method /endsWith/
 
    return {
    		processData: processData,
         getDateTime: getDateTime,
         JSONToCSVConvertor: JSONToCSVConvertor,
-        endsWith: endsWith
+        endsWith: endsWith,
+        printToNewWindow: printToNewWindow
    };
 })();
 
