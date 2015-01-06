@@ -7,7 +7,8 @@ var Router = Backbone.Router.extend({
         'edit/user/*': 'editUser',
         'edit/group/:name': 'editGroup',
         'edit/group/*': 'editGroup',
-        'edit/*':'selectEdit'
+        'edit/*':'selectEdit',
+        '*404': 'error'
     },
 
     initialize: function(options) {
@@ -16,6 +17,10 @@ var Router = Backbone.Router.extend({
     selectEdit: function() {
         var selectEditView = new app.SelectEditView();
         app.router.AppView.showView(selectEditView);
+    },
+    error: function(){
+        var errorView = new app.ErrorView();
+        app.router.AppView.showView(errorView);
     },
     editUser: function(loginname) {
     	var fetchingDataView,editUserPermissionView, user;
