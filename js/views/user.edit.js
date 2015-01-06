@@ -327,10 +327,10 @@ app.UserEditView = Backbone.View.extend({
         //publish user selected event
         //set router
         if (options && options.route) {
-            app.router.navigate('edit/' + user.attributes.loginname.replace('/', '\\'), false);
+            app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
             Backbone.pubSub.trigger('user:selected');
         } else {
-            app.router.navigate('edit/' + user.attributes.loginname.replace('/', '\\'), false);
+            app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
              Backbone.pubSub.trigger('user:selected');
         }
 
