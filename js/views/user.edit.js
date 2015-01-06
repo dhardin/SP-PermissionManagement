@@ -214,13 +214,14 @@ app.UserEditView = Backbone.View.extend({
     onPurgeBtnClick: function(e) {
         var user = this.model.attributes;
 
-        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div class="' + (class_map[type] ? class_map[type] : class_map.error) + '">' + message + '</div>');
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Purging [' + user.name + ']</div>');        
         this.$messages.scrollTop(this.$messages[0].scrollHeight);
         (function(that){
-            app.data.removeUserFromWeb(app.config.url, user, function(results) {
-                this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Modifying [' + user.name + ']\'s permissions</div>');
-            });
+             app.data.removeUserFromWeb(app.config.url, user, function(results){
+                that.onRemoveUserComplete(results);
+             });
         })(this);
+       
     },
 
     onRemoveUserComplete: function(results) {
@@ -235,7 +236,7 @@ app.UserEditView = Backbone.View.extend({
             message = 'Unsuccessfully removed ' + name + ' from site.';
         }
 
-        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span>' + message + ' </div>');
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>' + message + ' </div>');
     },
 
     clearConsole: function() {
