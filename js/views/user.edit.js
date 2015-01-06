@@ -237,6 +237,7 @@ app.UserEditView = Backbone.View.extend({
         }
 
         this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>' + message + ' </div>');
+        this.$messages.scrollTop(this.$messages[0].scrollHeight);
     },
 
     clearConsole: function() {
