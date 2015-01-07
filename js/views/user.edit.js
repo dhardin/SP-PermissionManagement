@@ -12,7 +12,8 @@ app.UserEditView = Backbone.View.extend({
         'click #clear-console': 'onClearConsoleClick',
         'click .export-permissions': 'onExportBtnClick',
         'click .purge-user-btn': 'onPurgeBtnClick',
-        'click .search-clear' : 'onSearchClear'
+        'click .search-clear' : 'onSearchClear',
+        'click .search': 'onSearchClick'
     },
 
     initialize: function(options) {
@@ -179,6 +180,10 @@ app.UserEditView = Backbone.View.extend({
         }
     },
 
+    onSearchClick: function (e) {
+        e.stopPropagation();
+    },
+    
     onSaveClick: function(e) {
         this.resetStateMap();
         //update progress bar
