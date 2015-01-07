@@ -63,7 +63,7 @@ li {
   background-color: #eee !important;
 }
 
-.permission-controls input{
+.permission-controls input, .user-controls input{
   margin-top: -15px;
   margin-bottom: 0px;
 }
