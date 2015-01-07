@@ -11,7 +11,8 @@ app.GroupEditView = Backbone.View.extend({
         'click .save-changes-btn': 'onSaveClick',
         'click #clear-console': 'onClearConsoleClick',
         'click .export-users': 'onExportBtnClick',
-        'click .search-clear': 'onSearchClear'
+        'click .search-clear': 'onSearchClear',
+        'click .search': 'onSearchClick'
     },
 
     initialize: function(options) {
@@ -217,7 +218,7 @@ app.GroupEditView = Backbone.View.extend({
     saveGroupInfoUpdates: function(){
         var isUpdating = false, updates = {},
             attribute, val,
-            group = this.model;
+            group = this.model, ownerid, user;
 
         
         this.$group_attributes.each(function(i, el) {
@@ -232,9 +233,13 @@ app.GroupEditView = Backbone.View.extend({
 
         
         updates['ownerType'] = (group.get('ownerisuser') ? 'user' : 'group');
-        updates['ownerIdentifier'] = ( updates['ownerType'] == 'user' 
-                                        ? app.UserCollection.findWhere({id: group.get('ownerid')}).get('loginname').replace('/', '\\')
-                                        :  app.GroupCollection.findWhere({id: group.get('ownerid')}).get('name'));
+        ownerid = group.get('ownerid');
+        if(updates['ownerType'] == 'user') {
+           user = app.UserCollection.findWhere({id: group.get('ownerid')});
+           updates['ownerIdentifier'] = (user ? user.get('loginname').replace('/', '\\') : '');
+        } else {
+           updates['ownerIdentifier'] = app.GroupCollection.findWhere({id: ownerid).get('name');
+        }
 
 
         //save updates
@@ -250,9 +255,11 @@ app.GroupEditView = Backbone.View.extend({
         this.$search.val('');
         this.$search.trigger('keyup');
          e.stopPropagation();
-          this.$user_search.focus();
+          this.$group_search.focus();
     },
-
+    onSearchClick: function (e) {
+        e.stopPropagation();
+    },
     onGroupSelectBtnClick: function(e) {
         (function(that) {
             setTimeout(function() {
