@@ -2,6 +2,9 @@
  nav{
   max-width: inherit !important;
  }
+ #main {
+  padding-top: 10px;
+ }
    #logo {
     width: 35px;
     height: 35px;
@@ -59,6 +62,10 @@ li {
 
 }
 
+#permissions .row, #user-select .row {
+  max-width: 100%;
+}
+
 #users li:hover, #groups li:hover {
   background-color: #eee !important;
 }
@@ -99,7 +106,6 @@ li {
   position: relative;
   background-color: #ddd;
    height: 15%;
-   margin-top:5%;
 }
 .current-progress {
   position: absolute;
@@ -108,16 +114,13 @@ li {
    font-weight: bold;
 }
 
-.notify {
-  height: 222px;
-}
-
-#user-info, #console, #group-info {
-  height: 222px;
+#console{
+  min-height: 100px;
 }
 
 #console-label {
   height:68%;
+  margin-bottom: 2em;
 }
 
 .messages {

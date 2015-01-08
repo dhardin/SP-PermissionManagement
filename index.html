@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta charset="utf-8" />
@@ -21,40 +22,42 @@
 
 <body>
     <div class="contain-to-grid sticky">
-    <nav class="top-bar" data-topbar role="navigation">
-        <ul class="title-area">
-            <li class="name">
-                <h1><a href="#"><img id="logo" alt="Brand" src="img/sp_logo_white.png"> SharePoint Permissions</a></h1>
-            </li>
-            <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-            <li class="toggle-topbar menu-icon"><a><span>Menu</span></a>
-            </li>
-        </ul>
-
-        <section class="top-bar-section">
-            <!-- Right Nav Section -->
-            <ul class="right">
-                <li class="has-dropdown">
-                    <a href="#">Manage Permissions</a>
-                    <ul class="dropdown">
-                        <li><a href="#edit/user">Users</a>
-                        </li>
-                        <li><a href="#edit/group">Groups</a>
-                        </li>
-                    </ul>
+        <nav class="top-bar" data-topbar role="navigation">
+            <ul class="title-area">
+                <li class="name">
+                    <h1><a href="#"><img id="logo" alt="Brand" src="img/sp_logo_white.png"> SharePoint Permissions</a></h1>
+                </li>
+                <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+                <li class="toggle-topbar menu-icon"><a><span>Menu</span></a>
                 </li>
             </ul>
-        </section>
-    </nav>
+
+            <section class="top-bar-section">
+                <!-- Right Nav Section -->
+                <ul class="right">
+                    <li class="has-dropdown">
+                        <a href="#">Manage Permissions</a>
+                        <ul class="dropdown">
+                            <li><a href="#edit/user">Users</a>
+                            </li>
+                            <li><a href="#edit/group">Groups</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+        </nav>
     </div>
     <div id="main"></div>
 
     <!-- TEMPLATES -->
     <script type="text/template" id="main-template">
-       <ul class="button-group stack">
-        <li ><a href="#edit/user" class="button info"><h1>Users</h1><h1 class="subheader">Edit SharePoint User Permissions</h1></a></li>
-        <li ><a href="#edit/group" class="button secondary"><h1>Groups</h1><h1 class="subheader">Edit SharePoint Groups and User Memberships</h1></a></li> 
-       </ul>
+        <ul class="button-group stack">
+            <li><a href="#edit/user" class="button info"><h1>Users</h1><h1 class="subheader">Edit SharePoint User Permissions</h1></a>
+            </li>
+            <li><a href="#edit/group" class="button secondary"><h1>Groups</h1><h1 class="subheader">Edit SharePoint Groups and User Memberships</h1></a>
+            </li>
+        </ul>
     </script>
 
 
@@ -74,8 +77,8 @@
             <%=name%>
         </a>
     </script>
-       <script type="text/template" id="user-edit-list-item-template">
-         <a class="list-group-item">
+    <script type="text/template" id="user-edit-list-item-template">
+        <a class="list-group-item">
             <%=name%>
         </a>
     </script>
@@ -94,95 +97,133 @@
     </script>
 
     <script type="text/template" id="user-edit-template">
-        <button data-dropdown="users-dropdown" aria-controls="users-dropdown" aria-expanded="false" class="button dropdown" id="user-select-btn">Select a User</button>
-        <br>
-        <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-            <li>
-                <div class="search-container">
-                    <input class="search" type="text" />
-                    <a class="search-clear hidden">X</a>
-                </div>
-                <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
-            </li>
-        </ul>
 
-        <div class="row">
-            <div id="user-info" class="small-12 medium-6 columns">
-                <label>Display Name
+        <div class="row" data-equalizer>
+            <div id="user-info" class="small-12 medium-6 columns" data-equalizer-watch>
+                <label>
+                    <button data-dropdown="users-dropdown" aria-controls="users-dropdown" aria-expanded="false" class="button dropdown small info" id="user-select-btn">Select a User</button>
+                    <br>
+                    <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
+                        <li>
+                            <div class="search-container">
+                                <input class="search" type="text" />
+                                <a class="search-clear hidden">X</a>
+                            </div>
+                            <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
+                        </li>
+                    </ul>
+
                     <input class="user-attr" type="text" id="name" value="<%=name%>" disabled/>
                 </label>
                 <label>Login Name
                     <input class="user-attr" type="text" id="loginname" value="<%=loginname%>" disabled/>
                 </label>
-                 <label>Email
+                <label>Email
                     <input class="user-attr" type="text" id="email" value="<%=email%>" disabled/>
                 </label>
             </div>
-             <div id="console" class="small-12 medium-6 columns"> 
+            <div id="console" class="small-12 medium-6 columns" data-equalizer-watch>
                 <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
                     <div class="messages"></div>
                 </label>
                 <div class="progress small-0 large-100">
                     <span class="current-progress">0%</span>
-                    <span  class="meter" style="width:0%"></span>
+                    <span class="meter" style="width:0%"></span>
                 </div>
             </div>
         </div>
-        <ul class="button-group even-3">
-            <li><a class="button save-permissions-btn">Save Permissions</a>
-            </li>
-            <li><a class="button alert" data-dropdown="purge-drop"><span class="icon icon-skull invert"></span>Purge User</a>
-                <ul id="purge-drop" class="content f-dropdown" data-dropdown-content>
-                  <li><h6>Are you sure?</h6></li>
-                  <li><a class="button purge-user-btn success">Yep!</a></li>
-                  <li><a class="button alert">Nope</a></li>
-                </ul>
-            </li>
-            <li><a class="button info export-permissions">Export Permissions</a></li>
-        </ul>
+        <div class="row">
+            <ul class="button-group even-3 small-12 columns">
+                <li>
+                    <a class="button save-permissions-btn">
+                        <span class="show-for-medium-up">Save Permissions</span>
+                        <span class="show-for-small-only">Save</br>Permissions</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="button alert" data-dropdown="purge-drop">
+                        <span class="show-for-medium-up">
+                        <span class="icon icon-skull invert"></span> Purge User
+                        </span>
+                        <span class="show-for-small-only">Purge</br>User</span>
+                    </a>
+                    <ul id="purge-drop" class="content f-dropdown" data-dropdown-content>
+                        <li>
+                            <h6>Are you sure?</h6>
+                        </li>
+                        <li><a class="button purge-user-btn success">Yep!</a>
+                        </li>
+                        <li><a class="button alert">Nope</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="button info export-permissions">
+                        <span class="show-for-medium-up">Export Permissions</span>
+                        <span class="show-for-small-only">Export</br>Permissions</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </script>
 
-     <script type="text/template" id="group-edit-template">
-       <button data-dropdown="groups-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown" id="groups-select-btn">Select a Group</button>
-        <br>
-        <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-            <li>
-            <div class="search-container">
-                <input class="search" type="text" />
-                <a class="search-clear hidden">X</a>
-            </div>
-                <ul id="groups" class="dropdown-menu" role="menu" aria-labelledby="group-search-button"></ul>
-            </li>
-        </ul>
-        <div class="row">
-            <div id="group-info" class="small-12 medium-6 columns">
-                <label>Name
-                    <input class="group-attr" type="text" id="name" value="<%=name%>"/>
+    <script type="text/template" id="group-edit-template">
+
+        <div class="row" data-equalizer>
+            <div id="group-info" class="small-12 medium-6 columns" data-equalizer-watch>
+                <label>
+                    <button data-dropdown="groups-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown small info" id="groups-select-btn">Select a Group</button>
+                    <br>
+                    <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
+                        <li>
+                            <div class="search-container">
+                                <input class="search" type="text" />
+                                <a class="search-clear hidden">X</a>
+                            </div>
+                            <ul id="groups" class="dropdown-menu" role="menu" aria-labelledby="group-search-button"></ul>
+                        </li>
+                    </ul>
+                    <input class="group-attr" type="text" id="name" value="<%=name%>" />
                 </label>
                 <label>Description
                     <textarea class="group-attr" id="description" value="<%=description%>"></textarea>
                 </label>
             </div>
-             <div id="console" class="small-12 medium-6 columns"> 
+            <div id="console" class="small-12 medium-6 columns" data-equalizer-watch>
                 <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
                     <div class="messages"></div>
                 </label>
                 <div class="progress small-0 large-100">
                     <span class="current-progress">0%</span>
-                    <span  class="meter" style="width:0%"></span>
+                    <span class="meter" style="width:0%"></span>
                 </div>
             </div>
         </div>
-        <ul class="button-group even-2">
-            <li><a class="button save-changes-btn">Save Changes</a>
-            </li>
-            <li><a class="button info export-users">Export Users</a></li>
-        </ul>
+        <div class="row">
+            <ul class="button-group even-2 small-12 columns">
+                <li>
+                    <a class="button save-changes-btn">
+                        <span class="show-for-medium-up">Save Changes</span>
+                        <span class="show-for-small-only">Save</br>Changes</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="button info export-users">
+                        <span class="show-for-medium-up">Export Users</span>
+                        <span class="show-for-small-only">Export</br>Users</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </script>
 
     <script type="text/template" id="user-permission-select-template">
         <div class="row">
+
             <div class="small-12 large-6 columns permission-controls">
+                <div class="text-center">
+                    <h3>Available Permissions</h3>
+                </div>
                 <ul class="button-group even-3 ">
                     <li><a class="button clearSelected" data-method="available">Clear</br>Selected</a>
                     </li>
@@ -198,6 +239,9 @@
                 <div id="group-available" class="list-group"></div>
             </div>
             <div class="small-12 large-6 columns permission-controls">
+                <div class="text-center">
+                    <h3>Selected Permissions</h3>
+                </div>
                 <ul class="button-group even-3 ">
                     <li><a class="button removeAllSelect" data-method="all">Remove</br>All</a>
                     </li>
@@ -215,9 +259,12 @@
         </div>
     </script>
 
- <script type="text/template" id="group-user-select-template">
+    <script type="text/template" id="group-user-select-template">
         <div class="row">
             <div class="small-12 large-6 columns user-controls">
+                <div class="text-center">
+                    <h3>Available Users</h3>
+                </div>
                 <ul class="button-group even-3 ">
                     <li><a class="button clearSelected" data-method="available">Clear</br>Selected</a>
                     </li>
@@ -233,6 +280,9 @@
                 <div id="users-available" class="list-group"></div>
             </div>
             <div class="small-12 large-6 columns user-controls">
+                <div class="text-center">
+                    <h3>Selected Users</h3>
+                </div>
                 <ul class="button-group even-3 ">
                     <li><a class="button removeAllSelect" data-method="all">Remove</br>All</a>
                     </li>
@@ -254,9 +304,10 @@
             <p>Fetching data...</p>
         </div>
     </script>
-     <script type="text/template" id="errorTemplate">
+    <script type="text/template" id="errorTemplate">
         <div class="text-center library-message">
-            <h1>Error</h1><h1 class="subheader">Sorry, but the requested page does not exist :(</h1>
+            <h1>Error</h1>
+            <h1 class="subheader">Sorry, but the requested page does not exist :(</h1>
         </div>
     </script>
 
@@ -301,7 +352,7 @@
     <!-- Router -->
     <script src="js/routes/routes.js"></script>
     <script>
-    $(document).foundation();
+    $(document).foundation({equalizer: {equalize_on_stack: true}});
     </script>
 </body>
 

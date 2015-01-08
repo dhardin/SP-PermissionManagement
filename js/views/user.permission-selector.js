@@ -190,7 +190,7 @@ app.UserPermissions = Backbone.View.extend({
 		var type = $(e.currentTarget).attr('data-method'),
 			collection = (type == 'available' ? this.libraryViewGroupAvailable.collection : this.libraryViewGroupSelected.collection);
 			
-		collection.where({selected: true}).each(function(model){
+		collection.where({selected: true}).forEach(function(model){
 			model.set({selected: false});
 		});
 	}
