@@ -7,6 +7,13 @@ An intuitive way to alter user permissions in SharePoint.
 ##Screenshot
 ![Permission Management Screenshot](https://raw.githubusercontent.com/dhardin/sp-permissionmanagement/master/user%20permissions.gif)
 
+##Features
+- Edit SharePoint user permissions
+- Edit SharePoint group users
+- Edit SharePoint group info
+- Responsive layout so you can edit on any device (thank you [Foundation](foundation.zurb.com))
+- Sexy color scheme :bowtie:
+
 ##Setup
 - Download this github repository
 - Upload repository to a Document Library in your SharePoint site
