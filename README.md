@@ -11,7 +11,7 @@ An intuitive way to alter user permissions in SharePoint.
 - Edit SharePoint user permissions
 - Edit SharePoint group users
 - Edit SharePoint group info
-- Responsive layout so you can edit on any device (thank you [Foundation](foundation.zurb.com))
+- Responsive layout so you can edit on any device (thank you [Foundation](https://foundation.zurb.com))
 - Sexy color scheme :bowtie:
 
 ##Setup
