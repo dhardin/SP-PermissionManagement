@@ -89,23 +89,23 @@ app.GroupEditView = Backbone.View.extend({
             searchAllAttributes = true;
         }
 
-        if(val.length > 0 ){
-             this.$search_clear.removeClass('hidden');
+        if (val.length > 0) {
+            this.$search_clear.removeClass('hidden');
         } else {
             this.$search_clear.addClass('hidden');
         }
 
-        options = (searchAllAttributes 
-		        	? { val: val }
-		        	: {
-			            key: 'name',
-			            val: val
-		        	});
+        options = (searchAllAttributes ? {
+            val: val
+        } : {
+            key: 'name',
+            val: val
+        });
 
         Backbone.pubSub.trigger('library_groups:search', options);
     },
 
-      clearConsole: function() {
+    clearConsole: function() {
         this.$messages.html('');
     },
 
@@ -122,7 +122,7 @@ app.GroupEditView = Backbone.View.extend({
 
         if (type == 'success') {
             this.state_map.success[operation].push(user);
-            message = '['+user + '] succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
+            message = '[' + user + '] succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
         } else { //error
             this.state_map.failed[operation].push(user);
             message = 'Unable to ' + operation + ' [' + user + '].'
@@ -187,7 +187,7 @@ app.GroupEditView = Backbone.View.extend({
         this.$progress_text.text('0%');
         //publish user selected event
         //set router
-      if (options && options.route) {
+        if (options && options.route) {
             app.router.navigate('edit/group/' + group.get('name'), false);
             Backbone.pubSub.trigger('group:selected');
         } else {
@@ -214,50 +214,103 @@ app.GroupEditView = Backbone.View.extend({
             });
         })(this);
     },
+    updateGroupInfo: function(updates) {
+        //save updates
+        (function(that) {
+            app.data.updateGroupInfo(app.config.url, updates, function(results) {
+                that.onGroupUpdateInfoComplete(results)
+            });
+        })(this);
+    },
 
-    saveGroupInfoUpdates: function(){
-        var isUpdating = false, updates = {},
+    saveGroupInfoUpdates: function() {
+        var isUpdating = false,
+            updates = {},
             attribute, val,
-            group = this.model, ownerid, user;
+            group = this.model,
+            ownerid, user;
 
-        
+
         this.$group_attributes.each(function(i, el) {
             isUpdating = true;
             updates[el.id] = $(el).val();
         });
 
         //return if no updates
-        if (!isUpdating){
+        if (!isUpdating) {
             return;
         }
 
-        
+        updates['oldGroupName'] = group.get('name');
+        updates['name'] = updates['name'] || updates['oldGroupName'];
         updates['ownerType'] = (group.get('ownerisuser') ? 'user' : 'group');
         ownerid = group.get('ownerid');
-        if(updates['ownerType'] == 'user') {
-           user = app.UserCollection.findWhere({id: group.get('ownerid')});
-           updates['ownerIdentifier'] = (user ? user.get('loginname').replace('/', '\\') : '');
-        } else {
-           updates['ownerIdentifier'] = app.GroupCollection.findWhere({id: ownerid).get('name');
-        }
-
-
-        //save updates
-        (function (that){
-            app.data.updateGroupInfo(app.config.url, group.get('name'), updates, function(){
-                that.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Succesfully updated [' + group.get('name') + ']\'s info</div>');
-                that.$messages.scrollTop(that.$messages[0].scrollHeight);
+        if (updates['ownerType'] == 'user') { //owner is user
+            user = app.UserCollection.findWhere({
+                id: group.get('ownerid')
             });
-        })(this);
+            //check and see if user exists
+            //if not, then set the owner as the current user
+            if (!user) { //owner does not exist
+                (function(that, groupUpdates) {
+                    app.data.getCurrentUser(app.config.url, function(results) {
+                        var type = results.type,
+                            data = results.data,
+                            loginname;
+                        if (type == 'success') {
+                            loginname = data;
+                            updates['ownerIdentifier'] = loginname;
+                            that.updateGroupInfo(updates);
+                        } else {
+                            that.onGroupUpdateInfoComplete(results);
+                        }
 
+                    });
+                })(this, updates);
+                return;
+            } else { //owner exists
+                updates['ownerIdentifier'] = user.get('loginname').replace('/', '\\');
+            }
+        } else { //owner is group
+            updates['ownerIdentifier'] = app.GroupCollection.findWhere({
+                id: ownerid
+            }).get('name');
+        }
+        this.updateGroupInfo(updates);
     },
-      onSearchClear: function(e){
+    onGroupUpdateInfoComplete: function(results) {
+        var type = results.type,
+            data = results.data,
+            group = results.updates.oldGroupName,
+            message = '',
+            class_map = {
+                'success': 'success',
+                'error': 'error'
+            };
+
+        if (type == 'success') {
+            message = 'Succesfully updated [' + group + ']\'s info';
+            //update model
+            this.model.set({name: results.updates['name'], description:  results.updates['description']});
+        } else { //error
+            message = 'Unable to update [' + group + ']\'s info';
+            //revert group info
+            this.$group_attributes.each(function(i, el) {
+                if (results.updates.hasOwnProperty[el.id]) {
+                    $(el).val(results.updates[el.id]);
+                }
+            });
+        }
+        that.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div class="' + class_map[type] + '">' + message + '</div>');
+        that.$messages.scrollTop(that.$messages[0].scrollHeight);
+    },
+    onSearchClear: function(e) {
         this.$search.val('');
         this.$search.trigger('keyup');
-         e.stopPropagation();
-          this.$group_search.focus();
+        e.stopPropagation();
+        this.$group_search.focus();
     },
-    onSearchClick: function (e) {
+    onSearchClick: function(e) {
         e.stopPropagation();
     },
     onGroupSelectBtnClick: function(e) {
@@ -297,12 +350,12 @@ app.GroupEditView = Backbone.View.extend({
         });
         this.state_map.group_users = group_users;
         //set remove permissions to the remaining user permissions...for contextual reasons
-        remove_users_arr = group_users.map(function(obj){
+        remove_users_arr = group_users.map(function(obj) {
             return obj.attributes;
         });
 
-            //set state map variables
-            this.state_map.pendingSaves = add_users_arr.length;
+        //set state map variables
+        this.state_map.pendingSaves = add_users_arr.length;
         this.state_map.pendingRemoves = remove_users_arr.length;
         this.state_map.totalUpdates = this.state_map.pendingRemoves + this.state_map.pendingSaves;
         this.state_map.progressUpdateRatio = 100 / this.state_map.totalUpdates;
@@ -346,14 +399,14 @@ app.GroupEditView = Backbone.View.extend({
 
     onExportBtnClick: function(e) {
         var users = this.model.get('users'),
-        ua = window.navigator.userAgent,
-        msie = ua.indexOf("MSIE "),
-        permissionsElement;
+            ua = window.navigator.userAgent,
+            msie = ua.indexOf("MSIE "),
+            permissionsElement;
 
-        if (msie > 0) {     // If Internet Explorer, return version number
+        if (msie > 0) { // If Internet Explorer, return version number
             permissionsElement = '<h1>' + this.model.get('name') + '\'s Users</h1></ul>';
-            permissionsElement += users.reduce(function(memo, obj){
-                return (typeof memo == "string" ? memo :  '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
+            permissionsElement += users.reduce(function(memo, obj) {
+                return (typeof memo == "string" ? memo : '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
             });
             permissionsElement += '</ul>';
             app.utility.printToNewWindow(permissionsElement);
@@ -362,5 +415,5 @@ app.GroupEditView = Backbone.View.extend({
         }
     }
 
-  
+
 });
