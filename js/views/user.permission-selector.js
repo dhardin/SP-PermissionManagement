@@ -13,7 +13,8 @@ app.UserPermissions = Backbone.View.extend({
 		'keyup .permissions_available .search' : 'onSearch',
 		'keyup .permissions_selected .search' : 'onSearch',
 		'click #user-search-button' : 'onUserSearchClick',
-		'click .search-clear': 'onSearchClear'
+		'click .search-clear': 'onSearchClear',
+		'click .clearSelected': 'onClearSelectedClick'
 	},
 
 	initialize: function (options) {
@@ -184,4 +185,13 @@ app.UserPermissions = Backbone.View.extend({
 			Backbone.pubSub.trigger('library_permissions_selected:search', options);
 		}
 	},
+
+	onClearSelectedClick: function (e) {
+		var type = $(e.currentTarget).attr('data-method'),
+			collection = (type == 'available' ? this.libraryViewGroupAvailable.collection : this.libraryViewGroupSelected.collection);
+			
+		collection.where({selected: true}).each(function(model){
+			model.set({selected: false});
+		});
+	}
 });

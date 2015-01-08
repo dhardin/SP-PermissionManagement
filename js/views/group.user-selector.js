@@ -12,7 +12,8 @@ app.GroupUsers = Backbone.View.extend({
 		'click .removeAllSelect' : 'onRemoveUserClick',
 		'keyup .users_available .search' : 'onSearch',
 		'keyup .users_selected .search' : 'onSearch',
-		'click .search-clear': 'onSearchClear'
+		'click .search-clear': 'onSearchClear',
+		'click .clearSelected': 'onClearSelectedClick'
 	},
 
 	initialize: function (options) {
@@ -176,5 +177,14 @@ app.GroupUsers = Backbone.View.extend({
 		} else {
 			Backbone.pubSub.trigger('library_users_selected:search', options);
 		}
+	},
+
+	onClearSelectedClick: function (e) {
+		var type = $(e.currentTarget).attr('data-method'),
+			collection = (type == 'available' ? this.libraryViewUsersAvailable.collection : this.libraryViewUsersSelected.collection);
+			
+		collection.where({selected: true}).each(function(model){
+			model.set({selected: false});
+		});
 	}
 });
