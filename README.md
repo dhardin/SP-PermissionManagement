@@ -33,3 +33,7 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 - Backbone
 - Underscore
 
+##TODO
+- [ ] Code cleanup
+- [ ] Optimizations
+
