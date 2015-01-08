@@ -10,7 +10,7 @@ An intuitive way to alter user permissions in SharePoint.
 ##Usage
 - Download this github repository
 - Upload repository to a Document Library in your SharePoint site
--Edit config.js
+- Edit config.js
   - [name of folder]/js/config.js
   - Change url attribute value to your SharePoint site
     - e.g., https://yoursite.com
