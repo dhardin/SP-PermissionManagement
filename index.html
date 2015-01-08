@@ -100,18 +100,19 @@
 
         <div class="row" data-equalizer>
             <div id="user-info" class="small-12 medium-6 columns" data-equalizer-watch>
+                <button data-dropdown="users-dropdown" aria-controls="users-dropdown" aria-expanded="false" class="button dropdown small info" id="user-select-btn">Select a User</button>
+                <br>
+                <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
+                    <li>
+                        <div class="search-container">
+                            <input class="search" type="text" />
+                            <a class="search-clear hidden">X</a>
+                        </div>
+                        <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
+                    </li>
+                </ul>
+
                 <label>
-                    <button data-dropdown="users-dropdown" aria-controls="users-dropdown" aria-expanded="false" class="button dropdown small info" id="user-select-btn">Select a User</button>
-                    <br>
-                    <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-                        <li>
-                            <div class="search-container">
-                                <input class="search" type="text" />
-                                <a class="search-clear hidden">X</a>
-                            </div>
-                            <ul id="users" class="dropdown-menu" role="menu" aria-labelledby="user-search-button"></ul>
-                        </li>
-                    </ul>
 
                     <input class="user-attr" type="text" id="name" value="<%=name%>" disabled/>
                 </label>
@@ -171,18 +172,19 @@
 
         <div class="row" data-equalizer>
             <div id="group-info" class="small-12 medium-6 columns" data-equalizer-watch>
+                <button data-dropdown="groups-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown small info" id="groups-select-btn">Select a Group</button>
+                <br>
+                <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
+                    <li>
+                        <div class="search-container">
+                            <input class="search" type="text" />
+                            <a class="search-clear hidden">X</a>
+                        </div>
+                        <ul id="groups" class="dropdown-menu" role="menu" aria-labelledby="group-search-button"></ul>
+                    </li>
+                </ul>
                 <label>
-                    <button data-dropdown="groups-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown small info" id="groups-select-btn">Select a Group</button>
-                    <br>
-                    <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-                        <li>
-                            <div class="search-container">
-                                <input class="search" type="text" />
-                                <a class="search-clear hidden">X</a>
-                            </div>
-                            <ul id="groups" class="dropdown-menu" role="menu" aria-labelledby="group-search-button"></ul>
-                        </li>
-                    </ul>
+
                     <input class="group-attr" type="text" id="name" value="<%=name%>" />
                 </label>
                 <label>Description
@@ -352,7 +354,11 @@
     <!-- Router -->
     <script src="js/routes/routes.js"></script>
     <script>
-    $(document).foundation({equalizer: {equalize_on_stack: true}});
+    $(document).foundation({
+        equalizer: {
+            equalize_on_stack: true
+        }
+    });
     </script>
 </body>
 

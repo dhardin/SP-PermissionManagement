@@ -168,7 +168,6 @@ app.GroupEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     groupSelect: function(group, options) {
-        this.$group_select_btn.click();
         if (!group.hasOwnProperty('attributes')) {
             return;
         }

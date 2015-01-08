@@ -314,7 +314,6 @@ app.UserEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     userSelect: function(user, options) {
-        this.$user_select_btn.click();
         if (!user.hasOwnProperty('attributes')) {
             return;
         }
