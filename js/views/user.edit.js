@@ -313,6 +313,9 @@ app.UserEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     userSelect: function(user, options) {
+        
+        //hide dropdown
+        $('body').click();
 
         if (!user.hasOwnProperty('attributes')) {
             return;

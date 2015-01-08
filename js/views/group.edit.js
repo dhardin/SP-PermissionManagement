@@ -230,6 +230,8 @@ app.GroupEditView = Backbone.View.extend({
             group = this.model,
             ownerid, user;
 
+        //hide dropdown
+        $('body').click();
 
         this.$group_attributes.each(function(i, el) {
             isUpdating = true;
