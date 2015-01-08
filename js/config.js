@@ -1,7 +1,7 @@
 var app = app || {};
 
 app.config = {
-	url: 'https://members.lcmp.csd.disa.mil/sites/jltv/',
+	url: 'url to your SharePoint top level site goes here...',
 	tryCount: 3,
 	isTesting: false,
 	property_map: {
