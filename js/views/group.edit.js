@@ -57,6 +57,7 @@ app.GroupEditView = Backbone.View.extend({
         this.$progress_text = this.$('.current-progress');
         this.$search_clear = this.$('.search-clear');
         this.$search = this.$('.search');
+        this.$group_select_btn = this.$('#groups-select-btn');
 
         if (this.model.get('name') == '') {
             this.$name.text('Select a Group');
@@ -167,7 +168,7 @@ app.GroupEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     groupSelect: function(group, options) {
-
+        this.$group_select_btn.click();
         if (!group.hasOwnProperty('attributes')) {
             return;
         }
@@ -230,8 +231,6 @@ app.GroupEditView = Backbone.View.extend({
             group = this.model,
             ownerid, user;
 
-        //hide dropdown
-        $('body').click();
 
         this.$group_attributes.each(function(i, el) {
             isUpdating = true;
@@ -319,6 +318,7 @@ app.GroupEditView = Backbone.View.extend({
         e.stopPropagation();
     },
     onGroupSelectBtnClick: function(e) {
+
         (function(that) {
             setTimeout(function() {
                 that.$group_search.focus();

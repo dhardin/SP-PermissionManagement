@@ -58,6 +58,8 @@ app.UserEditView = Backbone.View.extend({
         this.$progress_text = this.$('.current-progress');
         this.$search_clear = this.$('.search-clear');
         this.$search = this.$('.search');
+        this.$user_select_btn = this.$('#user-select-btn');
+
         if (this.model.get('name') == '') {
             this.$name.text('Select a User');
         }
@@ -105,7 +107,6 @@ app.UserEditView = Backbone.View.extend({
         Backbone.pubSub.trigger('library_users:search', options);
     },
     onUserSelectBtnClick: function(e) {
-
         (function(that) {
             setTimeout(function() {
                 that.$user_search.focus();
@@ -313,10 +314,7 @@ app.UserEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     userSelect: function(user, options) {
-        
-        //hide dropdown
-        $('body').click();
-
+        this.$user_select_btn.click();
         if (!user.hasOwnProperty('attributes')) {
             return;
         }
