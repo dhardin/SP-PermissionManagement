@@ -122,7 +122,7 @@
    
    // Begin Utility Method /printToNewWindow/
    printToNewWindow = function(stuffToPrint){
-        var myWindow=window.open('','','fullscreen=yes,scrollbars=yes');
+        var myWindow=window.open('','','fullscreen=no,scrollbars=yes');
         myWindow.document.write(stuffToPrint);
         myWindow.focus();
    };

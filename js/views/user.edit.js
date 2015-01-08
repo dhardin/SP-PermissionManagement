@@ -205,9 +205,15 @@ app.UserEditView = Backbone.View.extend({
 
     if (msie > 0) {     // If Internet Explorer, return version number
         permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
-        permissionsElement += permissions.reduce(function(memo, obj){
-            return (typeof memo == "string" ? memo :  '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
-        });
+
+        if(permissions.length > 1){
+            permissionsElement += permissions.reduce(function(memo, obj){
+                return (typeof memo == "string" ? memo :  '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
+            });
+        } else {
+            permissionsElement = '<li>' + permissions[0].name + '</li>';
+        }
+        
         permissionsElement += '</ul>';
         app.utility.printToNewWindow(permissionsElement);
     } else {
