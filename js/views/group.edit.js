@@ -301,8 +301,8 @@ app.GroupEditView = Backbone.View.extend({
                 }
             });
         }
-        that.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div class="' + class_map[type] + '">' + message + '</div>');
-        that.$messages.scrollTop(that.$messages[0].scrollHeight);
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div class="' + class_map[type] + '">' + message + '</div>');
+        this.$messages.scrollTop(this.$messages[0].scrollHeight);
     },
     onSearchClear: function(e) {
         this.$search.val('');
