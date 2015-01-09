@@ -20,9 +20,12 @@ app.LibraryView = Backbone.View.extend({
         var numActiveItems = 0,
             totalItems = 0,
             numItemsDisplayed = 0;
-            this.el_html = [];
+
 
         collection = collection || this.collection;
+         this.el_html = [];
+         this.numRenderedItems = collection.length;
+         this.renderedItems = 0;
         if (isFiltered && collection.length == this.collection.length) {
             return this;
         }
@@ -30,10 +33,15 @@ app.LibraryView = Backbone.View.extend({
 
         if (!isFiltered) {
             if (collection.length > 0) {
-                collection.each(function(item) {
-                    this.renderItem(item);
-                }, this);
-                this.$el.html(this.el_html);
+               (function(that){
+            		setTimeout(function(){
+            			that.renderItem(item);
+            			this.renderedItems++;
+            			if (this.renderedItems == this.numRenderedItems){
+            				that.onRenderComplete();
+            			}
+            		},0);
+            	})(this);
             } else {
                 this.$el.html($('#noItemsTemplate').html());
             }
@@ -43,12 +51,20 @@ app.LibraryView = Backbone.View.extend({
                 active: true
             }).length;
             totalItems = numActiveItems;
-            numItemsDisplayed = collection.toArray().length;
+            numItemsDisplayed = collection.length;
           
             collection.each(function(item) {
-                this.renderItem(item);
+            	  (function(that){
+            		setTimeout(function(){
+            			that.renderItem(item);
+            			this.renderedItems++;
+            			if (this.renderedItems == this.numRenderedItems){
+            				that.onRenderComplete();
+            			}
+            		},0);
+            	})(this);
             }, this);
-            this.$el.html(this.el_html);
+            
             if (numItemsDisplayed < totalItems) {
                 this.$el.prepend('<div>Displaying ' + numItemsDisplayed + ' out of ' + totalItems + '</div>');
             }
@@ -62,6 +78,10 @@ app.LibraryView = Backbone.View.extend({
             model: item
         });
         this.el_html.push(itemView.render().el);
+    },
+
+    onRenderComplete: function(){
+    	this.$el.html(this.el_html);
     },
 
     search: function(options) {
