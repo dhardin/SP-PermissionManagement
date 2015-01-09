@@ -22,6 +22,9 @@ app.LibraryView = Backbone.View.extend({
 		totalItems = 0,
 		numItemsDisplayed = 0;
 		collection = collection || this.collection;
+		if(collection.length == this.collection.length){
+			return;
+		}
 		this.$el.html('');
 
 		if (!isFiltered){
