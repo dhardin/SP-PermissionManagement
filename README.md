@@ -12,7 +12,8 @@ An intuitive way to alter user permissions in SharePoint.
 - Edit SharePoint group users
 - Edit SharePoint group info
 - Responsive layout so you can edit on any device (thank you [Foundation](http://foundation.zurb.com))
-- Sexy color scheme :bowtie:
+- Bookmarkable User/Group edit pages (i.e., bookmark a group and when the application opens to that bookmark, you will be routed to the permissions/users for that user/group)
+- Breadcrumbs
 
 ##Setup
 - Download this github repository
