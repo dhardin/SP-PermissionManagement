@@ -33,6 +33,7 @@ app.LibraryView = Backbone.View.extend({
 
         if (!isFiltered) {
             if (collection.length > 0) {
+            	 collection.each(function(item) {
                (function(that, targetItem){
             		setTimeout(function(){
             			that.renderItem(targetItem);
@@ -42,6 +43,7 @@ app.LibraryView = Backbone.View.extend({
             			}
             		},0);
             	})(this, item);
+            }, this);
             } else {
                 this.$el.html($('#noItemsTemplate').html());
             }
