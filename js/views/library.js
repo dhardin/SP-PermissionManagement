@@ -8,12 +8,12 @@ app.LibraryView = Backbone.View.extend({
         }, this);
 
         this.itemView = options.itemView;
-        this.filter = options.filter || false;
-        if (this.filter) {
-            this.search(this.filter)
-        } else {
+     //   this.filter = options.filter || false;
+        //if (this.filter) {
+          //  this.search(this.filter)
+        //} else {
             this.render();
-        }
+       // }
     },
 
     render: function(collection, isFiltered) {

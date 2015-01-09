@@ -42,11 +42,7 @@ app.UserPermissions = Backbone.View.extend({
         this.libraryViewGroupAvailable = new app.LibraryPermissionsAvailableView({
             el: this.$groupAvailable[0],
             collection: app.GroupCollection,
-            itemView: app.GroupView,
-            filter: {
-                key: 'selected',
-                val: true
-            }
+            itemView: app.GroupView
         });
 
         //append views to elements

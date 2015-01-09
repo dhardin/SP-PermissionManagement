@@ -41,11 +41,7 @@ app.GroupUsers = Backbone.View.extend({
         this.libraryViewUsersAvailable = new app.LibraryUsersAvailableView({
             el: this.$usersAvailable[0],
             collection: app.UserCollection,
-            itemView: app.GroupUserView,
-            filter: {
-                key: 'selected',
-                val: true
-            }
+            itemView: app.GroupUserView
         });
 
         //append views to elements
