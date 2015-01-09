@@ -33,15 +33,15 @@ app.LibraryView = Backbone.View.extend({
 
         if (!isFiltered) {
             if (collection.length > 0) {
-               (function(that){
+               (function(that, targetItem){
             		setTimeout(function(){
-            			that.renderItem(item);
-            			this.renderedItems++;
-            			if (this.renderedItems == this.numRenderedItems){
+            			that.renderItem(targetItem);
+            			that.renderedItems++;
+            			if (that.renderedItems == that.numRenderedItems){
             				that.onRenderComplete();
             			}
             		},0);
-            	})(this);
+            	})(this, item);
             } else {
                 this.$el.html($('#noItemsTemplate').html());
             }
@@ -56,9 +56,9 @@ app.LibraryView = Backbone.View.extend({
             collection.each(function(item) {
             	  (function(that){
             		setTimeout(function(){
-            			that.renderItem(item);
-            			this.renderedItems++;
-            			if (this.renderedItems == this.numRenderedItems){
+            			that.renderItem(targetItem);
+            			that.renderedItems++;
+            			if (that.renderedItems == that.numRenderedItems){
             				that.onRenderComplete();
             			}
             		},0);
