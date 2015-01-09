@@ -13,6 +13,7 @@ var Router = Backbone.Router.extend({
 
     initialize: function(options) {
         this.AppView = options.AppView;
+        this.on('route', this.onRouteChange);
     },
     selectEdit: function() {
         var selectEditView = new app.SelectEditView();
@@ -115,6 +116,29 @@ var Router = Backbone.Router.extend({
             });
 
             this.AppView.showView(editGroupUsersView);
+        }
+    },
+
+    onRouteChange: function (route, params) {
+        //parse out hash
+        var hashRoute = window.location.hash.substring(1),
+        routePathArr = hashRoute.split('/'), breadcrumb,
+        i, j, href = '#',
+        $breadcrumbs = $('.breadcrumbs');
+
+        $breadcrumbs.children().not('.home').remove();
+
+        if(route == 'error'){
+            return;
+        }
+
+        for(i = 0; i < routePathArr.length; i++){
+            breadcrumb = routePathArr[i];
+            if(breadcrumb == ''){
+                continue;
+            }
+            href += breadcrumb + '/';
+            $breadcrumbs.append('<li class="' + (i == routePathArr.length - 1 ? 'current' : '' ) +'"><a href="'+href+'">' + breadcrumb + '</a></li>');
         }
     }
 });

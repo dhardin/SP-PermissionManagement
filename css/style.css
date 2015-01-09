@@ -103,17 +103,20 @@ li {
 }
 
 .progress {
-  position: relative;
   background-color: #ddd;
-   height: 3em;
+   height: 2em;
+   position: relative;
 }
 .current-progress {
-  position: absolute;
-   left: 50%;
    color: #fff;
-   font-weight: bold;
+   font-weight: bold; 
+   position: relative; 
 }
-
+.meter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
 #console{
   min-height: 100px;
 }

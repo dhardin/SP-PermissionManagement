@@ -48,6 +48,11 @@
             </section>
         </nav>
     </div>
+
+    <ul class="breadcrumbs">
+        <li class="home"><a class="current" href="#">Home</a></li>
+    </ul>
+
     <div id="main"></div>
 
     <!-- TEMPLATES -->
@@ -127,9 +132,10 @@
                 <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
                     <div class="messages"></div>
                 </label>
-                <div class="progress small-0 large-100">
+                <div class="progress small-0 large-100 text-center">
+                <span class="meter" style="width:0%"></span>
                     <span class="current-progress">0%</span>
-                    <span class="meter" style="width:0%"></span>
+                    
                 </div>
             </div>
         </div>
@@ -195,9 +201,9 @@
                 <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
                     <div class="messages"></div>
                 </label>
-                <div class="progress small-0 large-100">
-                    <span class="current-progress">0%</span>
+                <div class="progress small-0 large-100 text-center">
                     <span class="meter" style="width:0%"></span>
+                    <span class="current-progress">0%</span>
                 </div>
             </div>
         </div>

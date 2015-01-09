@@ -18,6 +18,9 @@ app.LibraryView = Backbone.View.extend({
 	},
 
 	render: function (collection, isFiltered) {
+		var numActiveItems = 0,
+		totalItems = 0,
+		numItemsDisplayed = 0;
 		collection = collection || this.collection;
 		this.$el.html('');
 
@@ -30,9 +33,13 @@ app.LibraryView = Backbone.View.extend({
 				this.$el.html($('#noItemsTemplate').html());
 			}
 		} else {
-			var totalItems = this.collection.length,
+			//get the total number of active items
+			numActiveItems = this.collection.where({active: true}).length;
+			totalItems = numActiveItems;
 			numItemsDisplayed = collection.toArray().length;
-			this.$el.html('Displaying ' + numItemsDisplayed + ' out of ' + totalItems);
+			if(numItemsDisplayed < totalItems){
+				this.$el.html('Displaying ' + numItemsDisplayed + ' out of ' + totalItems);
+			}
 			collection.each(function(item){
 				this.renderItem(item);
 			}, this);

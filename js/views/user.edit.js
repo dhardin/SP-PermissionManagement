@@ -12,7 +12,7 @@ app.UserEditView = Backbone.View.extend({
         'click #clear-console': 'onClearConsoleClick',
         'click .export-permissions': 'onExportBtnClick',
         'click .purge-user-btn': 'onPurgeBtnClick',
-        'click .search-clear' : 'onSearchClear',
+        'click .search-clear': 'onSearchClear',
         'click .search': 'onSearchClick'
     },
 
@@ -84,11 +84,24 @@ app.UserEditView = Backbone.View.extend({
             options,
             searchAllAttributes = false;
 
+        if (val.length > 0) {
+            this.$search_clear.removeClass('hidden');
+        } else {
+            this.$search_clear.addClass('hidden');
+        }
+
         //check for search operand character '~'
-        if (val.indexOf('~') == 0) {
+        if (val.indexOf('~') == 0 && val.length > 1) {
             //set val to exclude '~'
             val = val.substring(1);
             searchAllAttributes = true;
+        } else if (val.indexOf('~') == 0) {
+            //don't commit to search yet since not enough info has been entered.
+            return;
+        }
+
+        if (val.length == 0) {
+            Backbone.pubSub.trigger('library_users:search');
         }
 
         options = (searchAllAttributes ? {
@@ -98,11 +111,6 @@ app.UserEditView = Backbone.View.extend({
             val: val
         });
 
-        if(val.length > 0 ){
-             this.$search_clear.removeClass('hidden');
-        } else {
-            this.$search_clear.addClass('hidden');
-        }
 
         Backbone.pubSub.trigger('library_users:search', options);
     },
@@ -113,11 +121,11 @@ app.UserEditView = Backbone.View.extend({
             }, 0);
         })(this);
     },
-    onSearchClear: function(e){
+    onSearchClear: function(e) {
         this.$search.val('');
         this.$search.trigger('keyup');
         e.stopPropagation();
-         this.$user_search.focus();
+        this.$user_search.focus();
     },
     onUsersKeyUp: function(e) {
         this.search();
@@ -181,10 +189,10 @@ app.UserEditView = Backbone.View.extend({
         }
     },
 
-    onSearchClick: function (e) {
+    onSearchClick: function(e) {
         e.stopPropagation();
     },
-    
+
     onSaveClick: function(e) {
         this.resetStateMap();
         //update progress bar
@@ -200,40 +208,40 @@ app.UserEditView = Backbone.View.extend({
 
     onExportBtnClick: function(e) {
         var permissions = this.model.get('permissions'),
-        ua = window.navigator.userAgent,
-         msie = ua.indexOf("MSIE "),
-         permissionsElement;
+            ua = window.navigator.userAgent,
+            msie = ua.indexOf("MSIE "),
+            permissionsElement;
 
-    if (msie > 0) {     // If Internet Explorer, return version number
-        permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
+        if (msie > 0) { // If Internet Explorer, return version number
+            permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
 
-        if(permissions.length > 1){
-            permissionsElement += permissions.reduce(function(memo, obj){
-                return (typeof memo == "string" ? memo :  '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
-            });
+            if (permissions.length > 1) {
+                permissionsElement += permissions.reduce(function(memo, obj) {
+                    return (typeof memo == "string" ? memo : '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
+                });
+            } else {
+                permissionsElement = '<li>' + permissions[0].name + '</li>';
+            }
+
+            permissionsElement += '</ul>';
+            app.utility.printToNewWindow(permissionsElement);
         } else {
-            permissionsElement = '<li>' + permissions[0].name + '</li>';
+            app.utility.JSONToCSVConvertor(permissions, this.model.get('name') + ' Permissions', true);
         }
-        
-        permissionsElement += '</ul>';
-        app.utility.printToNewWindow(permissionsElement);
-    } else {
-        app.utility.JSONToCSVConvertor(permissions, this.model.get('name') + ' Permissions', true);
-     }
-        
+
     },
 
     onPurgeBtnClick: function(e) {
         var user = this.model.attributes;
 
-        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Purging [' + user.name + ']</div>');        
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Purging [' + user.name + ']</div>');
         this.$messages.scrollTop(this.$messages[0].scrollHeight);
-        (function(that){
-             app.data.removeUserFromWeb(app.config.url, user, function(results){
+        (function(that) {
+            app.data.removeUserFromWeb(app.config.url, user, function(results) {
                 that.onRemoveUserComplete(results);
-             });
+            });
         })(this);
-       
+
     },
 
     onRemoveUserComplete: function(results) {
@@ -269,7 +277,7 @@ app.UserEditView = Backbone.View.extend({
 
         if (type == 'success') {
             this.state_map.success[operation].push(permission);
-            message = '['+ permission + '] succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
+            message = '[' + permission + '] succesfully ' + (operation == 'add' ? 'added.' : 'removed.');
         } else { //error
             this.state_map.failed[operation].push(permission);
             message = 'Unable to ' + operation + ' [' + permission + '].'
@@ -292,6 +300,7 @@ app.UserEditView = Backbone.View.extend({
         this.state_map.currentProgress += this.state_map.progressUpdateRatio;
         //clip progress if needed
         this.state_map.currentProgress = (this.state_map.currentProgress >= 100 ? 100 : this.state_map.currentProgress);
+        this.state_map.currentProgress = Math.ceil(this.state_map.currentProgress * 100) * 0.01;
         this.state_map.pendingRemoves -= (operation == 'remove' ? 1 : 0);
         this.state_map.pendingSaves -= (operation == 'add' ? 1 : 0);
 
@@ -344,7 +353,7 @@ app.UserEditView = Backbone.View.extend({
             Backbone.pubSub.trigger('user:selected');
         } else {
             app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
-             Backbone.pubSub.trigger('user:selected');
+            Backbone.pubSub.trigger('user:selected');
         }
 
     },

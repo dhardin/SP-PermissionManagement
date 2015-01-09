@@ -83,18 +83,25 @@ app.GroupEditView = Backbone.View.extend({
             options,
             searchAllAttributes = false;
 
-        //check for search operand character '~'
-        if (val.indexOf('~') == 0) {
-            //set val to exclude '~'
-            val = val.substring(1);
-            searchAllAttributes = true;
-        }
-
         if (val.length > 0) {
             this.$search_clear.removeClass('hidden');
         } else {
             this.$search_clear.addClass('hidden');
         }
+        //check for search operand character '~'
+        if (val.indexOf('~') == 0 && val.length > 1) {
+            //set val to exclude '~'
+            val = val.substring(1);
+            searchAllAttributes = true;
+        } else if (val.indexOf('~') == 0) {
+            return;
+        }
+
+        if (val.length == 0) {
+            Backbone.pubSub.trigger('library_groups:search');
+        }
+
+
 
         options = (searchAllAttributes ? {
             val: val
@@ -146,6 +153,7 @@ app.GroupEditView = Backbone.View.extend({
         this.state_map.currentProgress += this.state_map.progressUpdateRatio;
         //clip progress if needed
         this.state_map.currentProgress = (this.state_map.currentProgress >= 100 ? 100 : this.state_map.currentProgress);
+        this.state_map.currentProgress = Math.ceil(this.state_map.currentProgress * 100) * 0.01;
         this.state_map.pendingRemoves -= (operation == 'remove' ? 1 : 0);
         this.state_map.pendingSaves -= (operation == 'add' ? 1 : 0);
 
