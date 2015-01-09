@@ -56,7 +56,7 @@ app.LibraryView = Backbone.View.extend({
             numItemsDisplayed = collection.length;
           
             collection.each(function(item) {
-            	  (function(that){
+            	  (function(that, targetItem){
             		setTimeout(function(){
             			that.renderItem(targetItem);
             			that.renderedItems++;
@@ -64,7 +64,7 @@ app.LibraryView = Backbone.View.extend({
             				that.onRenderComplete();
             			}
             		},0);
-            	})(this);
+            	})(this, item);
             }, this);
             
             if (numItemsDisplayed < totalItems) {
