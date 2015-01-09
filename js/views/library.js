@@ -60,7 +60,7 @@ app.LibraryView = Backbone.View.extend({
         var itemView = new this.itemView({
             model: item
         });
-        this.el_html.push(item.render().el);
+        this.el_html.push(itemView.render().el);
     },
 
     search: function(options) {
