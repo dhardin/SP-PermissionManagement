@@ -74,7 +74,8 @@ app.LibraryView = Backbone.View.extend({
         	key = options.key;
         	val = options.val;
         	results = this.collection.filter(function(item){
-        		return (item.get(key).indexOf(val) > -1);
+        		var attributeVal = item.get(key);
+        		return true;
         	});
         	this.render(new Backbone.Collection(results), true);
            // this.render(collection.search(options), true);
