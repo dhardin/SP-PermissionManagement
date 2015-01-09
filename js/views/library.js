@@ -65,12 +65,15 @@ app.LibraryView = Backbone.View.extend({
     },
 
     search: function(options) {
-        var collection = (options && options.collection ? options.collection : this.collection);
+        var collection = (options && options.collection ? options.collection : this.collection)
+        	results = [];
 
-        if (!options || options.val == '') {
+        if (!options || options.val == '' || options.key == '') {
             this.render(this.collection, false);
         } else {
-            this.render(collection.search(options), true);
+        	results = this.collection.where({options.key: options.val});
+        	this.render(new Backbone.Collection(results), true);
+           // this.render(collection.search(options), true);
         }
     }
 });
