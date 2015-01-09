@@ -44,13 +44,14 @@ app.LibraryView = Backbone.View.extend({
             }).length;
             totalItems = numActiveItems;
             numItemsDisplayed = collection.toArray().length;
-            if (numItemsDisplayed < totalItems) {
-                this.$el.html('Displaying ' + numItemsDisplayed + ' out of ' + totalItems);
-            }
+          
             collection.each(function(item) {
                 this.renderItem(item);
             }, this);
             this.$el.html(this.el_html);
+            if (numItemsDisplayed < totalItems) {
+                this.$el.prepend('<div>Displaying ' + numItemsDisplayed + ' out of ' + totalItems + '</div>');
+            }
         }
 
         return this;
