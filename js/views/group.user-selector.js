@@ -192,9 +192,11 @@ app.GroupUsers = Backbone.View.extend({
             //set val to exclude '~'
             val = val.substring(1);
             searchAllAttributes = true;
-        } else if (val.indexOf('~') == 0) {
-            Backbone.pubSub.trigger('library_users_available:search');
+         } else if (val.indexOf('~') == 0) {
+            //don't commit to search yet since not enough info has been entered.
+            return;
         }
+
 
         options = (searchAllAttributes ? {
             val: val

@@ -203,10 +203,6 @@ app.UserPermissions = Backbone.View.extend({
             return;
         }
 
-        if (val.length == 0) {
-            Backbone.pubSub.trigger('library_permissions_available:search');
-        }
-
 
         options = (searchAllAttributes ? {
             val: val

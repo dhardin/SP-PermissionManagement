@@ -100,10 +100,6 @@ app.UserEditView = Backbone.View.extend({
             return;
         }
 
-        if (val.length == 0) {
-            Backbone.pubSub.trigger('library_users:search');
-        }
-
         options = (searchAllAttributes ? {
             val: val
         } : {

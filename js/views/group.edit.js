@@ -97,11 +97,6 @@ app.GroupEditView = Backbone.View.extend({
             return;
         }
 
-        if (val.length == 0) {
-            Backbone.pubSub.trigger('library_groups:search');
-        }
-
-
 
         options = (searchAllAttributes ? {
             val: val
