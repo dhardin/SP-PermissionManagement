@@ -20,7 +20,8 @@ app.LibraryView = Backbone.View.extend({
         var numActiveItems = 0,
             totalItems = 0,
             numItemsDisplayed = 0;
-        collection = collection || this.collection;
+        collection = collection || this.collection,
+        html;
         if (isFiltered && collection.length == this.collection.length) {
             return this;
         }
@@ -31,6 +32,7 @@ app.LibraryView = Backbone.View.extend({
                 collection.each(function(item) {
                     this.renderItem(item);
                 }, this);
+                this.$el.append(html);
             } else {
                 this.$el.html($('#noItemsTemplate').html());
             }
@@ -47,6 +49,7 @@ app.LibraryView = Backbone.View.extend({
             collection.each(function(item) {
                 this.renderItem(item);
             }, this);
+            this.$el.append(html);
         }
 
         return this;
@@ -56,7 +59,8 @@ app.LibraryView = Backbone.View.extend({
         var itemView = new this.itemView({
             model: item
         });
-        this.$el.append(itemView.render().el);
+        html += itemView.render().el;
+        
     },
 
     search: function(options) {
