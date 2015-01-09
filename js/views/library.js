@@ -73,7 +73,7 @@ app.LibraryView = Backbone.View.extend({
             val = options.val;
 
             //check to see if we already searched for this
-            results = this.search_cache[key];
+            results = this.search_cache[val];
 
             //if key isn't cached, go ahead and build a collection
             if (!results) {
@@ -83,7 +83,7 @@ app.LibraryView = Backbone.View.extend({
                     return (attributeVal.indexOf(val) > -1);
                 });
                 //cache results of search
-                this.search_cache[key] = results;
+                this.search_cache[val] = results;
             }
             this.render(new Backbone.Collection(results), true);
         }
