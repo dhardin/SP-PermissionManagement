@@ -21,7 +21,7 @@ app.LibraryView = Backbone.View.extend({
             totalItems = 0,
             numItemsDisplayed = 0,
             html = '';
-            
+
         collection = collection || this.collection;
         if (isFiltered && collection.length == this.collection.length) {
             return this;
@@ -60,7 +60,7 @@ app.LibraryView = Backbone.View.extend({
         var itemView = new this.itemView({
             model: item
         });
-        target_html += itemView.render().el;
+        target_html += itemView.render().el.outerHTML;
     },
 
     search: function(options) {
