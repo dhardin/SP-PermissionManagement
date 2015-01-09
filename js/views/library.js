@@ -23,6 +23,11 @@ app.LibraryView = Backbone.View.extend({
         if (isFiltered && collection.length == this.collection.length) {
             return this;
         }
+        //first check to see if we've already rendered items in our list before
+        if(this.$el.html() != ''){
+        	this.showFilteredItems(collection);
+        }
+
         this.$el.html('');
 
         if (!isFiltered) {
@@ -59,6 +64,33 @@ app.LibraryView = Backbone.View.extend({
             model: item
         });
         this.el_html.push(itemView.render().el);
+    },
+
+    showFilteredItems: function(collection){
+    	  //get the total number of active items
+            var numActiveItems = this.collection.where({
+                active: true
+            }).length;
+            var totalItems = numActiveItems;
+            var numItemsDisplayed = collection.toArray().length;
+
+            collection.each(function(item) {
+                this.showItem(item);
+            }, this);
+
+            if (numItemsDisplayed < totalItems) {
+            	if(this.$('.numItemsDisplayed').length == 0){
+                this.$el.prepend('<div class="numItemsDisplay">Displaying ' + numItemsDisplayed + ' out of ' + totalItems + '</div>');
+            	} else {
+            		this.$('.numItemsDisplayed').show();
+            	}
+            } else {
+            	this.$('.numItemsDisplayed').hide();
+            }
+    },
+
+    showItem: function(item){
+    	item.set({visible: true});
     },
 
     search: function(options) {
