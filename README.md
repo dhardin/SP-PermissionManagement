@@ -44,7 +44,9 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 ##TODO
 - [ ] Code cleanup
 - [ ] Optimizations
-  - [ ] Optimize list filtering 
-    - Some lag (few miliseconds) is noticed when filtering on lists of around 500+.  We could fix the 'lag' by using setTimeout but that would effectively make our searching take longer.  A list of 500+ should not experience that much lag.  Might be other sources involved.
+  - [x] Optimize list filtering 
+    - Resolved search delay using memoization and built-in underscore utility functions. 
   - [ ] Optimize list rendering 
+    - On each search, full list is re-rendered and nothing cached.  Maybe instead of rendering, we toggle visibility?  Will be testing performance on jsPerf.
+    - Resolved some rendering slowdown by updating the DOM only once as opposed to every model redraw.  We collect each of the model views and set the html of our target element to the collection.
 
