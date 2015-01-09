@@ -202,7 +202,7 @@ app.GroupEditView = Backbone.View.extend({
             app.router.navigate('edit/group/' + group.get('name'), false);
             Backbone.pubSub.trigger('group:selected');
         }
-
+        Backbone.pubSub.trigger('breadcrumbs');
     },
     getGroupUsers: function(group_name) {
         (function(that) {

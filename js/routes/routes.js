@@ -14,6 +14,7 @@ var Router = Backbone.Router.extend({
     initialize: function(options) {
         this.AppView = options.AppView;
         this.on('route', this.onRouteChange);
+        Backbone.pubSub.on('breadcrumbs', this.onRouteChange, this);
     },
     selectEdit: function() {
         var selectEditView = new app.SelectEditView();

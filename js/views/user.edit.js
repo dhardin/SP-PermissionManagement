@@ -350,11 +350,13 @@ app.UserEditView = Backbone.View.extend({
         //set router
         if (options && options.route) {
             app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
+
             Backbone.pubSub.trigger('user:selected');
         } else {
             app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
             Backbone.pubSub.trigger('user:selected');
         }
+        Backbone.pubSub.trigger('breadcrumbs');
 
     },
     getUserPermissions: function(loginname) {
