@@ -24,7 +24,7 @@ app.LibraryView = Backbone.View.extend({
 
         collection = collection || this.collection;
          this.el_html = [];
-         this.numRenderedItems = collection.length;
+         this.numRenderedItems = collection.toArray().length;
          this.renderedItems = 0;
         if (isFiltered && collection.length == this.collection.length) {
             return this;
@@ -53,7 +53,7 @@ app.LibraryView = Backbone.View.extend({
                 active: true
             }).length;
             totalItems = numActiveItems;
-            numItemsDisplayed = collection.length;
+            numItemsDisplayed = collection.toArray().length;
           
             collection.each(function(item) {
             	  (function(that, targetItem){
