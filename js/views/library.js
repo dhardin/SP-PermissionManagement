@@ -62,8 +62,8 @@ app.LibraryView = Backbone.View.extend({
     search: function(options) {
         var collection = (options && options.collection ? options.collection : this.collection);
 
-        if (!options) {
-            this.render();
+        if (!options || options.val == '') {
+            this.render(this.collection, false);
         } else {
             this.render(collection.search(options), true);
         }
