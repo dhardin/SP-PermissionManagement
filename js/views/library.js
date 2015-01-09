@@ -7,20 +7,17 @@ app.LibraryView = Backbone.View.extend({
             this.render(this.collection);
         }, this);
 
+        this.search_cache = {};
+
         this.itemView = options.itemView;
-     //   this.filter = options.filter || false;
-        //if (this.filter) {
-          //  this.search(this.filter)
-        //} else {
-            this.render();
-       // }
+        this.render();
     },
 
     render: function(collection, isFiltered) {
         var numActiveItems = 0,
             totalItems = 0,
             numItemsDisplayed = 0;
-            this.el_html = [];
+        this.el_html = [];
 
         collection = collection || this.collection;
         if (isFiltered && collection.length == this.collection.length) {
@@ -44,7 +41,7 @@ app.LibraryView = Backbone.View.extend({
             }).length;
             totalItems = numActiveItems;
             numItemsDisplayed = collection.toArray().length;
-          
+
             collection.each(function(item) {
                 this.renderItem(item);
             }, this);
@@ -66,20 +63,29 @@ app.LibraryView = Backbone.View.extend({
 
     search: function(options) {
         var collection = (options && options.collection ? options.collection : this.collection),
-        	results = [], key, val;
+            results = [],
+            key, val;
 
         if (!options || options.val == '' || options.key == '') {
             this.render(this.collection, false);
         } else {
-        	key = options.key;
-        	val = options.val;
-        	results = this.collection.filter(function(item){
-        		var attributeVal = '';
-        		attributeVal = item.get(key).toLowerCase();
-        		return (attributeVal.indexOf(val) > -1);
-        	});
-        	this.render(new Backbone.Collection(results), true);
-           // this.render(collection.search(options), true);
+            key = options.key;
+            val = options.val;
+
+            //check to see if we already searched for this
+            results = this.search_cache[key];
+
+            //if key isn't cached, go ahead and build a collection
+            if (!results) {
+                results = this.collection.filter(function(item) {
+                    var attributeVal = '';
+                    attributeVal = item.get(key).toLowerCase();
+                    return (attributeVal.indexOf(val) > -1);
+                });
+                //cache results of search
+                this.search_cache[key] = results;
+            }
+            this.render(new Backbone.Collection(results), true);
         }
     }
 });
