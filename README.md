@@ -43,4 +43,7 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 ##TODO
 - [ ] Code cleanup
 - [ ] Optimizations
+  - [ ] Optimize list filtering 
+    - Some lag (few miliseconds) is noticed when filtering on lists of around 500+.  We could fix the 'lag' by using setTimeout but that would effectively make our searching take longer.  A list of 500+ should not experience that much lag.  Might be other sources involved.
+  - [ ] Optimize list rendering 
 
