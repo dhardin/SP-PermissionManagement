@@ -19,8 +19,8 @@ app.LibraryView = Backbone.View.extend({
     render: function(collection, isFiltered) {
         var numActiveItems = 0,
             totalItems = 0,
-            numItemsDisplayed = 0,
-            html = '';
+            numItemsDisplayed = 0;
+            this.el_html = '';
 
         collection = collection || this.collection;
         if (isFiltered && collection.length == this.collection.length) {
@@ -31,9 +31,9 @@ app.LibraryView = Backbone.View.extend({
         if (!isFiltered) {
             if (collection.length > 0) {
                 collection.each(function(item) {
-                    this.renderItem(item, html);
+                    this.renderItem(item);
                 }, this);
-                this.$el.append(html);
+                this.$el.append(this.el_html);
             } else {
                 this.$el.html($('#noItemsTemplate').html());
             }
@@ -48,19 +48,19 @@ app.LibraryView = Backbone.View.extend({
                 this.$el.html('Displaying ' + numItemsDisplayed + ' out of ' + totalItems);
             }
             collection.each(function(item) {
-                this.renderItem(item, html);
+                this.renderItem(item);
             }, this);
-            this.$el.append(html);
+            this.$el.append(this.el_html);
         }
 
         return this;
     },
 
-    renderItem: function(item, target_html) {
+    renderItem: function(item) {
         var itemView = new this.itemView({
             model: item
         });
-        target_html += itemView.render().el.outerHTML;
+        this.el_html += itemView.render().el.outerHTML;
     },
 
     search: function(options) {
