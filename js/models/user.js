@@ -8,6 +8,7 @@ app.User = Backbone.Model.extend({
         id: '',
         permissions: [],
         selected: false,
-        active: true
+        active: true,
+        rank: 0
     }
 });

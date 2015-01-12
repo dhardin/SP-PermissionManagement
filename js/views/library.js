@@ -8,89 +8,90 @@ app.LibraryView = Backbone.View.extend({
         }, this);
 
         this.search_cache = {};
+        this.searchNum = 0;
 
         this.itemView = options.itemView;
         this.render();
     },
 
-    render: function(collection, isFiltered) {
-        var numActiveItems = 0,
-            totalItems = 0,
-            numItemsDisplayed = 0;
+    render: function() {
         this.el_html = [];
 
-        collection = collection || this.collection;
-        if (isFiltered && collection.length == this.collection.length) {
-            return this;
-        }
-        //first check to see if we've already rendered items in our list before
-        if(this.$el.html() != ''){
-        	this.showFilteredItems(collection);
-        }
+        collection = this.collection;
 
         this.$el.html('');
 
-        if (!isFiltered) {
-            if (collection.length > 0) {
-                collection.each(function(item) {
-                    this.renderItem(item);
-                }, this);
-                this.$el.html(this.el_html);
-            } else {
-                this.$el.html($('#noItemsTemplate').html());
-            }
-        } else {
-            //get the total number of active items
-            numActiveItems = this.collection.where({
-                active: true
-            }).length;
-            totalItems = numActiveItems;
-            numItemsDisplayed = collection.toArray().length;
-
-            collection.each(function(item) {
-                this.renderItem(item);
-            }, this);
+        if (collection.length > 0) {
+            (function(that){
+                 collection.each(function(item){
+                that.renderItemHtml(item);
+            });
+            })(this);
+           
             this.$el.html(this.el_html);
-            if (numItemsDisplayed < totalItems) {
-                this.$el.prepend('<div>Displaying ' + numItemsDisplayed + ' out of ' + totalItems + '</div>');
-            }
+        } else {
+            this.$el.html($('#noItemsTemplate').html());
         }
 
         return this;
     },
 
-    renderItem: function(item) {
+    renderItems: function(modelsArr, index, currentSearchNum) {
+        if (this.searchNum != currentSearchNum) {
+            return;
+        }
+        if (index < modelsArr.length) {
+            this.renderItem(modelsArr[index]);
+            (function(that) {
+                setTimeout(function() {
+                    index++;
+                    that.renderItems(modelsArr, index, currentSearchNum);
+                }, 1);
+            })(this);
+        }
+    },
+    renderItemHtml: function(item) {
         var itemView = new this.itemView({
             model: item
         });
         this.el_html.push(itemView.render().el);
     },
-
-    showFilteredItems: function(collection){
-    	  //get the total number of active items
-            var numActiveItems = this.collection.where({
-                active: true
-            }).length;
-            var totalItems = numActiveItems;
-            var numItemsDisplayed = collection.toArray().length;
-
-            collection.each(function(item) {
-                this.showItem(item);
-            }, this);
-
-            if (numItemsDisplayed < totalItems) {
-            	if(this.$('.numItemsDisplayed').length == 0){
-                this.$el.prepend('<div class="numItemsDisplay">Displaying ' + numItemsDisplayed + ' out of ' + totalItems + '</div>');
-            	} else {
-            		this.$('.numItemsDisplayed').show();
-            	}
-            } else {
-            	this.$('.numItemsDisplayed').hide();
-            }
+    renderItem: function(item) {
+        var itemView = new this.itemView({
+            model: item
+        });
+        this.$el.append(itemView.render().el);
     },
+    renderFiltered: function(collection) {
+     var numActiveItems = 0,
+            totalItems = 0,
+            numItemsDisplayed = 0;
 
-    showItem: function(item){
-    	item.set({visible: true});
+        collection = collection || this.collection;
+        collection.comparator = 'name';
+        collection.sort();
+
+        //get the total number of active items
+        numActiveItems = this.collection.where({
+            active: true
+        }).length;
+        totalItems = numActiveItems;
+        numItemsDisplayed = collection.toArray().length;
+        if (collection.length == this.collection.length) {
+            return this;
+        }
+        this.$el.html('');
+        if (numItemsDisplayed < totalItems) {
+            this.$el.append('<div>Displaying ' + numItemsDisplayed + ' out of ' + totalItems + '</div>');
+        }
+
+        if (collection.length > 0) {
+            this.searchNum++;
+            this.renderItems(collection.models, 0, this.searchNum);
+
+        }
+
+
     },
 
     search: function(options) {
@@ -99,25 +100,66 @@ app.LibraryView = Backbone.View.extend({
             key, val;
 
         if (!options || options.val == '' || options.key == '') {
-            this.render(this.collection, false);
+            this.render();
         } else {
             key = options.key;
             val = options.val;
+            this.searchQuery = val;
 
             //check to see if we already searched for this
             results = this.search_cache[val];
 
             //if key isn't cached, go ahead and build a collection
             if (!results) {
-                results = this.collection.filter(function(item) {
-                    var attributeVal = '';
-                    attributeVal = item.get(key).toLowerCase();
-                    return (attributeVal.indexOf(val) > -1);
-                });
+                (function(that) {
+                    results = that.collection.filter(function(item) {
+                        var attributeVal = '',
+                            vals = val.split(' '),
+                            attributeVals,
+                            i = 0,
+                            j = 0,
+                            rank = 0,
+                            isExact = false;
+                        attributeVal = item.get(key).toLowerCase();
+                        for (i = 0; i < vals.length; i++) {
+                            if (attributeVal.indexOf(vals[i]) > -1) {
+                                isExact = false;
+                                attributeVals = attributeVal.split(' ');
+                                for (j = 0; j < attributeVals.length; j++) {
+                                    if (attributeVals[j] == vals[i]) {
+                                        isExact = true;
+                                    }
+                                }
+                                rank += that._rankMatch(isExact, i, vals.length);
+                            }
+                            item.set({
+                                rank: rank
+                            });
+                            //only return result if its at least an 80% match or greater
+                            if (rank != 0 && rank >= (vals.length * 0.8 * 100)) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+                })(this);
+
+                //sort results
+                results.comparator = 'rank';
+                results.sort();
                 //cache results of search
                 this.search_cache[val] = results;
             }
-            this.render(new Backbone.Collection(results), true);
+            this.renderFiltered(new Backbone.Collection(results));
         }
+    },
+    _rankMatch: function(isExact, matchIndex, matchArrTotal) {
+        //returns rank 0 to 100
+        var rank = 0,
+            exactScore = 100,
+            partialScore = 80;
+        rank += (isExact ? (matchArrTotal - matchIndex) * exactScore : (matchArrTotal - matchIndex) * partialScore);
+        return rank;
     }
 });

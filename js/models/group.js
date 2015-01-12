@@ -7,6 +7,7 @@ app.Group = Backbone.Model.extend({
        description:'',
        users: [],
        selected: false,
-       active: true
+       active: true,
+       rank: 0
     }
 });
