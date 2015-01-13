@@ -15,7 +15,12 @@ app.LibraryView = Backbone.View.extend({
     },
 
     render: function() {
-        this.el_html = [];
+        this.el_html = [], cache = this.search_cache[''];
+
+        if(cache && cache.el){
+            this.$el.html(cache.el);
+            return;
+        }
 
         collection = this.collection;
 
@@ -29,6 +34,7 @@ app.LibraryView = Backbone.View.extend({
             })(this);
            
             this.$el.html(this.el_html);
+            this.onRenderComplete('');
         } else {
             this.$el.html($('#noItemsTemplate').html());
         }
@@ -48,6 +54,8 @@ app.LibraryView = Backbone.View.extend({
                     that.renderItems(modelsArr, index, currentSearchNum);
                 }, 1);
             })(this);
+        } else {
+            this.onRenderComplete(this.searchQuery);
         }
     },
     renderItemHtml: function(item) {
@@ -65,7 +73,13 @@ app.LibraryView = Backbone.View.extend({
     renderFiltered: function(collection) {
      var numActiveItems = 0,
             totalItems = 0,
-            numItemsDisplayed = 0;
+            numItemsDisplayed = 0,
+            cache = this.search_cache[this.searchQuery];
+
+        if(cache && cache.el){
+            this.$el.html(cache.el);
+            return;
+        }
 
         collection = collection || this.collection;
         collection.comparator = 'name';
@@ -88,10 +102,11 @@ app.LibraryView = Backbone.View.extend({
         if (collection.length > 0) {
             this.searchNum++;
             this.renderItems(collection.models, 0, this.searchNum);
-
         }
-
-
+    },
+    onRenderComplete: function(query){
+        this.search_cache[query] = this.search_cache[query] || {};
+        this.search_cache[query].el = this.$el.html();
     },
 
     search: function(options) {
@@ -107,8 +122,8 @@ app.LibraryView = Backbone.View.extend({
             this.searchQuery = val;
 
             //check to see if we already searched for this
-            results = this.search_cache[val];
-
+            this.search_cache[val] = this.search_cache[val] || {};
+            results = this.search_cache[val].results;
             //if key isn't cached, go ahead and build a collection
             if (!results) {
                 (function(that) {
@@ -149,7 +164,7 @@ app.LibraryView = Backbone.View.extend({
                 results.comparator = 'rank';
                 results.sort();
                 //cache results of search
-                this.search_cache[val] = results;
+                this.search_cache[val].results = results;
             }
             this.renderFiltered(new Backbone.Collection(results));
         }
