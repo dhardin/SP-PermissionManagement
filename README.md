@@ -43,10 +43,10 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 
 ##TODO
 - [ ] Code cleanup
-- [ ] Optimizations
+- [x] Optimizations
   - [x] Optimize list filtering 
     - Resolved search delay using memoization and built-in underscore utility functions. 
-  - [ ] Optimize list rendering 
-    - On each search, full list is re-rendered and nothing cached.  Maybe instead of rendering, we toggle visibility?  Will be testing performance on jsPerf.
-    - Resolved some rendering slowdown by updating the DOM only once as opposed to every model redraw.  We collect each of the model views and set the html of our target element to the collection.
+  - [x] Optimize list rendering 
+    - Initial list rendering is cached and queries are cached after fully rendered.
+    - When a user searches, if the query is cached, set the list html to cached value, else render list in asynchronous fashion.
 
