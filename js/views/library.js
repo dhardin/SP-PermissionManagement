@@ -9,32 +9,33 @@ app.LibraryView = Backbone.View.extend({
 
         this.search_cache = {};
         this.searchNum = 0;
+        this.searchQuery = '';
+        this.cachedViews = [];
 
         this.itemView = options.itemView;
-        this.render();
     },
 
-    render: function() {
-        this.el_html = [], cache = this.search_cache[''];
+    render: function(collection) {
+        this.el_html = [];
 
-        if(cache && cache.el){
-            this.$el.html(cache.el);
-            return;
-        }
-
-        collection = this.collection;
+        // if(this.replaceWithCacheView()){
+        //   return;
+        //}
 
         this.$el.html('');
+        collection = collection || this.collection;
+
+
 
         if (collection.length > 0) {
-            (function(that){
-                 collection.each(function(item){
-                that.renderItemHtml(item);
-            });
+            (function(that) {
+                collection.each(function(item) {
+                    that.renderItemHtml(item);
+                });
             })(this);
-           
+
             this.$el.html(this.el_html);
-            this.onRenderComplete('');
+            this.onRenderComplete(this.searchQuery);
         } else {
             this.$el.html($('#noItemsTemplate').html());
         }
@@ -68,18 +69,17 @@ app.LibraryView = Backbone.View.extend({
         var itemView = new this.itemView({
             model: item
         });
+
         this.$el.append(itemView.render().el);
     },
     renderFiltered: function(collection) {
-     var numActiveItems = 0,
+        var numActiveItems = 0,
             totalItems = 0,
-            numItemsDisplayed = 0,
-            cache = this.search_cache[this.searchQuery];
+            numItemsDisplayed = 0;
 
-        if(cache && cache.el){
-            this.$el.html(cache.el);
-            return;
-        }
+        // if(this.replaceWithCacheView()){
+        //   return;
+        //}
 
         collection = collection || this.collection;
         collection.comparator = 'name';
@@ -104,9 +104,21 @@ app.LibraryView = Backbone.View.extend({
             this.renderItems(collection.models, 0, this.searchNum);
         }
     },
-    onRenderComplete: function(query){
+    onRenderComplete: function(query) {
         this.search_cache[query] = this.search_cache[query] || {};
         this.search_cache[query].el = this.$el.html();
+    },
+    replaceWithCacheView: function() {
+        var cache = this.search_cache[this.searchQuery];
+
+        if (cache && cache.el) {
+            this.$el.html(cache.el);
+            this.delegateEvents();
+            this.collection.each(function(item) {
+
+            })
+            return true;
+        }
     },
 
     search: function(options) {
@@ -114,12 +126,13 @@ app.LibraryView = Backbone.View.extend({
             results = [],
             key, val;
 
+        this.searchQuery = options.val || '';
+
         if (!options || options.val == '' || options.key == '') {
             this.render();
         } else {
             key = options.key;
             val = options.val;
-            this.searchQuery = val;
 
             //check to see if we already searched for this
             this.search_cache[val] = this.search_cache[val] || {};
