@@ -42,6 +42,8 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 - Underscore
 
 ##Roadmap
+- [x] Add ability to manage a group's users
+- [x] Add ability to manage a user's groups
 - [ ] Code cleanup
 - [x] Optimizations
   - [x] Optimize list filtering 
