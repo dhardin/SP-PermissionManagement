@@ -49,5 +49,5 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
   - [x] Optimize list rendering 
     - Initial list rendering is cached and queries are cached after fully rendered.
     - When a user searches, if the query is cached, set the list html to cached value, else render list in asynchronous fashion.
-  - [ ] Add ability to manage permissions at the list/library level.
+- [ ] Add ability to manage permissions at the list/library level.
 
