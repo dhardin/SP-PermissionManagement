@@ -196,3 +196,7 @@ li {
 input::-ms-clear {
     display: none;
 }
+
+.disabled {
+  cursor: not-allowed !important;
+}

@@ -58,9 +58,12 @@ app.GroupEditView = Backbone.View.extend({
         this.$search_clear = this.$('.search-clear');
         this.$search = this.$('.search');
         this.$group_select_btn = this.$('#groups-select-btn');
+        this.$save_btn = this.$('.save-changes-btn');
+        this.$export_btn = this.$('.export-users');
+
 
         if (this.model.get('name') == '') {
-            this.$name.text('Select a Group');
+            this.toggleButtons(false);
         }
 
         this.libraryViewGroups = new app.LibraryGroupView({
@@ -339,7 +342,8 @@ app.GroupEditView = Backbone.View.extend({
             group = this.model.attributes;
 
 
-
+        this.toggleButtons(true);
+        
         //iterate through selected permissions
         selected_users.forEach(function(user) {
             //check if permissions is in user permissions
@@ -390,6 +394,9 @@ app.GroupEditView = Backbone.View.extend({
     },
 
     onSaveClick: function(e) {
+        if($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
         this.resetStateMap();
         //update progress bar
         this.$progress_meter.width('0%');
@@ -405,10 +412,14 @@ app.GroupEditView = Backbone.View.extend({
     },
 
     onExportBtnClick: function(e) {
-        var users = this.model.get('users'),
+        var users = (this.model ? this.model.get('users') : false),
             ua = window.navigator.userAgent,
             msie = ua.indexOf("MSIE "),
             usersElement;
+
+        if($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
         if (msie > 0) { // If Internet Explorer, return version number
             usersElement = '<h1>' + this.model.get('name') + '\'s Users</h1></ul>';
@@ -425,6 +436,20 @@ app.GroupEditView = Backbone.View.extend({
         } else {
             app.utility.JSONToCSVConvertor(users, this.model.get('name') + ' Users', true);
         }
+    },
+      toggleButtons: function(enable){
+        if(enable){
+            this.$save_btn.removeClass('disabled');
+            this.$export_btn.removeClass('disabled');
+        } else {
+            this.$save_btn.addClass('disabled');
+            this.$export_btn.addClass('disabled');
+        }
+    },
+    clearInfo: function(enable){
+         this.$group_attributes.each(function(i, el) {
+            $(el).val('');
+         });
     }
 
 

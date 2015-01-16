@@ -32,6 +32,8 @@ app.GroupUsers = Backbone.View.extend({
         //initialize our target elements
         this.$usersAvailable = this.$('#users-available');
         this.$usersSelected = this.$('#users-selected');
+        this.$buttons = this.$('.control-btn');
+        this.toggleButtons(false);
 
         this.libraryViewUsersSelected = new app.LibraryUsersSelectedView({
             el: this.$usersSelected[0],
@@ -55,6 +57,8 @@ app.GroupUsers = Backbone.View.extend({
         var tempCollection,
             selectedUsersCollection = this.libraryViewUsersSelected.collection,
             availableUsersCollection = this.libraryViewUsersAvailable.collection;
+
+        this.toggleButtons(true);
 
         //select permissions in available permissions collection
         users.forEach(function(obj) {
@@ -88,6 +92,10 @@ app.GroupUsers = Backbone.View.extend({
             tempCollection, collection = [],
             selectedUsersCollection = this.libraryViewUsersSelected.collection,
             availableUsersCollection = this.libraryViewUsersAvailable.collection;
+
+        if ($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
         switch (method) {
             case 'single':
@@ -142,6 +150,10 @@ app.GroupUsers = Backbone.View.extend({
             selectedUsersCollection = this.libraryViewUsersSelected.collection,
             availableUsersCollection = this.libraryViewUsersAvailable.collection;
 
+        if ($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
+
         switch (method) {
             case 'single':
                 //fetch all models in the collection that are currently selected
@@ -188,7 +200,7 @@ app.GroupUsers = Backbone.View.extend({
             //set val to exclude '~'
             val = val.substring(1);
             searchAllAttributes = true;
-         } else if (val.indexOf('~') == 0) {
+        } else if (val.indexOf('~') == 0) {
             //don't commit to search yet since not enough info has been entered.
             return;
         }
@@ -218,6 +230,17 @@ app.GroupUsers = Backbone.View.extend({
             model.set({
                 selected: false
             });
+        });
+    },
+
+    toggleButtons: function(enable) {
+        this.$buttons.each(function(i, el) {
+            if (enable) {
+                $(el).removeClass('disabled');
+            } else {
+                $(el).addClass('disabled');
+            }
+
         });
     }
 });

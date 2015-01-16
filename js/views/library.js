@@ -7,6 +7,8 @@ app.LibraryView = Backbone.View.extend({
             this.render(this.collection);
         }, this);
 
+        Backbone.pubSub.on('library:search', this.search, this);
+
         this.search_cache = {};
         this.searchNum = 0;
         this.searchQuery = '';

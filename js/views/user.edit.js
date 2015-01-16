@@ -59,9 +59,12 @@ app.UserEditView = Backbone.View.extend({
         this.$search_clear = this.$('.search-clear');
         this.$search = this.$('.search');
         this.$user_select_btn = this.$('#user-select-btn');
+        this.$save_btn = this.$('.save-permissions-btn');
+        this.$purge_btn = this.$('.purge-btn');
+        this.$export_btn = this.$('.export-permissions');
 
         if (this.model.get('name') == '') {
-            this.$name.text('Select a User');
+            this.toggleButtons(false);
         }
 
         this.libraryViewUsers = new app.LibraryUserView({
@@ -133,6 +136,7 @@ app.UserEditView = Backbone.View.extend({
             remove_permissions_arr = [],
             user = this.model.attributes;
 
+        this.toggleButtons(true);
 
 
         //iterate through selected permissions
@@ -190,6 +194,9 @@ app.UserEditView = Backbone.View.extend({
     },
 
     onSaveClick: function(e) {
+        if($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
         this.resetStateMap();
         //update progress bar
         this.$progress_meter.width('0%');
@@ -203,10 +210,14 @@ app.UserEditView = Backbone.View.extend({
     },
 
     onExportBtnClick: function(e) {
-        var permissions = this.model.get('permissions'),
+        var permissions = (this.model ? this.model.get('permissions') : false),
             ua = window.navigator.userAgent,
             msie = ua.indexOf("MSIE "),
             permissionsElement;
+
+        if($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
         if (msie > 0) { // If Internet Explorer, return version number
             permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
@@ -228,13 +239,19 @@ app.UserEditView = Backbone.View.extend({
     },
 
     onPurgeBtnClick: function(e) {
-        var user = this.model.attributes;
+        var user = (this.model ? this.model.attributes : false);
+
+         if($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
         this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Purging [' + user.name + ']</div>');
         this.$messages.scrollTop(this.$messages[0].scrollHeight);
         (function(that) {
             app.data.removeUserFromWeb(app.config.url, user, function(results) {
+                that.model.collection.remove(this.model);
                 that.onRemoveUserComplete(results);
+                app.router.navigate('edit/user/', true);
             });
         })(this);
 
@@ -245,6 +262,8 @@ app.UserEditView = Backbone.View.extend({
             data = results.data,
             name = this.model.get('name'),
             message = '';
+
+        
 
         if (type != 'error') {
             message = 'Succesfully removed ' + name + ' from site.';
@@ -391,5 +410,21 @@ app.UserEditView = Backbone.View.extend({
             this.$user_search_container.hide();
             this.$users.hide();
         }
+    },
+    toggleButtons: function(enable){
+        if(enable){
+            this.$save_btn.removeClass('disabled');
+            this.$purge_btn.removeClass('disabled');
+            this.$export_btn.removeClass('disabled');
+        } else {
+            this.$save_btn.addClass('disabled');
+            this.$purge_btn.addClass('disabled');
+            this.$export_btn.addClass('disabled');
+        }
+    },
+    clearInfo: function(enable){
+         this.$user_attributes.each(function(i, el) {
+            $(el).val('');
+         });
     }
 });

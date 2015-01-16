@@ -33,6 +33,8 @@ app.UserPermissions = Backbone.View.extend({
         //initialize our target elements
         this.$groupAvailable = this.$('#group-available');
         this.$groupSelected = this.$('#group-selected');
+        this.$buttons = this.$('.control-btn');
+        this.toggleButtons(false);
 
         this.libraryViewGroupSelected = new app.LibraryPermissionsSelectedView({
             el: this.$groupSelected[0],
@@ -63,6 +65,8 @@ app.UserPermissions = Backbone.View.extend({
         var tempCollection,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
+
+        this.toggleButtons(true);
 
         //select permissions in available permissions collection
         permissions.forEach(function(obj) {
@@ -100,6 +104,10 @@ app.UserPermissions = Backbone.View.extend({
             tempCollection, collection = [],
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
+
+        if ($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
         switch (method) {
             case 'single':
@@ -153,6 +161,10 @@ app.UserPermissions = Backbone.View.extend({
             tempCollection, collection = [],
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
+
+        if ($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
         switch (method) {
             case 'single':
@@ -223,6 +235,16 @@ app.UserPermissions = Backbone.View.extend({
             model.set({
                 selected: false
             });
+        });
+    },
+    toggleButtons: function(enable) {
+        this.$buttons.each(function(i, el) {
+            if (enable) {
+                $(el).removeClass('disabled');
+            } else {
+                $(el).addClass('disabled');
+            }
+
         });
     }
 });

@@ -7,7 +7,7 @@ var Router = Backbone.Router.extend({
         'edit/user/*': 'editUser',
         'edit/group/:name': 'editGroup',
         'edit/group/*': 'editGroup',
-        'edit/*':'selectEdit',
+        'edit/*': 'selectEdit',
         '*404': 'error'
     },
 
@@ -20,12 +20,12 @@ var Router = Backbone.Router.extend({
         var selectEditView = new app.SelectEditView();
         app.router.AppView.showView(selectEditView);
     },
-    error: function(){
+    error: function() {
         var errorView = new app.ErrorView();
         app.router.AppView.showView(errorView);
     },
     editUser: function(loginname) {
-    	var fetchingDataView,editUserPermissionView, user;
+        var fetchingDataView, editUserPermissionView, user;
 
         app.state_map.fetchId = (loginname != null ? loginname.replace('\\', '/') : "");
         if (app.config.isTesting) {
@@ -40,25 +40,34 @@ var Router = Backbone.Router.extend({
             this.AppView.showView(fetchingDataView);
 
             app.state_map.dataLoadCallback = function() {
-                user = (app.state_map.fetchId && app.UserCollection.findWhere({
-                            loginname: app.state_map.fetchId
-                        }) ?
-                        app.UserCollection.findWhere({
-                            loginname: app.state_map.fetchId
-                        }) : new app.User()),
-                    editUserPermissionView = new app.EditUserPermissionsView({
-                        model: user
+
+                if (app.state_map.fetchId) {
+                    user = app.UserCollection.findWhere({
+                        loginname: app.state_map.fetchId
                     });
+                    if (!user) {
+                        app.router.navigate('edit/user/', true);
+                        user = new app.User();
+                    }
+                } else {
+                    app.router.navigate('edit/user/', true);
+                    user = new app.User();
+                }
+                editUserPermissionView = new app.EditUserPermissionsView({
+                    model: user
+                });
 
                 app.router.AppView.showView(editUserPermissionView);
             };
         } else if (loginname) {
-            user = (app.UserCollection.findWhere({
+                    
+                    user = app.UserCollection.findWhere({
                         loginname: app.state_map.fetchId
-                    }) ?
-                    app.UserCollection.findWhere({
-                        loginname: app.state_map.fetchId
-                    }) : new app.User()),
+                    });
+                    if (!user) {
+                        app.router.navigate('edit/user/', true);
+                        user = new app.User();
+                    }
                 editUserPermissionView = new app.EditUserPermissionsView({
                     model: user
                 });
@@ -87,25 +96,34 @@ var Router = Backbone.Router.extend({
             this.AppView.showView(fetchingDataView);
 
             app.state_map.dataLoadCallback = function() {
-                var group = (app.state_map.fetchId && app.GroupCollection.findWhere({
-                            name: app.state_map.fetchId
-                        }) ?
-                        app.GroupCollection.findWhere({
-                            name: app.state_map.fetchId
-                        }) : new app.Group()),
-                    editGroupUsersView = new app.EditGroupUsersView({
-                        model: group
+                var group, editGroupUsersView;
+                if (app.state_map.fetchId) {
+                    group = app.GroupCollection.findWhere({
+                        name: app.state_map.fetchId
                     });
+                    if (!group) {
+                        app.router.navigate('edit/group/', true);
+                        group = new app.Group();
+                    }
+                } else {
+                    app.router.navigate('edit/group/', true);
+                    group = new app.Group();
+                }
+
+                editGroupUsersView = new app.EditGroupUsersView({
+                    model: group
+                });
 
                 app.router.AppView.showView(editGroupUsersView);
             };
         } else if (name) {
-            var user = (app.GroupCollection.findWhere({
+              group = app.GroupCollection.findWhere({
                         name: app.state_map.fetchId
-                    }) ?
-                    app.GroupCollection.findWhere({
-                        name: app.state_map.fetchId
-                    }) : new app.Group()),
+                    });
+                    if (!group) {
+                        app.router.navigate('edit/group/', true);
+                        group = new app.Group();
+                    }
                 editGroupUsersView = new app.EditGroupUsersView({
                     model: group
                 });
@@ -120,26 +138,27 @@ var Router = Backbone.Router.extend({
         }
     },
 
-    onRouteChange: function (route, params) {
+    onRouteChange: function(route, params) {
         //parse out hash
         var hashRoute = window.location.hash.substring(1),
-        routePathArr = hashRoute.split('/'), breadcrumb,
-        i, j, href = '#',
-        $breadcrumbs = $('.breadcrumbs');
+            routePathArr = hashRoute.split('/'),
+            breadcrumb,
+            i, j, href = '#',
+            $breadcrumbs = $('.breadcrumbs');
 
         $breadcrumbs.children().not('.home').remove();
 
-        if(route == 'error'){
+        if (route == 'error') {
             return;
         }
 
-        for(i = 0; i < routePathArr.length; i++){
+        for (i = 0; i < routePathArr.length; i++) {
             breadcrumb = routePathArr[i];
-            if(breadcrumb == ''){
+            if (breadcrumb == '') {
                 continue;
             }
             href += breadcrumb + '/';
-            $breadcrumbs.append('<li class="' + (i == routePathArr.length - 1 ? 'current' : '' ) +'"><a href="'+href+'">' + breadcrumb + '</a></li>');
+            $breadcrumbs.append('<li class="' + (i == routePathArr.length - 1 ? 'current' : '') + '"><a href="' + href + '">' + breadcrumb + '</a></li>');
         }
     }
 });
