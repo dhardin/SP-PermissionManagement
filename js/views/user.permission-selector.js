@@ -85,11 +85,15 @@ app.UserPermissions = Backbone.View.extend({
         this.setPermissions(tempCollection, selectedPermissionsCollection, false);
     },
     onUserSelect: function(e) {
+
         if (this.libraryViewGroupSelected) {
             this.clearPermissions();
+             this.toggleButtons(false);
         }
     },
     onUserPermissionsSave: function(e) {
+        //disable edit buttons until save is complete
+        this.toggleButtons(false);
         var selectedPermissionsCollection = this.libraryViewGroupSelected.collection.where({
                 active: true
             }),

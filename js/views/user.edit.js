@@ -136,7 +136,7 @@ app.UserEditView = Backbone.View.extend({
             remove_permissions_arr = [],
             user = this.model.attributes;
 
-        this.toggleButtons(true);
+        this.toggleButtons(false);
 
 
         //iterate through selected permissions
@@ -383,6 +383,8 @@ app.UserEditView = Backbone.View.extend({
                 that.model.set({
                     permissions: results
                 });
+                //endable edit buttons
+                that.toggleButtons(true);
                 //publish results globally 
                 Backbone.pubSub.trigger('user:permissions-fetched', results);
                 that.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Completed fetching [' + that.model.get('name') + ']\'s permissions</div>');

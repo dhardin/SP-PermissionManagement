@@ -211,6 +211,8 @@ app.GroupEditView = Backbone.View.extend({
                 that.model.set({
                     users: results
                 });
+                //enable edit buttons
+                that.toggleButtons(true);
                 //publish results globally 
                 Backbone.pubSub.trigger('group:users-fetched', results);
                 that.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Completed fetching [' + group_name + ']\'s users</div>');
@@ -341,8 +343,8 @@ app.GroupEditView = Backbone.View.extend({
             group_user,
             group = this.model.attributes;
 
-
-        this.toggleButtons(true);
+        //disable toggle buttons
+        this.toggleButtons(false);
         
         //iterate through selected permissions
         selected_users.forEach(function(user) {

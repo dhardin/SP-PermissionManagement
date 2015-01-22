@@ -77,11 +77,14 @@ app.GroupUsers = Backbone.View.extend({
         this.setUsers(tempCollection, selectedUsersCollection, false);
     },
     onGroupSelect: function(e) {
+
         if (this.libraryViewUsersSelected) {
             this.clearUsers();
+             this.toggleButtons(false);
         }
     },
     onGroupUsersSave: function(e) {
+        this.toggleButtons(false);
         var selectedUsersCollection = this.libraryViewUsersSelected.collection.where({
             active: true
         });
