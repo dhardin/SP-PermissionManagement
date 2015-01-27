@@ -19,7 +19,9 @@ app.LibraryView = Backbone.View.extend({
     },
 
     render: function(collection) {
-        this.el_html = [], active;
+        var active;
+        
+        this.el_html = [];
 
         // if(this.replaceWithCacheView()){
         //   return;
