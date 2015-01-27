@@ -19,9 +19,24 @@ An intuitive way to alter user permissions in SharePoint.
 - Download this github repository
 - Upload repository to a Document Library in your SharePoint site
 - Edit config.js
-  - [name of folder]/js/config.js
+  - SP-PermissionManagement/js/config.js
   - Change url attribute value to your SharePoint site
-    - e.g., https://yoursite.com
+    ```javascript
+    var app = app || {};
+    
+    app.confg = {
+        **url**: 'Your url goes here',
+        trycount: 3,
+        isTesting: false,
+        property_map: {
+          user: {
+            ows_name: 'name',
+            ows_username: 'username',
+            ows_email: 'email'
+          }
+        }
+      }
+    ```
 - Open index.html and start managing permissions
 
 ##Usage
