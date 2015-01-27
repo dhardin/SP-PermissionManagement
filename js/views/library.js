@@ -13,12 +13,13 @@ app.LibraryView = Backbone.View.extend({
         this.searchNum = 0;
         this.searchQuery = '';
         this.cachedViews = [];
+        this.rank_cache = {};
 
         this.itemView = options.itemView;
     },
 
     render: function(collection) {
-        this.el_html = [];
+        this.el_html = [], active;
 
         // if(this.replaceWithCacheView()){
         //   return;
@@ -26,6 +27,13 @@ app.LibraryView = Backbone.View.extend({
 
         this.$el.html('');
         collection = collection || this.collection;
+
+        //filter results to only show active items
+        active = collection.where({
+            active: true
+        });
+
+        collection = new Backbone.Collection(active);
 
 
 
@@ -84,15 +92,20 @@ app.LibraryView = Backbone.View.extend({
         //}
 
         collection = collection || this.collection;
-        collection.comparator = 'name';
-        collection.sort();
+
+        //filter results to only show active items
+        active = collection.where({
+            active: true
+        });
+
+        collection = new Backbone.Collection(active);
 
         //get the total number of active items
         numActiveItems = this.collection.where({
             active: true
         }).length;
         totalItems = numActiveItems;
-        numItemsDisplayed = collection.toArray().length;
+        numItemsDisplayed = collection.length;
         if (collection.length == this.collection.length) {
             return this;
         }
@@ -109,18 +122,6 @@ app.LibraryView = Backbone.View.extend({
     onRenderComplete: function(query) {
         this.search_cache[query] = this.search_cache[query] || {};
         this.search_cache[query].el = this.$el.html();
-    },
-    replaceWithCacheView: function() {
-        var cache = this.search_cache[this.searchQuery];
-
-        if (cache && cache.el) {
-            this.$el.html(cache.el);
-            this.delegateEvents();
-            this.collection.each(function(item) {
-
-            })
-            return true;
-        }
     },
 
     search: function(options) {

@@ -117,7 +117,7 @@ app.UserEditView = Backbone.View.extend({
         (function(that) {
             setTimeout(function() {
                 that.$user_search.focus();
-            }, 0);
+            }, 25);
         })(this);
     },
     onSearchClear: function(e) {
@@ -393,25 +393,6 @@ app.UserEditView = Backbone.View.extend({
                 that.$progress_text.text('100%');
             });
         })(this);
-    },
-    toggleUserDropdown: function() {
-        if (this.$name_container.is(':visible')) {
-            this.$name_container.hide();
-            this.$user_search_container.show();
-            this.$users.show();
-            this.$user_search.focus();
-            this.$users.height(function(index, height) {
-                return (window.innerHeight - $(this).offset().top) * 0.9;
-            });
-
-            this.$users.width(function(index, height) {
-                return (window.innerWidth - $(this).offset().left) * 0.9;
-            });
-        } else {
-            this.$name_container.show();
-            this.$user_search_container.hide();
-            this.$users.hide();
-        }
     },
     toggleButtons: function(enable){
         if(enable){

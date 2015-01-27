@@ -325,11 +325,10 @@ app.GroupEditView = Backbone.View.extend({
         e.stopPropagation();
     },
     onGroupSelectBtnClick: function(e) {
-
         (function(that) {
             setTimeout(function() {
                 that.$group_search.focus();
-            }, 0);
+            }, 25);
         })(this);
     },
 
