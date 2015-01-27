@@ -31,12 +31,12 @@ app.LibraryView = Backbone.View.extend({
         collection = collection || this.collection;
 
         //filter results to only show active items
-        active = collection.where({
+        /*active = collection.where({
             active: true
         });
 
         collection = new Backbone.Collection(active);
-
+*/
 
 
         if (collection.length > 0) {
@@ -96,11 +96,11 @@ app.LibraryView = Backbone.View.extend({
         collection = collection || this.collection;
 
         //filter results to only show active items
-        active = collection.where({
+       /* active = collection.where({
             active: true
         });
 
-        collection = new Backbone.Collection(active);
+        collection = new Backbone.Collection(active);*/
 
         //get the total number of active items
         numActiveItems = this.collection.where({
