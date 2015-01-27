@@ -23,20 +23,8 @@ app.LibraryView = Backbone.View.extend({
         
         this.el_html = [];
 
-        // if(this.replaceWithCacheView()){
-        //   return;
-        //}
-
         this.$el.html('');
         collection = collection || this.collection;
-
-        //filter results to only show active items
-        /*active = collection.where({
-            active: true
-        });
-
-        collection = new Backbone.Collection(active);
-*/
 
 
         if (collection.length > 0) {
@@ -89,18 +77,7 @@ app.LibraryView = Backbone.View.extend({
             totalItems = 0,
             numItemsDisplayed = 0;
 
-        // if(this.replaceWithCacheView()){
-        //   return;
-        //}
-
         collection = collection || this.collection;
-
-        //filter results to only show active items
-       /* active = collection.where({
-            active: true
-        });
-
-        collection = new Backbone.Collection(active);*/
 
         //get the total number of active items
         numActiveItems = this.collection.where({
