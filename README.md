@@ -25,9 +25,7 @@ An intuitive way to alter user permissions in SharePoint.
     var app = app || {};
     
     app.confg = {
-        <pre>
-        <b>url</b>: 'Your url goes here',
-        </pre>
+        url: 'Your url goes here',
         trycount: 3,
         isTesting: false,
         property_map: {
