@@ -1,7 +1,7 @@
  var app = app || {};
 
  app.utility = (function(){
- 	var processData;
+ 	var processData, getDateTime, JSONToCSVConvertor, printToNewWindow,endsWith, delayFn;
  // Begin Utility Method /processData/
      processData= function(results) {
         var data = [],
@@ -135,12 +135,23 @@ endsWith = function(string, suffix){
 };
    // End utility method /endsWith/
 
+//use delayFn like setTimeout
+// Begin utility method /delayFn/
+delayFn = (function(){
+        var timer = 0;
+        return function(callback, ms){
+            clearTimeout(timer);
+            timer = setTimeout(callback,ms);
+        }
+    })();
+// End utility method /delayFn/
    return {
    		processData: processData,
         getDateTime: getDateTime,
         JSONToCSVConvertor: JSONToCSVConvertor,
         endsWith: endsWith,
-        printToNewWindow: printToNewWindow
+        printToNewWindow: printToNewWindow,
+        delayFn: delayFn
    };
 })();
 

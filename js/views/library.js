@@ -114,7 +114,7 @@ app.LibraryView = Backbone.View.extend({
             this.render();
         } else {
             key = options.key;
-            val = options.val;
+            val = options.val.toLowerCase();
 
             //check to see if we already searched for this
             this.search_cache[val] = this.search_cache[val] || {};
