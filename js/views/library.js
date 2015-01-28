@@ -123,53 +123,17 @@ app.LibraryView = Backbone.View.extend({
             if (!results) {
                 (function(that) {
                     results = that.collection.filter(function(item) {
-                        var attributeVal = '',
-                            vals = val.split(' '),
-                            attributeVals,
-                            i = 0,
-                            j = 0,
-                            rank = 0,
-                            isExact = false;
-                        attributeVal = item.get(key).toLowerCase();
-                        for (i = 0; i < vals.length; i++) {
-                            if (attributeVal.indexOf(vals[i]) > -1) {
-                                isExact = false;
-                                attributeVals = attributeVal.split(' ');
-                                for (j = 0; j < attributeVals.length; j++) {
-                                    if (attributeVals[j] == vals[i]) {
-                                        isExact = true;
-                                    }
-                                }
-                                rank += that._rankMatch(isExact, i, vals.length);
-                            }
-                            item.set({
-                                rank: rank
-                            });
-                            //only return result if its at least an 80% match or greater
-                            if (rank != 0 && rank >= (vals.length * 0.8 * 100)) {
-                                return true;
-                            } else {
-                                return false;
-                            }
+                        var attributeVal = item.get(key).toLowerCase();
+                        if(attributeVal.indexOf(val)){
+                            return true;
                         }
                     });
                 })(this);
 
-                //sort results
-                results.comparator = 'rank';
-                results.sort();
                 //cache results of search
                 this.search_cache[val].results = results;
             }
             this.renderFiltered(new Backbone.Collection(results));
         }
-    },
-    _rankMatch: function(isExact, matchIndex, matchArrTotal) {
-        //returns rank 0 to 100
-        var rank = 0,
-            exactScore = 100,
-            partialScore = 80;
-        rank += (isExact ? (matchArrTotal - matchIndex) * exactScore : (matchArrTotal - matchIndex) * partialScore);
-        return rank;
     }
 });
