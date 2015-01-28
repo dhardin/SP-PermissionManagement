@@ -149,20 +149,15 @@ app.UserPermissions = Backbone.View.extend({
 
     },
     setPermissions: function(from_collection, target_collection, setSelected) {
-
         from_collection.forEach(function(model, index) {
             model.set({
                 active: false,
                 selected: false
             });
-         //   target_collection.get(model.id).set({
-          //      active: true,
-         //       selected: setSelected
-        //    });
-        });
-        target_collection.reset(from_collection);
-        target_collection.each(function(model){
-            model.set({active: true, selected: setSelected});
+            target_collection.get(model.id).set({
+                active: true,
+                selected: setSelected
+            });
         });
     },
     onRemovePermissionClick: function(e) {

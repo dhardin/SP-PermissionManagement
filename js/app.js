@@ -8,55 +8,6 @@ app.state_map = {
     filterOptions: false
 };
 
-
-var user_data = [{
-        name: 'Hardin, Dustin',
-        loginname: 'dustin.hardin',
-        email: 'dustin.hardin@example.com',
-        permissions: ['Admin']
-    }, {
-        name: 'Doe, John',
-        loginname: 'john.doe',
-        email: 'john.doe@example.com',
-        permissions: ['Visitors']
-    }, {
-        name: 'Doe, Jane',
-        loginname: 'jane.doe',
-        email: 'jane.doe@example.com'
-    }
-
-];
-
-var group_data = [{
-    id: '1',
-    name: 'Admin',
-    users: ['dustin.hardin'],
-    active: true
-}, {
-    id: '2',
-    name: 'Visitors',
-    users: ['john.doe', 'jane.doe'],
-    active: true
-}, ];
-
-app.setTestData = function(view_name) {
-    //initialize data
-    app.UserCollection = new app.LibraryUser(user_data);
-    app.GroupCollection = new app.LibraryGroup(group_data);
-    if(view_name == 'user'){
-    	group_data.forEach(function(model, index) {
-        	model.active = false;
-    	});
-    } else {
-    	user_data.forEach(function(model, index) {
-        	model.active = false;
-    	});
-    }
-   
-    app.GroupSelectedCollection = new app.LibraryGroup(group_data);
-     app.UsersSelectedCollection = new app.LibraryGroup(user_data);
-};
-
 app.DataFetched = function() {
     if (!app.state_map.fetchingUsers && !app.state_map.fetchingGroups) {
         app.state_map.fetchingData = false;
@@ -86,6 +37,7 @@ app.userEditFetchData = function() {
         groups = app.utility.processData(groups);
 
         app.GroupCollection = new app.LibraryGroup(groups);
+        app.GroupAvailCollection = new app.LibraryGroup(groups);
         groups.forEach(function(model, index) {
             model.active = false;
         });
