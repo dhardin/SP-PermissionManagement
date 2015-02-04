@@ -106,7 +106,7 @@ app.LibraryView = Backbone.View.extend({
 
         if (collection.length > 0) {
             this.searchNum++;
-            regex = new RegEx(this.searchQuery, 'gi');
+            regex = new RegExp(this.searchQuery, 'gi');
             this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
     },
@@ -120,7 +120,7 @@ app.LibraryView = Backbone.View.extend({
 
         content = $el.html();
 
-        content = content.replace(regex || new RegEx(phrase, 'gi'), function(match){
+        content = content.replace(regex || new RegExp(phrase, 'gi'), function(match){
             return '<span class="match">' + match + '</span>';
         });
 
