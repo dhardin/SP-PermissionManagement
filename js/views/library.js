@@ -44,16 +44,22 @@ app.LibraryView = Backbone.View.extend({
         return this;
     },
 
-    renderItems: function(modelsArr, index, currentSearchNum) {
+    renderItems: function(modelsArr, index, currentSearchNum, highlightSearch, regex) {;
         if (this.searchNum != currentSearchNum) {
             return;
         }
+
         if (index < modelsArr.length) {
-            this.renderItem(modelsArr[index]);
+            if(highlightSearch && regex){
+                this.renderItem(modelsArr[index], highlightSearch, regex);
+            } else {
+                this.renderItem(modelsArr[index]);  
+            }
+            
             (function(that) {
                 setTimeout(function() {
                     index++;
-                    that.renderItems(modelsArr, index, currentSearchNum);
+                    that.renderItems(modelsArr, index, currentSearchNum, highlightSearch, regex);
                 }, 1);
             })(this);
         } else {
@@ -66,17 +72,22 @@ app.LibraryView = Backbone.View.extend({
         });
         this.el_html.push(itemView.render().el);
     },
-    renderItem: function(item) {
+    renderItem: function(item, highlightSearch, regex) {
         var itemView = new this.itemView({
             model: item
-        });
+        }), itemViewEl = itemView.render().el;
 
-        this.$el.append(itemView.render().el);
+        if(highlightSearch && regex){
+            itemViewEl = this.highlightSearchPhrase($(itemViewEl), this.searchQuery, regex)[0];
+        }
+        
+        this.$el.append(itemViewEl);
     },
     renderFiltered: function(collection) {
         var numActiveItems = 0,
             totalItems = 0,
-            numItemsDisplayed = 0, active_items_arr;
+            numItemsDisplayed = 0, active_items_arr,
+            regex;
 
         collection = collection || this.collection;
         active_items_arr = collection.where({active: true});
@@ -95,8 +106,29 @@ app.LibraryView = Backbone.View.extend({
 
         if (collection.length > 0) {
             this.searchNum++;
-            this.renderItems(collection.models, 0, this.searchNum);
+            regex = new RegEx(this.searchQuery, 'gi');
+            this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
+    },
+    highlightSearchPhrase: function($el, phrase, regex){
+        var content;
+
+        //return if phrase is blank
+        if(!el || !phrase || phrase.length == 0){
+            return;
+        }
+
+        content = $el.html();
+
+        content = content.replace(regex || new RegEx(phrase, 'gi'), function(match){
+            return '<span class="match">' + match + '</span>';
+        });
+
+        $el.html(content);
+
+        return $el;
+
+
     },
     onRenderComplete: function(query) {
         this.search_cache[query] = this.search_cache[query] || {};

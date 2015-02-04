@@ -200,3 +200,8 @@ input::-ms-clear {
 .disabled {
   cursor: not-allowed !important;
 }
+
+.match {
+  font-weight: bold;
+  text-decoration: underline;
+}
