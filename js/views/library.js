@@ -114,7 +114,7 @@ app.LibraryView = Backbone.View.extend({
         var content;
 
         //return if phrase is blank
-        if(!el || !phrase || phrase.length == 0){
+        if(!$el || !phrase || phrase.length == 0){
             return;
         }
 
