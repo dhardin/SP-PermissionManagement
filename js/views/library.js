@@ -75,10 +75,14 @@ app.LibraryView = Backbone.View.extend({
     renderItem: function(item, highlightSearch, regex) {
         var itemView = new this.itemView({
             model: item
-        }), itemViewEl = itemView.render().el;
+        }), $searchEl = $(itemView.render().el).find('.list-item');
 
         if(highlightSearch && regex){
-            itemViewEl = this.highlightSearchPhrase($(itemViewEl), this.searchQuery, regex)[0];
+            (function(that){
+                $searchEl.each(function(){
+                    that.highlightSearchPhrase($(this), this.searchQuery, regex);
+                });  
+            })(this);
         }
         
         this.$el.append(itemViewEl);
@@ -125,10 +129,6 @@ app.LibraryView = Backbone.View.extend({
         });
 
         $el.html(content);
-
-        return $el;
-
-
     },
     onRenderComplete: function(query) {
         this.search_cache[query] = this.search_cache[query] || {};
