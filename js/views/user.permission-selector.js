@@ -88,7 +88,7 @@ app.UserPermissions = Backbone.View.extend({
 
         if (this.libraryViewGroupSelected) {
             this.clearPermissions();
-             this.toggleButtons(false);
+            this.toggleButtons(false);
         }
     },
     onUserPermissionsSave: function(e) {
@@ -196,16 +196,15 @@ app.UserPermissions = Backbone.View.extend({
     },
     onSearch: function(e) {
         var val = $(e.currentTarget).val(),
-            options,
+            type = $(e.currentTarget).attr('data-method'),
+            pubEvent = (type == 'available' ? 'library_permissions_available:search' : 'library_permissions_selected:search'),
             $search_clear = $(e.currentTarget).siblings('.search-clear'),
-            searchAllAttributes = false;
+            searchAllAttributes = false,
+            query;
 
-        if (val.length > 0) {
-            $search_clear.removeClass('hidden');
-        } else {
-            $search_clear.addClass('hidden');
-        }
-
+        //toggle clear 'x' button
+        $search_clear.toggleClass('hidden', val.length > 0);
+      
         //check for search operand character '~'
         if (val.indexOf('~') == 0 && val.length > 1) {
             //set val to exclude '~'
@@ -216,29 +215,35 @@ app.UserPermissions = Backbone.View.extend({
         }
 
 
-        options = (searchAllAttributes ? {
+        query = (searchAllAttributes ? {
             val: val
         } : {
             key: 'name',
             val: val
         });
-        if ($(e.currentTarget).parents('.permissions_available').length) {
-            Backbone.pubSub.trigger('library_permissions_available:search', options);
-        } else {
-            Backbone.pubSub.trigger('library_permissions_selected:search', options);
+
+        this.search({
+            pubEvent: pubEvent,
+            query: query
+        });
+    },
+
+    search: function(settings) {
+        if (!settings.pubEvent || !settings.query) {
+            return;
         }
+
+        Backbone.pubSub.trigger(settings.pubEvent, settigns.query);
     },
 
     onClearSelectedClick: function(e) {
         var type = $(e.currentTarget).attr('data-method'),
-            collection = (type == 'available' ? this.libraryViewGroupAvailable.collection : this.libraryViewGroupSelected.collection);
+            pubEvent = (type == 'available' ? 'library_permissions_available:search' : 'library_permissions_selected:search');
 
-        collection.where({
-            selected: true
-        }).forEach(function(model) {
-            model.set({
-                selected: false
-            });
+        //we seach instead of just doing a backbone collection search because our search caches queries for quick results
+        this.search({
+            pubEvent: pubEvent,
+            query: ''
         });
     },
     toggleButtons: function(enable) {
