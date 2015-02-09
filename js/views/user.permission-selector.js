@@ -85,8 +85,8 @@ app.UserPermissions = Backbone.View.extend({
         this.setPermissions(tempCollection, selectedPermissionsCollection, false);
     },
     onUserSelect: function(e) {
-
         if (this.libraryViewGroupSelected) {
+            //clear permissions for current user
             this.clearPermissions();
             this.toggleButtons(false);
         }
@@ -94,10 +94,7 @@ app.UserPermissions = Backbone.View.extend({
     onUserPermissionsSave: function(e) {
         //disable edit buttons until save is complete
         this.toggleButtons(false);
-        var selectedPermissionsCollection = this.libraryViewGroupSelected.collection.where({
-                active: true
-            }),
-            selectedPermissionsArr = selectedPermissionsCollection.map(function(model) {
+        var selectedPermissionsArr = this.libraryViewGroupSelected.collection.models.map(function(model) {
                 return model.get('name');
             });
         Backbone.pubSub.trigger('user:selected-permissions-fetched', selectedPermissionsArr);
@@ -105,7 +102,7 @@ app.UserPermissions = Backbone.View.extend({
     },
     onAddPermissionClick: function(e) {
         var method = $(e.target).attr('data-method'),
-            tempCollection, collection = [],
+            models = [],
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
@@ -116,84 +113,73 @@ app.UserPermissions = Backbone.View.extend({
         switch (method) {
             case 'single':
                 //fetch all models in the collection that are currently selected
-                tempCollection = availablePermissionCollection
+                models = availablePermissionCollection
                     .where({
                         selected: true
                     });
                 //add each model from the temp collection to the  collection
-                this.setPermissions(tempCollection, selectedPermissionsCollection, false);
+                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models,false);
                 break;
             case 'all':
                 //fetch all models that are currently displayed (i.e., "active")
-                tempCollection = availablePermissionCollection
-                    .where({
-                        active: true
-                    });
+                models = availablePermissionCollection.models;
                 //set each model in temp collection to have selected state = true
                 //and add model to collection
-                this.setPermissions(tempCollection, selectedPermissionsCollection, false);
+                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models,false);
                 break;
 
             default:
                 break;
         };
     },
-    clearPermissions: function() {
-        var tempCollection = this.libraryViewGroupSelected.collection
-            .where({
-                active: true
-            }),
+      onRemovePermissionClick: function(e) {
+        var method = $(e.target).attr('data-method'),
+            models,
+            selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
-        this.setPermissions(tempCollection, availablePermissionCollection, false);
+        if ($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
+        switch (method) {
+            case 'single':
+                //fetch all models in the collection that are currently selected
+                models = selectedPermissionsCollection
+                    .where({
+                        selected: true
+                    });
+                //add each model from the temp collection to the  collection
+                this.setPermissions(selectedPermissionsCollection, availablePermissionCollection, models, false);
+                break;
+            case 'all':
+                //fetch all models that are currently displayed (i.e., "active")
+                models = selectedPermissionsCollection.models;
+                //set each model in temp collection to have selected state = true
+                //and add model to collection
+                this.setPermissions(selectedPermissionsCollection, availablePermissionCollection, models, false);
+                break;
+            default:
+                break;
+        }
     },
-    setPermissions: function(from_collection, target_collection, setSelected) {
-        from_collection.forEach(function(model, index) {
-            model.set({
-                active: false,
-                selected: false
-            });
+     setPermissions: function(from_collection, target_collection, models, setSelected) {
+        target_collection.add(models);
+        from_collection.remove(models);
+        //set the selected state of the models
+        models.forEach(function(model, index) {
             target_collection.get(model.id).set({
-                active: true,
                 selected: setSelected
             });
         });
     },
-    onRemovePermissionClick: function(e) {
-        var method = $(e.target).attr('data-method'),
-            tempCollection, collection = [],
-            selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
-            availablePermissionCollection = this.libraryViewGroupAvailable.collection;
-
-        if ($(e.currentTarget).hasClass('disabled')) {
-            return;
-        }
-
-        switch (method) {
-            case 'single':
-                //fetch all models in the collection that are currently selected
-                tempCollection = selectedPermissionsCollection
-                    .where({
-                        selected: true
-                    });
-                //add each model from the temp collection to the  collection
-                this.setPermissions(tempCollection, availablePermissionCollection, false);
-                break;
-            case 'all':
-                //fetch all models that are currently displayed (i.e., "active")
-                tempCollection = selectedPermissionsCollection
-                    .where({
-                        active: true
-                    });
-                //set each model in temp collection to have selected state = true
-                //and add model to collection
-                this.setPermissions(tempCollection, availablePermissionCollection, false);
-                break;
-            default:
-                break;
-        };
+  
+    clearPermissions: function() {
+        this.libraryViewGroupSelected.collection.reset([]);
+        this.libraryViewGroupAvailable.collection.reset(app.GroupCollection.collection.models);
     },
+   
+
     onSearch: function(e) {
         var val = $(e.currentTarget).val(),
             type = $(e.currentTarget).attr('data-method'),
@@ -246,6 +232,7 @@ app.UserPermissions = Backbone.View.extend({
             query: ''
         });
     },
+
     toggleButtons: function(enable) {
         this.$buttons.each(function(i, el) {
             if (enable) {

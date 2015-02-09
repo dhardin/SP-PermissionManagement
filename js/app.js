@@ -38,10 +38,7 @@ app.userEditFetchData = function() {
 
         app.GroupCollection = new app.LibraryGroup(groups);
         app.GroupAvailCollection = new app.LibraryGroup(groups);
-        groups.forEach(function(model, index) {
-            model.active = false;
-        });
-        app.GroupSelectedCollection = new app.LibraryGroup(groups);
+        app.GroupSelectedCollection = new app.LibraryGroup([]);
         app.state_map.fetchingGroups = false;
         app.DataFetched();
     });
