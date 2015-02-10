@@ -66,6 +66,8 @@ app.UserPermissions = Backbone.View.extend({
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
+        this.libraryViewGroupAvailable.collection.reset(app.GroupCollection.models);
+
         this.toggleButtons(true);
 
         //select permissions in available permissions collection
