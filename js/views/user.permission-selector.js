@@ -66,13 +66,15 @@ app.UserPermissions = Backbone.View.extend({
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
+        this.toggleButtons(true);
+
         if(permissions.length == 0 || this.libraryViewGroupAvailable.collection.length == app.GroupCollection.length){
             return;
         }
 
         this.libraryViewGroupAvailable.collection.set(app.GroupCollection.models);
 
-        this.toggleButtons(true);
+      
 
         //select permissions in available permissions collection
         permissions.forEach(function(obj) {
