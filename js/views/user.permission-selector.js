@@ -176,7 +176,7 @@ app.UserPermissions = Backbone.View.extend({
   
     clearPermissions: function() {
         this.libraryViewGroupSelected.collection.reset([]);
-        this.libraryViewGroupAvailable.collection.reset(app.GroupCollection.collection.models);
+        this.libraryViewGroupAvailable.collection.reset(app.GroupCollection.models);
     },
    
 
