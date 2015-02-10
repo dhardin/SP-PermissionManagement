@@ -219,7 +219,7 @@ app.UserPermissions = Backbone.View.extend({
             return;
         }
 
-        Backbone.pubSub.trigger(settings.pubEvent, settigns.query);
+        Backbone.pubSub.trigger(settings.pubEvent, settings.query);
     },
 
     onClearSelectedClick: function(e) {

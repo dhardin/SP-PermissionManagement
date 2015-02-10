@@ -80,7 +80,7 @@ app.LibraryView = Backbone.View.extend({
         if(highlightSearch && regex){
             (function(that){
                 $searchEl.each(function(){
-                    that.highlightSearchPhrase($(this), this.searchQuery, regex);
+                    that.highlightSearchPhrase($(this), that.searchQuery, regex);
                 });  
             })(this);
         }
