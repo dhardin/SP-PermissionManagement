@@ -62,7 +62,7 @@ app.UserPermissions = Backbone.View.extend({
         //Backbone.pubSub.trigger('group:select', $(el));
     },
     onPermissionFetched: function(permissions) {
-        var tempCollection,
+        var models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
@@ -76,13 +76,13 @@ app.UserPermissions = Backbone.View.extend({
         });
 
         //set collection to matching permissions array
-        tempCollection = availablePermissionCollection
+        models = availablePermissionCollection
             .where({
                 selected: true
             });
 
         //set permissions and don't select (i.e., hightlight) set permissions
-        this.setPermissions(tempCollection, selectedPermissionsCollection, false);
+        this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
     },
     onUserSelect: function(e) {
         if (this.libraryViewGroupSelected) {
