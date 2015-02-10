@@ -189,7 +189,7 @@ app.UserPermissions = Backbone.View.extend({
             query;
 
         //toggle clear 'x' button
-        $search_clear.toggleClass('hidden', val.length > 0);
+        $search_clear.toggleClass('hidden', val.length == 0);
       
         //check for search operand character '~'
         if (val.indexOf('~') == 0 && val.length > 1) {
