@@ -66,7 +66,11 @@ app.UserPermissions = Backbone.View.extend({
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
-        this.libraryViewGroupAvailable.collection.reset(app.GroupCollection.models);
+        if(permissions.length == 0 || this.libraryViewGroupAvailable.collection.length == app.GroupCollection.length){
+            return;
+        }
+
+        this.libraryViewGroupAvailable.collection.set(app.GroupCollection.models);
 
         this.toggleButtons(true);
 
@@ -177,8 +181,8 @@ app.UserPermissions = Backbone.View.extend({
     },
   
     clearPermissions: function() {
-        this.libraryViewGroupSelected.collection.reset([]);
-        this.libraryViewGroupAvailable.collection.reset(app.GroupCollection.models);
+        this.libraryViewGroupSelected.collection.set([]);
+        this.libraryViewGroupAvailable.collection.set(app.GroupCollection.models);
     },
    
 
