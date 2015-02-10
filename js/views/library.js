@@ -75,7 +75,7 @@ app.LibraryView = Backbone.View.extend({
     renderItem: function(item, highlightSearch, regex) {
         var itemView = new this.itemView({
             model: item
-        }), $searchEl = $(itemView.render().el).find('.list-item');
+        }), itemViewEl = itemView.render().el, $searchEl = $(itemViewEl).find('.list-item');
 
         if(highlightSearch && regex){
             (function(that){
