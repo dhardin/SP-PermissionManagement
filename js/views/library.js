@@ -156,7 +156,7 @@ app.LibraryView = Backbone.View.extend({
                 (function(that) {
                     results = that.collection.filter(function(item) {
                         var attributeVal = item.get(key).toLowerCase();
-                        if(attributeVal.indexOf(val)){
+                        if(attributeVal.indexOf(val) > -1){
                             return true;
                         }
                     });
