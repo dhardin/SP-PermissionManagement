@@ -143,11 +143,11 @@ app.LibraryView = Backbone.View.extend({
         });
 
         this.$el.insertAt(model_index, itemView.render().el);
-
+        index = index + 1;
         if (index < models.length) {
             (function(that) {
                 setTimeout(function() {
-                    index = index + 1;
+
                     that.add(models, collection, index);
                 }, 10);
             })(this);
@@ -166,11 +166,11 @@ app.LibraryView = Backbone.View.extend({
         model_index = collection.indexOf(model);
         this.$el.children().eq(model_index).remove();
         this.collection.remove(model);
-
+        index = index + 1;
         if (index < models.length) {
             (function(that) {
                 setTimeout(function() {
-                    index = index + 1;
+
                     that.remove(models, collection, index);
                 }, 10);
             })(this);
