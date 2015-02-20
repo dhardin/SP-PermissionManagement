@@ -186,6 +186,7 @@ app.UserPermissions = Backbone.View.extend({
        // });
        for (i = 0; i < models.length; i++){
             model = models[i];
+            model.set({selected: setSelected});
             Backbone.pubSub.trigger('add', model, target_collection)
                             .trigger('remove', model, from_collection);
        }
