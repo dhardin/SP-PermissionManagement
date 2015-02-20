@@ -60,7 +60,7 @@ app.groupEditFetchData = function() {
         users.forEach(function(model, index) {
             model.active = false;
         });
-         app.UsersSelectedCollection = new app.LibraryUser(users);
+        app.UsersSelectedCollection = new app.LibraryUser(users);
         app.state_map.fetchingUsers = false;
         app.DataFetched();
     });
@@ -70,22 +70,22 @@ app.groupEditFetchData = function() {
         groups = app.utility.processData(groups);
 
         app.GroupCollection = new app.LibraryGroup(groups);
-       
-       
+
+
         app.state_map.fetchingGroups = false;
         app.DataFetched();
     });
 };
 
-$.fn.insertAt = function(index, element){
+$.fn.insertAt = function(index, element) {
     var lastIndex = this.children().size();
 
-    if (index < 0){
+    if (index < 0) {
         index = Math.max(0, lastIndex + 1 + index);
     }
     this.append(element);
-    if(index < lastIndex){
-        $children.eq(index).before(this.children().last());
+    if (index < lastIndex) {
+        this.children().eq(index).before(this.children().last());
     }
     return this;
 }
