@@ -76,3 +76,16 @@ app.groupEditFetchData = function() {
         app.DataFetched();
     });
 };
+
+$.fn.insertAt = function(index, element){
+    var $children = this.children(), lastIndex = $chilren.size();
+
+    if (index < 0){
+        index = Math.max(0, lastIndex + 1 + index);
+    }
+    this.append(element);
+    if(index < lastIndex){
+        $children.eq(index).before($children.last());
+    }
+    return this;
+}

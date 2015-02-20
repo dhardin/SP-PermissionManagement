@@ -3,11 +3,13 @@ var app = app || {};
 app.LibraryView = Backbone.View.extend({
 
     initialize: function(options) {
-        this.collection.on('add reset remove', function() {
-            this.render(this.collection);
-        }, this);
+       // this.collection.on('add reset remove', function() {
+      //      this.render(this.collection);
+     //   }, this);
 
         Backbone.pubSub.on('library:search', this.search, this);
+        Backbone.pubSub.on('add', this.add, this);
+        Backbone.pubSub.on('remove', this.remove, this);
 
         this.search_cache = {};
         this.searchNum = 0;
@@ -113,6 +115,30 @@ app.LibraryView = Backbone.View.extend({
             regex = new RegExp(this.searchQuery, 'gi');
             this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
+    },
+    add: function(model, collection){
+        var index = 0, itemView;
+
+        if(collection != this.collection){
+            return;
+        }
+
+        itemView = new this.itemView({
+            model: model
+        });
+
+        this.$el.insertAt(index, itemView.render().el);
+    },
+    remove: function(model, collection){
+        var index = 0, itemView;
+
+        if (collection != this.collection){
+            return;
+        }
+
+        index = collection.indexOf(model);
+        this.$el.children().eq(index).remove();
+        this.collection.remove(model);
     },
     highlightSearchPhrase: function($el, phrase, regex){
         var content;

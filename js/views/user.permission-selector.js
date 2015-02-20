@@ -175,14 +175,20 @@ app.UserPermissions = Backbone.View.extend({
         }
     },
      setPermissions: function(from_collection, target_collection, models, setSelected) {
-        target_collection.add(models);
-        from_collection.remove(models);
+        var i = 0, model;
+        //target_collection.add(models);
+       // from_collection.remove(models);
         //set the selected state of the models
-        models.forEach(function(model, index) {
-            target_collection.get(model.id).set({
-                selected: setSelected
-            });
-        });
+        //models.forEach(function(model, index) {
+           // target_collection.get(model.id).set({
+           //     selected: setSelected
+           // });
+       // });
+       for (i = 0; i < models.length; i++){
+            model = models[i];
+            Backbone.pubSub.trigger('add', model, target_collection)
+                            .trigger('remove', model, from_collection);
+       }
     },
   
     clearPermissions: function() {
