@@ -148,7 +148,7 @@ app.LibraryView = Backbone.View.extend({
             this.add(models, collection, index);
         }
     },
-    remove: function(models, collection, index) {
+    remove: function(models, collection, index, models_length) {
         var itemView, model, model_index;
 
         index = index || 0;

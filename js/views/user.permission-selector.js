@@ -176,6 +176,9 @@ app.UserPermissions = Backbone.View.extend({
     },
     setPermissions: function(from_collection, target_collection, models, setSelected) {
         var i = 0;
+
+        models = $.extend([], models);
+        
         for (i = 0; i < models.length; i++) {
             models[i].set({
                 selected: setSelected
