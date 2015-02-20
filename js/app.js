@@ -78,14 +78,14 @@ app.groupEditFetchData = function() {
 };
 
 $.fn.insertAt = function(index, element){
-    var $children = this.children(), lastIndex = $children.size();
+    var lastIndex = this.children().size();
 
     if (index < 0){
         index = Math.max(0, lastIndex + 1 + index);
     }
     this.append(element);
     if(index < lastIndex){
-        $children.eq(index).before($children.last());
+        $children.eq(index).before(this.children().last());
     }
     return this;
 }
