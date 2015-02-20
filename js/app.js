@@ -36,8 +36,10 @@ app.userEditFetchData = function() {
         var key, i, temp_group, group, new_key, groupArr = [];
         groups = app.utility.processData(groups);
 
+        groupArr = $.extend(true, [], groups);
+
         app.GroupCollection = new app.LibraryGroup(groups);
-        app.GroupAvailCollection = new app.LibraryGroup(groups);
+        app.GroupAvailCollection = new app.LibraryGroup(groupArr);
         app.GroupSelectedCollection = new app.LibraryGroup([]);
         app.state_map.fetchingGroups = false;
         app.DataFetched();

@@ -43,7 +43,7 @@ app.UserPermissions = Backbone.View.extend({
         });
         this.libraryViewGroupAvailable = new app.LibraryPermissionsAvailableView({
             el: this.$groupAvailable[0],
-            collection: app.GroupCollection,
+            collection: app.GroupAvailCollection,
             itemView: app.GroupView
         });
 
@@ -64,18 +64,21 @@ app.UserPermissions = Backbone.View.extend({
     onPermissionFetched: function(permissions) {
         var models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
-            availablePermissionCollection = this.libraryViewGroupAvailable.collection;
+            availablePermissionCollection = this.libraryViewGroupAvailable.collection,
+            tempCollectionArr;
 
         this.toggleButtons(true);
 
-        if(permissions.length == 0 || this.libraryViewGroupAvailable.collection.length == app.GroupCollection.length){
-            return;
+        //reset available permissions
+        if(this.libraryViewGroupAvailable.collection.length != app.GroupCollection.length){
+            tempCollectionArr = $.extend(true, [], app.GroupCollection.models)
+            this.libraryViewGroupAvailable.collection.set(tempCollectionArr);
         }
 
-        this.libraryViewGroupAvailable.collection.set(app.GroupCollection.models);
-
-      
-
+        //return if no permissions to set
+        if(permissions.length == 0 || !(permissions instanceof Array)){
+            return;
+        }
         //select permissions in available permissions collection
         permissions.forEach(function(obj) {
             availablePermissionCollection.get(obj.id).set({

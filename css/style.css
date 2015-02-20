@@ -118,7 +118,7 @@ li {
   bottom: 0;
 }
 #console{
-  min-height: 100px;
+  height: 300px;
 }
 
 #console-label {
