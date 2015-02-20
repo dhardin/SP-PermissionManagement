@@ -147,7 +147,8 @@ app.LibraryView = Backbone.View.extend({
         if (index < models.length) {
             (function(that) {
                 setTimeout(function() {
-                    that.add(models, collection, index++);
+                    index = index + 1;
+                    that.add(models, collection, index);
                 }, 10);
             })(this);
         }
@@ -169,7 +170,8 @@ app.LibraryView = Backbone.View.extend({
         if (index < models.length) {
             (function(that) {
                 setTimeout(function() {
-                    that.remove(models, collection, index++);
+                    index = index + 1;
+                    that.remove(models, collection, index);
                 }, 10);
             })(this);
         }
