@@ -145,9 +145,11 @@ app.LibraryView = Backbone.View.extend({
         this.$el.insertAt(model_index, itemView.render().el);
 
         if (index < models.length) {
-            setTimeout(function() {
-                this.add(models, collection, index++);
-            }, 10);
+            (function(that) {
+                setTimeout(function() {
+                    that.add(models, collection, index++);
+                }, 10);
+            })(this);
         }
     },
     remove: function(models, collection, index) {
@@ -165,9 +167,11 @@ app.LibraryView = Backbone.View.extend({
         this.collection.remove(model);
 
         if (index < models.length) {
-            setTimeout(function() {
-                this.remove(models, collection, index++);
-            }, 10);
+            (function(that) {
+                setTimeout(function() {
+                    that.remove(models, collection, index++);
+                }, 10);
+            })(this);
         }
     },
     highlightSearchPhrase: function($el, phrase, regex) {
