@@ -60,6 +60,7 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 - [x] Add ability to manage a group's users
 - [x] Add ability to manage a user's groups
 - [ ] Add abiility to manage permissions at the list/library level
+- [ ] Highlight search results
 - [x] Optimizations
   - [x] Optimize list filtering 
     - Resolved search delay using memoization and built-in underscore utility functions. 
