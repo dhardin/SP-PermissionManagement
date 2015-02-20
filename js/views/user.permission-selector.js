@@ -70,13 +70,13 @@ app.UserPermissions = Backbone.View.extend({
         this.toggleButtons(true);
 
         //reset available permissions
-        if(this.libraryViewGroupAvailable.collection.length != app.GroupCollection.length){
+        if (this.libraryViewGroupAvailable.collection.length != app.GroupCollection.length) {
             tempCollectionArr = $.extend(true, [], app.GroupCollection.models)
             this.libraryViewGroupAvailable.collection.set(tempCollectionArr);
         }
 
         //return if no permissions to set
-        if(permissions.length == 0 || !(permissions instanceof Array)){
+        if (permissions.length == 0 || !(permissions instanceof Array)) {
             return;
         }
         //select permissions in available permissions collection
@@ -106,8 +106,8 @@ app.UserPermissions = Backbone.View.extend({
         //disable edit buttons until save is complete
         this.toggleButtons(false);
         var selectedPermissionsArr = this.libraryViewGroupSelected.collection.models.map(function(model) {
-                return model.get('name');
-            });
+            return model.get('name');
+        });
         Backbone.pubSub.trigger('user:selected-permissions-fetched', selectedPermissionsArr);
 
     },
@@ -129,21 +129,21 @@ app.UserPermissions = Backbone.View.extend({
                         selected: true
                     });
                 //add each model from the temp collection to the  collection
-                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models,false);
+                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
                 break;
             case 'all':
                 //fetch all models that are currently displayed (i.e., "active")
                 models = availablePermissionCollection.models;
                 //set each model in temp collection to have selected state = true
                 //and add model to collection
-                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models,false);
+                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
                 break;
 
             default:
                 break;
         };
     },
-      onRemovePermissionClick: function(e) {
+    onRemovePermissionClick: function(e) {
         var method = $(e.target).attr('data-method'),
             models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
@@ -174,29 +174,22 @@ app.UserPermissions = Backbone.View.extend({
                 break;
         }
     },
-     setPermissions: function(from_collection, target_collection, models, setSelected) {
-        var i = 0, model;
-        //target_collection.add(models);
-       // from_collection.remove(models);
-        //set the selected state of the models
-        //models.forEach(function(model, index) {
-           // target_collection.get(model.id).set({
-           //     selected: setSelected
-           // });
-       // });
-       for (i = 0; i < models.length; i++){
-            model = models[i];
-            model.set({selected: setSelected});
-            Backbone.pubSub.trigger('add', model, target_collection)
-                            .trigger('remove', model, from_collection);
-       }
+    setPermissions: function(from_collection, target_collection, models, setSelected) {
+        var i = 0;
+        for (i = 0; i < models.length; i++) {
+            models[i].set({
+                selected: setSelected
+            });
+        }
+        Backbone.pubSub.trigger('add', models, target_collection);
+        Backbone.pubSub.trigger('remove', models, from_collection);
     },
-  
+
     clearPermissions: function() {
         this.libraryViewGroupSelected.collection.set([]);
         this.libraryViewGroupAvailable.collection.set(app.GroupCollection.models);
     },
-   
+
 
     onSearch: function(e) {
         var val = $(e.currentTarget).val(),
@@ -208,7 +201,7 @@ app.UserPermissions = Backbone.View.extend({
 
         //toggle clear 'x' button
         $search_clear.toggleClass('hidden', val.length == 0);
-      
+
         //check for search operand character '~'
         if (val.indexOf('~') == 0 && val.length > 1) {
             //set val to exclude '~'

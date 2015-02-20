@@ -3,9 +3,9 @@ var app = app || {};
 app.LibraryView = Backbone.View.extend({
 
     initialize: function(options) {
-       // this.collection.on('add reset remove', function() {
-      //      this.render(this.collection);
-     //   }, this);
+        // this.collection.on('add reset remove', function() {
+        //      this.render(this.collection);
+        //   }, this);
 
         Backbone.pubSub.on('library:search', this.search, this);
         Backbone.pubSub.on('add', this.add, this);
@@ -22,12 +22,14 @@ app.LibraryView = Backbone.View.extend({
 
     render: function(collection) {
         var active_items_arr;
-        
+
         this.el_html = [];
 
         this.$el.html('');
         collection = collection || this.collection;
-        active_items_arr = collection.where({active: true});
+        active_items_arr = collection.where({
+            active: true
+        });
         collection = new Backbone.Collection(active_items_arr);
 
         if (collection.length > 0) {
@@ -52,12 +54,12 @@ app.LibraryView = Backbone.View.extend({
         }
 
         if (index < modelsArr.length) {
-            if(highlightSearch && regex){
+            if (highlightSearch && regex) {
                 this.renderItem(modelsArr[index], highlightSearch, regex);
             } else {
-                this.renderItem(modelsArr[index]);  
+                this.renderItem(modelsArr[index]);
             }
-            
+
             (function(that) {
                 setTimeout(function() {
                     index++;
@@ -76,27 +78,32 @@ app.LibraryView = Backbone.View.extend({
     },
     renderItem: function(item, highlightSearch, regex) {
         var itemView = new this.itemView({
-            model: item
-        }), itemViewEl = itemView.render().el, $searchEl = $(itemViewEl).find('.list-item');
+                model: item
+            }),
+            itemViewEl = itemView.render().el,
+            $searchEl = $(itemViewEl).find('.list-item');
 
-        if(highlightSearch && regex){
-            (function(that){
-                $searchEl.each(function(){
+        if (highlightSearch && regex) {
+            (function(that) {
+                $searchEl.each(function() {
                     that.highlightSearchPhrase($(this), that.searchQuery, regex);
-                });  
+                });
             })(this);
         }
-        
+
         this.$el.append(itemViewEl);
     },
     renderFiltered: function(collection) {
         var numActiveItems = 0,
             totalItems = 0,
-            numItemsDisplayed = 0, active_items_arr,
+            numItemsDisplayed = 0,
+            active_items_arr,
             regex;
 
         collection = collection || this.collection;
-        active_items_arr = collection.where({active: true});
+        active_items_arr = collection.where({
+            active: true
+        });
         collection = new Backbone.Collection(active_items_arr);
         //get the total number of active items
         numActiveItems = this.collection.length;
@@ -116,43 +123,53 @@ app.LibraryView = Backbone.View.extend({
             this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
     },
-    add: function(model, collection){
-        var index = 0, itemView;
+    add: function(models, collection) {
+        var index = 0, i = 0,
+            itemView, model;
 
-        if(collection != this.collection){
-            return;
-        }
-        this.collection.add(model);
-        index = this.collection.indexOf(model);
-
-        itemView = new this.itemView({
-            model: model
-        });
-
-        this.$el.insertAt(index, itemView.render().el);
-    },
-    remove: function(model, collection){
-        var index = 0, itemView;
-
-        if (collection != this.collection){
+        if (collection != this.collection) {
             return;
         }
 
-        index = collection.indexOf(model);
-        this.$el.children().eq(index).remove();
-        this.collection.remove(model);
+        for (i = 0; i < models.length; i++) {
+
+            model = models[i];
+            this.collection.add(model);
+            index = this.collection.indexOf(model);
+
+            itemView = new this.itemView({
+                model: model
+            });
+
+            this.$el.insertAt(index, itemView.render().el);
+        }
     },
-    highlightSearchPhrase: function($el, phrase, regex){
+    remove: function(models, collection) {
+        var index = 0,
+            itemView, model, i = 0;
+
+        if (collection != this.collection) {
+            return;
+        }
+
+        for (i = 0; i < models.length; i++) {
+            model = models[i];
+            index = collection.indexOf(model);
+            this.$el.children().eq(index).remove();
+            this.collection.remove(model);
+        }
+    },
+    highlightSearchPhrase: function($el, phrase, regex) {
         var content;
 
         //return if phrase is blank
-        if(!$el || !phrase || phrase.length == 0){
+        if (!$el || !phrase || phrase.length == 0) {
             return;
         }
 
         content = $el.html();
 
-        content = content.replace(regex || new RegExp(phrase, 'gi'), function(match){
+        content = content.replace(regex || new RegExp(phrase, 'gi'), function(match) {
             return '<span class="match">' + match + '</span>';
         });
 
@@ -184,7 +201,7 @@ app.LibraryView = Backbone.View.extend({
                 (function(that) {
                     results = that.collection.filter(function(item) {
                         var attributeVal = item.get(key).toLowerCase();
-                        if(attributeVal.indexOf(val) > -1){
+                        if (attributeVal.indexOf(val) > -1) {
                             return true;
                         }
                     });
