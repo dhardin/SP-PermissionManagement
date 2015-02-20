@@ -122,6 +122,8 @@ app.LibraryView = Backbone.View.extend({
         if(collection != this.collection){
             return;
         }
+        this.collection.add(model);
+        index = this.collection.indexOf(model);
 
         itemView = new this.itemView({
             model: model
