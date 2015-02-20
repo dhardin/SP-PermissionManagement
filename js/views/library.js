@@ -123,33 +123,28 @@ app.LibraryView = Backbone.View.extend({
             this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
     },
-    add: function(models, collection, index) {
-        var model_index = 0,
-            itemView, model;
-
-        index = index || 0;
-
-
+    add: function(models, collection) {
+        var index = 0,
+            i = 0,
+            itemView, model,
+            temp_models = $.extend(true, [], models);
 
         if (collection != this.collection) {
             return;
         }
-        model = models[index];
-        this.collection.add(model);
-        model_index = this.collection.indexOf(model);
 
-        itemView = new this.itemView({
-            model: model
-        });
-
-        this.$el.insertAt(model_index, itemView.render().el);
-        index = index + 1;
-        if (index < models.length) {
-            this.add(models, collection, index);
+        for (i = 0; i < temp_models.length; i++) {
+            model = temp_models[i];
+            this.collection.add(model);
+            itemView = new this.itemView({
+                model: model
+            });
+            index = this.collection.indexOf(model);
+            this.$el.insertAt(index, itemView.render().el);
         }
     },
-    remove: function(models, collection, index, models_length) {
-        var itemView, model, model_index;
+    remove: function(models, collection) {
+        var itemView, model, index = 0, i = 0,  temp_models = $.extend(true, [], models);;
 
         index = index || 0;
 
@@ -157,13 +152,11 @@ app.LibraryView = Backbone.View.extend({
             return;
         }
 
-        model = models[index];
-        model_index = collection.indexOf(model);
-        this.$el.children().eq(model_index).remove();
-        this.collection.remove(model);
-        index = index + 1;
-        if (index < models.length) {
-            this.remove(models, collection, index);
+        for (i = 0; i < temp_models.length; i++) {
+            model = temp_models[i];
+            index = collection.indexOf(model);
+            this.$el.children().eq(index).remove();
+            this.collection.remove(model);
         }
     },
     highlightSearchPhrase: function($el, phrase, regex) {
