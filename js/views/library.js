@@ -126,15 +126,14 @@ app.LibraryView = Backbone.View.extend({
     add: function(models, collection) {
         var index = 0,
             i = 0,
-            itemView, model,
-            temp_models = $.extend(true, [], models);
+            itemView, model;
 
         if (collection != this.collection) {
             return;
         }
 
-        for (i = 0; i < temp_models.length; i++) {
-            model = temp_models[i];
+        for (i = 0; i < models.length; i++) {
+            model = models[i];
             this.collection.add(model);
             itemView = new this.itemView({
                 model: model
@@ -144,7 +143,7 @@ app.LibraryView = Backbone.View.extend({
         }
     },
     remove: function(models, collection) {
-        var itemView, model, index = 0, i = 0,  temp_models = $.extend(true, [], models);;
+        var itemView, model, index = 0, i = 0;
 
         index = index || 0;
 
@@ -152,8 +151,8 @@ app.LibraryView = Backbone.View.extend({
             return;
         }
 
-        for (i = 0; i < temp_models.length; i++) {
-            model = temp_models[i];
+        for (i = 0; i < models.length; i++) {
+            model = models[i];
             index = collection.indexOf(model);
             this.$el.children().eq(index).remove();
             this.collection.remove(model);
