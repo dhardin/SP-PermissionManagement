@@ -66,6 +66,9 @@ app.UserEditView = Backbone.View.extend({
             this.toggleButtons(false);
         }
 
+
+        $('body').on('click', this.onBodyClick);
+
         this.libraryViewUsers = new app.LibraryUserView({
             el: this.$users[0],
             collection: app.UserCollection,
@@ -111,6 +114,24 @@ app.UserEditView = Backbone.View.extend({
 
 
         Backbone.pubSub.trigger('library_users:search', options);
+    },
+    onBodyClick: function(e) {
+        var $currentTarget = $(e.currentTarget);
+
+        (function(that) {
+            setTimeout(function() {
+                //return if users are not visible or the current target is the user search bar
+                if (!that.$users.is(':visible') || $currentTarget[0] === that.$user_search[0]) {
+                    return;
+                }
+                if (document.activeElement === that.$user_info[0]) {
+                    return;
+                } else {
+                    that.$users.hide();
+                }
+
+            }, 10);
+        })(this);
     },
     onSearchClear: function(e) {
         this.$search.val('');
@@ -344,7 +365,7 @@ app.UserEditView = Backbone.View.extend({
 
         if (!user.attributes.hasOwnProperty('loginname')) {
             return false;
-        }  
+        }
 
         this.$search.val(user.get('name'));
         this.$search_clear.show();
@@ -411,16 +432,5 @@ app.UserEditView = Backbone.View.extend({
 
     onSearchFocus: function(e) {
         this.$users.show();
-    },
-
-    onSearchBlur: function(e) {
-        (function(that) {
-            setTimeout(function() {
-                if(document.activeElement === that.$user_info[0]){
-                    return;
-                }
-                that.$users.hide();
-            },100);
-        })(this);
     }
 });
