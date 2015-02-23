@@ -44,6 +44,7 @@ app.UserEditView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template(this.model.toJSON()));
         this.$users = this.$('#users');
+        this.$user_info = this.$('#user-info');
         this.$user_search_container = this.$('.search-container');
         this.$user_search = this.$('.search');
         this.$user_attributes = this.$('.user-attr');
@@ -416,7 +417,7 @@ app.UserEditView = Backbone.View.extend({
         (function(that) {
             setTimeout(function() {
                 var $currentTarget = $(document.activeElement);
-                if($currentTarget === that.$users){
+                if($currentTarget === that.$user_info){
                     return;
                 }
                 that.$users.hide();
