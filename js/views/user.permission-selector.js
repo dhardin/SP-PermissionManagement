@@ -22,10 +22,6 @@ app.UserPermissions = Backbone.View.extend({
         Backbone.pubSub.on('user:save-permissions', this.onUserPermissionsSave, this);
     },
 
-    select: function(e) {
-        Backbone.pubSub.trigger('user:select', this.model);
-    },
-
     render: function() {
         this.$el.html(this.template(this.model.toJSON()));
 

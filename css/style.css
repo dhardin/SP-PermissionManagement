@@ -170,7 +170,7 @@ li {
 .search-clear {
   position: absolute;
   right: 1em;
-  top: 0.1em;
+  top: 0.5em;
   display: inline-block !important;
   color: #008cba !important;
 }
@@ -180,7 +180,7 @@ li {
 }
 
 #user-select .search-clear, #group-select .search-clear {
-  top: 0.5em;
+  top: 0.4em;
 }
 
 #purge-drop li {
