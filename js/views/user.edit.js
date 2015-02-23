@@ -416,8 +416,7 @@ app.UserEditView = Backbone.View.extend({
     onSearchBlur: function(e) {
         (function(that) {
             setTimeout(function() {
-                var $currentTarget = $(document.activeElement);
-                if($currentTarget === that.$user_info){
+                if(document.activeElement === that.$user_info[0]){
                     return;
                 }
                 that.$users.hide();
