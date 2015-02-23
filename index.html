@@ -170,17 +170,11 @@
 
         <div class="row" data-equalizer>
             <div id="group-info" class="small-12 medium-6 columns" data-equalizer-watch>
-                <button data-dropdown="groups-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown small info" id="groups-select-btn">Select a Group</button>
-                <br>
-                <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-                    <li>
-                        <div class="search-container">
-                            <input class="search" type="text" />
-                            <a class="search-clear hidden">X</a>
-                        </div>
-                        <ul id="groups"></ul>
-                    </li>
-                </ul>
+             <div class="search-container">
+                    <input class="search" type="text" />
+                    <a class="search-clear hidden">X</a>
+                     <ul id="groups"></ul>
+                </div>
                 <label>
 
                     <input class="group-attr" type="text" id="name" value="<%=name%>" />

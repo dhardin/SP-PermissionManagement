@@ -55,8 +55,10 @@ app.groupEditFetchData = function() {
         var key, i, temp_user, user, new_key, userArr = [];
         users = app.utility.processData(users);
 
+   userArr = $.extend(true, [], users);
         //initialize data
         app.UserCollection = new app.LibraryUser(users);
+        app.UserAvailCollection = new app.LibraryGroup(userArr);
         users.forEach(function(model, index) {
             model.active = false;
         });

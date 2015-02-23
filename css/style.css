@@ -53,6 +53,11 @@ li {
   overflow-y: scroll;
   margin-left: 0;
   max-height: 20em;
+  display: none;
+  position: absolute;
+  background: #fff;
+  z-index: 9999;
+  width: 100%;
 }
 #users li, #groups li{
   cursor: pointer;
@@ -87,12 +92,6 @@ li {
   border-color: #61b6d9;
 }
 
-#users {
-  display: none;
-  position: absolute;
-  background: #fff;
-  z-index: 9999;
-}
 
 #users-dropdown, #groups-dropdown{
    background-color: #fff;

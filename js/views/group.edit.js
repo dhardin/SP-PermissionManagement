@@ -12,7 +12,8 @@ app.GroupEditView = Backbone.View.extend({
         'click #clear-console': 'onClearConsoleClick',
         'click .export-users': 'onExportBtnClick',
         'click .search-clear': 'onSearchClear',
-        'click .search': 'onSearchClick'
+        'click .search': 'onSearchClick',
+        'focus .search': 'onSearchFocus'
     },
 
     initialize: function(options) {
@@ -38,10 +39,6 @@ app.GroupEditView = Backbone.View.extend({
 
     },
 
-    select: function(e) {
-        Backbone.pubSub.trigger('group:select', this.model);
-    },
-
     render: function() {
         this.$el.html(this.template(this.model.toJSON()));
         this.$groups = this.$('#groups');
@@ -65,6 +62,14 @@ app.GroupEditView = Backbone.View.extend({
         if (this.model.get('name') == '') {
             this.toggleButtons(false);
         }
+
+
+        (function(that){
+              $('body').on('click',function(e){
+                that.onBodyClick(e);
+            });
+        })(this);
+      
 
         this.libraryViewGroups = new app.LibraryGroupView({
             el: this.$groups[0],
@@ -110,7 +115,24 @@ app.GroupEditView = Backbone.View.extend({
 
         Backbone.pubSub.trigger('library_groups:search', options);
     },
+  onBodyClick: function(e) {
+        var $currentTarget = $(e.currentTarget);
 
+        (function(that) {
+            setTimeout(function() {
+                //return if users are not visible or the current target is the user search bar
+                if (!that.$users.is(':visible') || $currentTarget[0] === that.$user_search[0]) {
+                    return;
+                }
+                if (document.activeElement === that.$user_info[0]) {
+                    return;
+                } else {
+                    that.$users.hide();
+                }
+
+            }, 10);
+        })(this);
+    },
     clearConsole: function() {
         this.$messages.html('');
     },
@@ -177,10 +199,14 @@ app.GroupEditView = Backbone.View.extend({
         if (!group.hasOwnProperty('attributes')) {
             return;
         }
+         this.$groups.hide();
         this.model = group;
         this.$group_attributes.each(function(i, el) {
             $(el).val(group.attributes[el.id]);
         });
+
+            this.$search.val(user.get('name'));
+        this.$search_clear.show();
 
         //fetch group users
         this.getGroupUsers(group.get('name'));
@@ -451,6 +477,12 @@ app.GroupEditView = Backbone.View.extend({
          this.$group_attributes.each(function(i, el) {
             $(el).val('');
          });
+    },
+    onSearchFocus: function(e) {
+        this.$groups.show();
+        if(this.$search.val().length > 0){
+             this.$search_clear.show();
+        }
     }
 
 

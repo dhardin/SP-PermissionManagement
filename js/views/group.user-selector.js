@@ -22,10 +22,6 @@ app.GroupUsers = Backbone.View.extend({
         Backbone.pubSub.on('group:save-users', this.onGroupUsersSave, this);
     },
 
-    select: function(e) {
-        Backbone.pubSub.trigger('group:select', this.model);
-    },
-
     render: function() {
         this.$el.html(this.template(this.model.toJSON()));
 
@@ -42,7 +38,7 @@ app.GroupUsers = Backbone.View.extend({
         });
         this.libraryViewUsersAvailable = new app.LibraryUsersAvailableView({
             el: this.$usersAvailable[0],
-            collection: app.UserCollection,
+            collection: app.UserAvailCollection,
             itemView: app.GroupUserView
         });
 
@@ -54,12 +50,15 @@ app.GroupUsers = Backbone.View.extend({
     },
 
     onUsersFetched: function(users) {
-        var tempCollection,
+        var models,
             selectedUsersCollection = this.libraryViewUsersSelected.collection,
             availableUsersCollection = this.libraryViewUsersAvailable.collection;
 
         this.toggleButtons(true);
-
+        //return if no permissions to set
+        if (users.length == 0 || !(users instanceof Array)) {
+            return;
+        }
         //select permissions in available permissions collection
         users.forEach(function(obj) {
             availableUsersCollection.get(obj.id).set({
@@ -68,19 +67,19 @@ app.GroupUsers = Backbone.View.extend({
         });
 
         //set collection to matching permissions array
-        tempCollection = availableUsersCollection
+        models = availableUsersCollection
             .where({
                 selected: true
             });
 
         //set permissions and don't select (i.e., hightlight) set permissions
-        this.setUsers(tempCollection, selectedUsersCollection, false);
+        this.setUsers(availableUsersCollection, selectedUsersCollection, models, false);
     },
     onGroupSelect: function(e) {
 
         if (this.libraryViewUsersSelected) {
             this.clearUsers();
-             this.toggleButtons(false);
+            this.toggleButtons(false);
         }
     },
     onGroupUsersSave: function(e) {
@@ -92,7 +91,7 @@ app.GroupUsers = Backbone.View.extend({
     },
     onAddUserClick: function(e) {
         var method = $(e.target).attr('data-method'),
-            tempCollection, collection = [],
+            models = [],
             selectedUsersCollection = this.libraryViewUsersSelected.collection,
             availableUsersCollection = this.libraryViewUsersAvailable.collection;
 
@@ -103,37 +102,59 @@ app.GroupUsers = Backbone.View.extend({
         switch (method) {
             case 'single':
                 //fetch all models in the collection that are currently selected
-                tempCollection = availableUsersCollection
+                models = availableUsersCollection
                     .where({
                         selected: true
                     });
-                //add each model from the temp collection to the  collection
-                this.setUsers(tempCollection, selectedUsersCollection, false);
                 break;
             case 'all':
                 //fetch all models that are currently displayed (i.e., "active")
-                tempCollection = availableUsersCollection
-                    .where({
-                        active: true
-                    });
-                //set each model in temp collection to have selected state = true
-                //and add model to collection
-                this.setUsers(tempCollection, selectedUsersCollection, false);
+                models = availableUsersCollection.models;
+
                 break;
 
             default:
+                return;
                 break;
         };
+        this.setUsers(availableUsersCollection, selectedUsersCollection, models, false);
     },
-    clearUsers: function() {
-        var tempCollection = this.libraryViewUsersSelected.collection
-            .where({
-                active: true
-            }),
+    onRemoveUserClick: function(e) {
+        var method = $(e.target).attr('data-method'),
+            models = [],
+            selectedUsersCollection = this.libraryViewUsersSelected.collection,
             availableUsersCollection = this.libraryViewUsersAvailable.collection;
 
-        this.setUsers(tempCollection, availableUsersCollection, false);
+        if ($(e.currentTarget).hasClass('disabled')) {
+            return;
+        }
 
+        switch (method) {
+            case 'single':
+                //fetch all models in the collection that are currently selected
+                models = selectedUsersCollection
+                    .where({
+                        selected: true
+                    });
+                break;
+            case 'all':
+                //fetch all models that are currently displayed (i.e., "active")
+                models = selectedUsersCollection.models;
+                //set each model in temp collection to have selected state = true
+                //and add model to collection
+
+                break;
+            default:
+                return;
+                break;
+        };
+        this.setUsers(selectedUsersCollection, availableUsersCollection, models, false);
+    },
+    clearUsers: function() {
+           this.libraryViewUsersSelected.collection.set([]);
+        this.libraryViewUsersAvailable.collection;.set($.extend([], app.UserCollection.models));
+        Backbone.pubSub.trigger('view:reset',  this.libraryViewUsersSelected);
+          Backbone.pubSub.trigger('view:reset',  this.libraryViewUsersAvailable);
     },
     setUsers: function(from_collection, target_collection, setSelected) {
         from_collection.forEach(function(model, index) {
@@ -147,56 +168,22 @@ app.GroupUsers = Backbone.View.extend({
             });
         });
     },
-    onRemoveUserClick: function(e) {
-        var method = $(e.target).attr('data-method'),
-            tempCollection, collection = [],
-            selectedUsersCollection = this.libraryViewUsersSelected.collection,
-            availableUsersCollection = this.libraryViewUsersAvailable.collection;
 
-        if ($(e.currentTarget).hasClass('disabled')) {
-            return;
-        }
-
-        switch (method) {
-            case 'single':
-                //fetch all models in the collection that are currently selected
-                tempCollection = selectedUsersCollection
-                    .where({
-                        selected: true
-                    });
-                //add each model from the temp collection to the  collection
-                this.setUsers(tempCollection, availableUsersCollection, false);
-                break;
-            case 'all':
-                //fetch all models that are currently displayed (i.e., "active")
-                tempCollection = selectedUsersCollection
-                    .where({
-                        active: true
-                    });
-                //set each model in temp collection to have selected state = true
-                //and add model to collection
-                this.setUsers(tempCollection, availableUsersCollection, false);
-                break;
-            default:
-                break;
-        };
-    },
     onSearchClear: function(e) {
         var $search = $(e.currentTarget).siblings('.search');
         $search.val('');
         $search.trigger('keyup');
     },
-    onSearch: function(e) {
+   onSearch: function(e) {
         var val = $(e.currentTarget).val(),
-            options,
+            type = $(e.currentTarget).attr('data-method'),
+            pubEvent = (type == 'available' ? 'library_users_available:search' : 'library_users_selected:search'),
             $search_clear = $(e.currentTarget).siblings('.search-clear'),
-            searchAllAttributes = false;
+            searchAllAttributes = false,
+            query;
 
-        if (val.length > 0) {
-            $search_clear.removeClass('hidden');
-        } else {
-            $search_clear.addClass('hidden');
-        }
+        //toggle clear 'x' button
+        $search_clear.toggleClass('hidden', val.length == 0);
 
         //check for search operand character '~'
         if (val.indexOf('~') == 0 && val.length > 1) {
@@ -204,23 +191,29 @@ app.GroupUsers = Backbone.View.extend({
             val = val.substring(1);
             searchAllAttributes = true;
         } else if (val.indexOf('~') == 0) {
-            //don't commit to search yet since not enough info has been entered.
             return;
         }
 
 
-        options = (searchAllAttributes ? {
+        query = (searchAllAttributes ? {
             val: val
         } : {
             key: 'name',
             val: val
         });
 
-        if ($(e.currentTarget).parents('.users_available').length) {
-            Backbone.pubSub.trigger('library_users_available:search', options);
-        } else {
-            Backbone.pubSub.trigger('library_users_selected:search', options);
+        this.search({
+            pubEvent: pubEvent,
+            query: query
+        });
+    },
+
+    search: function(settings) {
+        if (!settings.pubEvent || !settings.query) {
+            return;
         }
+
+        Backbone.pubSub.trigger(settings.pubEvent, settings.query);
     },
 
     onClearSelectedClick: function(e) {

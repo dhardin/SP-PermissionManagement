@@ -13,7 +13,6 @@ app.UserEditView = Backbone.View.extend({
         'click .purge-user-btn': 'onPurgeBtnClick',
         'click .search-clear': 'onSearchClear',
         'click .search': 'onSearchClick',
-        'blur .search': 'onSearchBlur',
         'focus .search': 'onSearchFocus'
     },
 
