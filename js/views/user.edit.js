@@ -67,7 +67,10 @@ app.UserEditView = Backbone.View.extend({
         }
 
 
-        $('body').on('click', this.onBodyClick);
+        (function(that){
+              $('body').on('click',that.onBodyClick);
+        })(this);
+      
 
         this.libraryViewUsers = new app.LibraryUserView({
             el: this.$users[0],
