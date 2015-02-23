@@ -357,6 +357,10 @@ app.UserEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     userSelect: function(user, options) {
+        var name = user.get('name'),
+        loginname = user.get('loginname');
+
+        loginname = loginname.replace('/', '\\');
         if (!user.hasOwnProperty('attributes')) {
             return;
         }
@@ -371,7 +375,7 @@ app.UserEditView = Backbone.View.extend({
             return false;
         }
 
-        this.$search.val(user.get('name'));
+        this.$search.val(name);
         this.$search_clear.show();
 
 
@@ -379,7 +383,7 @@ app.UserEditView = Backbone.View.extend({
         this.getUserPermissions(user.attributes.loginname);
 
         //update message
-        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Fetching [' + this.model.get('name') + ']\'s permissions</div>');
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Fetching [' + name + ']\'s permissions</div>');
         this.$messages.scrollTop(this.$messages[0].scrollHeight);
         //update progress bar
         this.$progress_meter.width('0%');
@@ -387,11 +391,11 @@ app.UserEditView = Backbone.View.extend({
         //publish user selected event
         //set router
         if (options && options.route) {
-            app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
+            app.router.navigate('edit/user/' + loginname, false);
 
             Backbone.pubSub.trigger('user:selected');
         } else {
-            app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
+            app.router.navigate('edit/user/' + loginname, false);
             Backbone.pubSub.trigger('user:selected');
         }
         Backbone.pubSub.trigger('breadcrumbs');

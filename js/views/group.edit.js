@@ -64,12 +64,12 @@ app.GroupEditView = Backbone.View.extend({
         }
 
 
-        (function(that){
-              $('body').on('click',function(e){
+        (function(that) {
+            $('body').on('click', function(e) {
                 that.onBodyClick(e);
             });
         })(this);
-      
+
 
         this.libraryViewGroups = new app.LibraryGroupView({
             el: this.$groups[0],
@@ -115,7 +115,7 @@ app.GroupEditView = Backbone.View.extend({
 
         Backbone.pubSub.trigger('library_groups:search', options);
     },
-  onBodyClick: function(e) {
+    onBodyClick: function(e) {
         var $currentTarget = $(e.currentTarget);
 
         (function(that) {
@@ -196,23 +196,24 @@ app.GroupEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     groupSelect: function(group, options) {
+        var name = group.get('name');
         if (!group.hasOwnProperty('attributes')) {
             return;
         }
-         this.$groups.hide();
+        this.$groups.hide();
         this.model = group;
         this.$group_attributes.each(function(i, el) {
             $(el).val(group.attributes[el.id]);
         });
 
-            this.$search.val(user.get('name'));
+        this.$search.val(name);
         this.$search_clear.show();
 
         //fetch group users
-        this.getGroupUsers(group.get('name'));
+        this.getGroupUsers(name);
 
         //update message
-        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Fetching [' + group.get('name') + ']\'s users</div>');
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Fetching [' + name + ']\'s users</div>');
         this.$messages.scrollTop(this.$messages[0].scrollHeight);
         //update progress bar
         this.$progress_meter.width('0%');
@@ -220,10 +221,10 @@ app.GroupEditView = Backbone.View.extend({
         //publish user selected event
         //set router
         if (options && options.route) {
-            app.router.navigate('edit/group/' + group.get('name'), false);
+            app.router.navigate('edit/group/' + name, false);
             Backbone.pubSub.trigger('group:selected');
         } else {
-            app.router.navigate('edit/group/' + group.get('name'), false);
+            app.router.navigate('edit/group/' +name, false);
             Backbone.pubSub.trigger('group:selected');
         }
         Backbone.pubSub.trigger('breadcrumbs');
@@ -370,7 +371,7 @@ app.GroupEditView = Backbone.View.extend({
 
         //disable toggle buttons
         this.toggleButtons(false);
-        
+
         //iterate through selected permissions
         selected_users.forEach(function(user) {
             //check if permissions is in user permissions
@@ -421,7 +422,7 @@ app.GroupEditView = Backbone.View.extend({
     },
 
     onSaveClick: function(e) {
-        if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
         this.resetStateMap();
@@ -444,7 +445,7 @@ app.GroupEditView = Backbone.View.extend({
             msie = ua.indexOf("MSIE "),
             usersElement;
 
-        if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
 
@@ -464,8 +465,8 @@ app.GroupEditView = Backbone.View.extend({
             app.utility.JSONToCSVConvertor(users, this.model.get('name') + ' Users', true);
         }
     },
-      toggleButtons: function(enable){
-        if(enable){
+    toggleButtons: function(enable) {
+        if (enable) {
             this.$save_btn.removeClass('disabled');
             this.$export_btn.removeClass('disabled');
         } else {
@@ -473,15 +474,15 @@ app.GroupEditView = Backbone.View.extend({
             this.$export_btn.addClass('disabled');
         }
     },
-    clearInfo: function(enable){
-         this.$group_attributes.each(function(i, el) {
+    clearInfo: function(enable) {
+        this.$group_attributes.each(function(i, el) {
             $(el).val('');
-         });
+        });
     },
     onSearchFocus: function(e) {
         this.$groups.show();
-        if(this.$search.val().length > 0){
-             this.$search_clear.show();
+        if (this.$search.val().length > 0) {
+            this.$search_clear.show();
         }
     }
 
