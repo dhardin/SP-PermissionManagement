@@ -7,7 +7,6 @@ app.UserEditView = Backbone.View.extend({
 
     events: {
         'keyup .search': 'onUsersKeyUp',
-        'click #user-select-btn': 'onUserSelectBtnClick',
         'click .save-permissions-btn': 'onSaveClick',
         'click #clear-console': 'onClearConsoleClick',
         'click .export-permissions': 'onExportBtnClick',
@@ -362,6 +361,7 @@ app.UserEditView = Backbone.View.extend({
         if (!user.hasOwnProperty('attributes')) {
             return;
         }
+        this.$users.hide();
         this.model = user;
         this.$user_attributes.each(function(i, el) {
             $(el).val(user.attributes[el.id]);
