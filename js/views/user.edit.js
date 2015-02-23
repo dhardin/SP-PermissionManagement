@@ -437,5 +437,8 @@ app.UserEditView = Backbone.View.extend({
 
     onSearchFocus: function(e) {
         this.$users.show();
+        if(this.$search.val().length > 0){
+             this.$search_clear.show();
+        }
     }
 });
