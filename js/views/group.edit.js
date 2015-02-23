@@ -121,13 +121,13 @@ app.GroupEditView = Backbone.View.extend({
         (function(that) {
             setTimeout(function() {
                 //return if users are not visible or the current target is the user search bar
-                if (!that.$users.is(':visible') || $currentTarget[0] === that.$user_search[0]) {
+                if (!that.$groups.is(':visible') || $currentTarget[0] === that.$group_search[0]) {
                     return;
                 }
                 if (document.activeElement === that.$user_info[0]) {
                     return;
                 } else {
-                    that.$users.hide();
+                    that.$groups.hide();
                 }
 
             }, 10);
