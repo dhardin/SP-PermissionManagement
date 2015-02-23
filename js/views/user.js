@@ -13,7 +13,8 @@ app.UserView = Backbone.View.extend({
 	},
 
 	select: function(e){
-		 Backbone.pubSub.trigger('user:select', this.model);
+		e.stopPropagation();
+		Backbone.pubSub.trigger('user:select', this.model);
 	},
 
 	edit: function(e){

@@ -7,12 +7,10 @@
     <title>SharePoint Permissions</title>
     <!-- Third Party Style Sheets -->
     <link rel="stylesheet" type="text/css" href="lib/foundation/css/foundation.css">
-    <link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.css">
     <!-- Our Style Sheets -->
     <link rel="stylesheet" href="css/style.css" />
     <!-- Third Party JavaScript -->
     <script src="lib/jquery.js"></script>
-    <script src="lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="lib/underscore.js"></script>
     <script type="text/javascript" src="lib/backbone.js"></script>
     <script type="text/javascript" src="lib/foundation/js/foundation.min.js"></script>
@@ -50,7 +48,8 @@
     </div>
 
     <ul class="breadcrumbs">
-        <li class="home"><a class="current" href="#">Home</a></li>
+        <li class="home"><a class="current" href="#">Home</a>
+        </li>
     </ul>
 
     <div id="main"></div>
@@ -105,20 +104,13 @@
 
         <div class="row">
             <div id="user-info" class="small-12 medium-6 columns">
-                <button data-dropdown="users-dropdown" aria-controls="users-dropdown" aria-expanded="false" class="button dropdown small info" id="user-select-btn">Select a User</button>
-                <br>
-                <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-                    <li>
-                        <div class="search-container">
-                            <input class="search" type="text" />
-                            <a class="search-clear hidden">X</a>
-                        </div>
-                        <ul id="users"></ul>
-                    </li>
-                </ul>
-
+                <div class="search-container">
+                    <input class="search" type="text" />
+                    <a class="search-clear hidden">X</a>
+                     <ul id="users"></ul>
+                </div>
+               
                 <label>
-
                     <input class="user-attr" type="text" id="name" value="<%=name%>" disabled/>
                 </label>
                 <label>Login Name
@@ -133,9 +125,9 @@
                     <div class="messages"></div>
                 </label>
                 <div class="progress small-0 large-100 text-center">
-                <span class="meter" style="width:0%"></span>
+                    <span class="meter" style="width:0%"></span>
                     <span class="current-progress">0%</span>
-                    
+
                 </div>
             </div>
         </div>

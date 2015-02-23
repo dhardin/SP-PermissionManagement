@@ -87,7 +87,12 @@ li {
   border-color: #61b6d9;
 }
 
-
+#users {
+  display: none;
+  position: absolute;
+  background: #fff;
+  z-index: 9999;
+}
 
 #users-dropdown, #groups-dropdown{
    background-color: #fff;
@@ -160,7 +165,7 @@ li {
 .search {
   padding-right: 2.5em !important;
   display: inline-block !important;
-}
+} 
 
 .search-clear {
   position: absolute;
@@ -175,7 +180,7 @@ li {
 }
 
 #user-select .search-clear, #group-select .search-clear {
-  top: 0.4em;
+  top: 0.5em;
 }
 
 #purge-drop li {

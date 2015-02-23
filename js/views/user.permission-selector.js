@@ -13,8 +13,7 @@ app.UserPermissions = Backbone.View.extend({
         'keyup .permissions_available .search': 'onSearch',
         'keyup .permissions_selected .search': 'onSearch',
         'click #user-search-button': 'onUserSearchClick',
-        'click .search-clear': 'onSearchClear',
-        'click .clearSelected': 'onClearSelectedClick'
+        'click .search-clear': 'onSearchClear'
     },
 
     initialize: function(options) {
@@ -34,7 +33,9 @@ app.UserPermissions = Backbone.View.extend({
         this.$groupAvailable = this.$('#group-available');
         this.$groupSelected = this.$('#group-selected');
         this.$buttons = this.$('.control-btn');
+
         this.toggleButtons(false);
+
 
         this.libraryViewGroupSelected = new app.LibraryPermissionsSelectedView({
             el: this.$groupSelected[0],
@@ -64,16 +65,10 @@ app.UserPermissions = Backbone.View.extend({
     onPermissionFetched: function(permissions) {
         var models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
-            availablePermissionCollection = this.libraryViewGroupAvailable.collection,
-            tempCollectionArr;
+            availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
         this.toggleButtons(true);
-
-        //reset available permissions
-        if (this.libraryViewGroupAvailable.collection.length != app.GroupCollection.length) {
-            tempCollectionArr = $.extend(true, [], app.GroupCollection.models)
-            this.libraryViewGroupAvailable.collection.set(tempCollectionArr);
-        }
+       
 
         //return if no permissions to set
         if (permissions.length == 0 || !(permissions instanceof Array)) {
@@ -182,13 +177,16 @@ app.UserPermissions = Backbone.View.extend({
                 selected: setSelected
             });
         }
+
         Backbone.pubSub.trigger('add', models, target_collection);
         Backbone.pubSub.trigger('remove', models, from_collection);
     },
 
     clearPermissions: function() {
         this.libraryViewGroupSelected.collection.set([]);
-        this.libraryViewGroupAvailable.collection.set(app.GroupCollection.models);
+        this.libraryViewGroupAvailable.collection.set($.extend([], app.GroupCollection.models));
+        Backbone.pubSub.trigger('view:reset',  this.libraryViewGroupSelected);
+          Backbone.pubSub.trigger('view:reset',  this.libraryViewGroupAvailable);
     },
 
 

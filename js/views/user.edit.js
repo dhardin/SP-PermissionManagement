@@ -13,7 +13,9 @@ app.UserEditView = Backbone.View.extend({
         'click .export-permissions': 'onExportBtnClick',
         'click .purge-user-btn': 'onPurgeBtnClick',
         'click .search-clear': 'onSearchClear',
-        'click .search': 'onSearchClick'
+        'click .search': 'onSearchClick',
+        'blur .search': 'onSearchBlur',
+        'focus .search': 'onSearchFocus'
     },
 
     initialize: function(options) {
@@ -37,10 +39,6 @@ app.UserEditView = Backbone.View.extend({
             }
         }
 
-    },
-
-    select: function(e) {
-        Backbone.pubSub.trigger('user:select', this.model);
     },
 
     render: function() {
@@ -112,13 +110,6 @@ app.UserEditView = Backbone.View.extend({
 
 
         Backbone.pubSub.trigger('library_users:search', options);
-    },
-    onUserSelectBtnClick: function(e) {
-        (function(that) {
-            setTimeout(function() {
-                that.$user_search.focus();
-            }, 25);
-        })(this);
     },
     onSearchClear: function(e) {
         this.$search.val('');
@@ -194,7 +185,7 @@ app.UserEditView = Backbone.View.extend({
     },
 
     onSaveClick: function(e) {
-        if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
         this.resetStateMap();
@@ -215,12 +206,15 @@ app.UserEditView = Backbone.View.extend({
             msie = ua.indexOf("MSIE "),
             permissionsElement;
 
-        if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
 
         if (msie > 0) { // If Internet Explorer, return version number
             permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
+            permissionsElement += '<div>' + this.model.get('name') + '</div>';
+            permissionsElement += '<div>' + this.model.get('loginname') + '</div>';
+            permissionsElement += '<div>' + this.models.get('email') + '</div>';
 
             if (permissions.length > 1) {
                 permissionsElement += permissions.reduce(function(memo, obj) {
@@ -241,7 +235,7 @@ app.UserEditView = Backbone.View.extend({
     onPurgeBtnClick: function(e) {
         var user = (this.model ? this.model.attributes : false);
 
-         if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
 
@@ -263,7 +257,7 @@ app.UserEditView = Backbone.View.extend({
             name = this.model.get('name'),
             message = '';
 
-        
+
 
         if (type != 'error') {
             message = 'Succesfully removed ' + name + ' from site.';
@@ -349,7 +343,10 @@ app.UserEditView = Backbone.View.extend({
 
         if (!user.attributes.hasOwnProperty('loginname')) {
             return false;
-        }
+        }  
+
+        this.$search.val(user.get('name'));
+        this.$search_clear.show();
 
 
         //fetch user permissions
@@ -394,8 +391,8 @@ app.UserEditView = Backbone.View.extend({
             });
         })(this);
     },
-    toggleButtons: function(enable){
-        if(enable){
+    toggleButtons: function(enable) {
+        if (enable) {
             this.$save_btn.removeClass('disabled');
             this.$purge_btn.removeClass('disabled');
             this.$export_btn.removeClass('disabled');
@@ -405,9 +402,25 @@ app.UserEditView = Backbone.View.extend({
             this.$export_btn.addClass('disabled');
         }
     },
-    clearInfo: function(enable){
-         this.$user_attributes.each(function(i, el) {
+    clearInfo: function(enable) {
+        this.$user_attributes.each(function(i, el) {
             $(el).val('');
-         });
+        });
+    },
+
+    onSearchFocus: function(e) {
+        this.$users.show();
+    },
+
+    onSearchBlur: function(e) {
+        var $currentTarget = $(e.currentTarget);
+        if($currentTarget) === this.$users){
+            return;
+        }
+        (function(that) {
+            setTimeout(function() {
+                that.$users.hide();
+            },100);
+        })(this);
     }
 });
