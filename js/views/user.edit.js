@@ -240,7 +240,7 @@ app.UserEditView = Backbone.View.extend({
             permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
             permissionsElement += '<div>' + this.model.get('name') + '</div>';
             permissionsElement += '<div>' + this.model.get('loginname') + '</div>';
-            permissionsElement += '<div>' + this.models.get('email') + '</div>';
+            permissionsElement += '<div>' + this.model.get('email') + '</div>';
 
             if (permissions.length > 1) {
                 permissionsElement += permissions.reduce(function(memo, obj) {
