@@ -151,22 +151,22 @@ app.GroupUsers = Backbone.View.extend({
         this.setUsers(selectedUsersCollection, availableUsersCollection, models, false);
     },
     clearUsers: function() {
-           this.libraryViewUsersSelected.collection.set([]);
-        this.libraryViewUsersAvailable.collection;.set($.extend([], app.UserCollection.models));
-        Backbone.pubSub.trigger('view:reset',  this.libraryViewUsersSelected);
-          Backbone.pubSub.trigger('view:reset',  this.libraryViewUsersAvailable);
+        this.libraryViewUsersSelected.collection.set([]);
+        this.libraryViewUsersAvailable.collection.set($.extend([], app.UserCollection.models));
+        Backbone.pubSub.trigger('view:reset', this.libraryViewUsersSelected);
+        Backbone.pubSub.trigger('view:reset', this.libraryViewUsersAvailable);
     },
-    setUsers: function(from_collection, target_collection, setSelected) {
-        from_collection.forEach(function(model, index) {
-            model.set({
-                active: false,
-                selected: false
-            });
-            target_collection.get(model.id).set({
-                active: true,
+    setUsers: function(from_collection, target_collection, models, setSelected) {
+       var i = 0;
+
+        for (i = 0; i < models.length; i++) {
+            models[i].set({
                 selected: setSelected
             });
-        });
+        }
+
+        Backbone.pubSub.trigger('add', models, target_collection);
+        Backbone.pubSub.trigger('remove', models, from_collection);
     },
 
     onSearchClear: function(e) {
@@ -174,7 +174,7 @@ app.GroupUsers = Backbone.View.extend({
         $search.val('');
         $search.trigger('keyup');
     },
-   onSearch: function(e) {
+    onSearch: function(e) {
         var val = $(e.currentTarget).val(),
             type = $(e.currentTarget).attr('data-method'),
             pubEvent = (type == 'available' ? 'library_users_available:search' : 'library_users_selected:search'),
