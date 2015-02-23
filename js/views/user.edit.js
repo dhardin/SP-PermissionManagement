@@ -414,7 +414,7 @@ app.UserEditView = Backbone.View.extend({
 
     onSearchBlur: function(e) {
         var $currentTarget = $(e.currentTarget);
-        if($currentTarget) === this.$users){
+        if($currentTarget === this.$users){
             return;
         }
         (function(that) {
