@@ -68,7 +68,9 @@ app.UserEditView = Backbone.View.extend({
 
 
         (function(that){
-              $('body').on('click',that.onBodyClick);
+              $('body').on('click',function(e){
+                that.onBodyClick(e);
+            });
         })(this);
       
 
