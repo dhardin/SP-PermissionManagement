@@ -21,9 +21,9 @@ app.userEditFetchData = function() {
     app.state_map.fetchingData = true;
     app.state_map.fetchingUsers = true;
     app.state_map.fetchingGroups = true;
-    var funcArr = [];
-    //fetch user data and once complete, set user list.
-    funcArr.push(function(callback) {
+
+    $.when(
+
         app.data.getUsers(app.config.url, function(users) {
             var key, i, temp_user, user, new_key, userArr = [];
             users = app.utility.processData(users);
@@ -31,11 +31,10 @@ app.userEditFetchData = function() {
             //initialize data
             app.UserCollection = new app.LibraryUser(users);
             app.state_map.fetchingUsers = false;
-           
+
         });
-    });
-    funcArr.push(function(callback) {
-        //fetch group data and once complete, set group listings
+
+
         app.data.getPermissions(app.config.url, '', function(groups) {
             var key, i, temp_group, group, new_key, groupArr = [];
             groups = app.utility.processData(groups);
@@ -46,25 +45,15 @@ app.userEditFetchData = function() {
             app.GroupAvailCollection = new app.LibraryGroup(groupArr);
             app.GroupSelectedCollection = new app.LibraryGroup([]);
             app.state_map.fetchingGroups = false;
-             if (callback) {
+            if (callback) {
                 callback();
             }
         });
+    ).then(function() {
+        app.DataFetched();
     });
 
-    app.fetchUserEditData(funcArr, 0, app.DataFetched);
-};
 
-app.fetchUserEditData = function(arr, index, callback) {
-    index = index || 0;
-
-    if (index < arr.length) {
-        index++;
-        //process current function and callback this function once complete
-        arr[index](app.fetchUserEditData(arr, index, callback));
-    } else if (callback) {
-        callback();
-    }
 };
 
 app.groupEditFetchData = function() {
