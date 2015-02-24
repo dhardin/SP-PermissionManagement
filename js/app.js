@@ -23,28 +23,34 @@ app.userEditFetchData = function() {
     app.state_map.fetchingGroups = true;
 
     $.when(
+        (function() {
+            var deferred = $.Deferred();
+            app.data.getUsers(app.config.url, function(users) {
+                var key, i, temp_user, user, new_key, userArr = [];
+                users = app.utility.processData(users);
 
-        app.data.getUsers(app.config.url, function(users) {
-            var key, i, temp_user, user, new_key, userArr = [];
-            users = app.utility.processData(users);
+                //initialize data
+                app.UserCollection = new app.LibraryUser(users);
+                app.state_map.fetchingUsers = false;
+                deferred.resolve();
 
-            //initialize data
-            app.UserCollection = new app.LibraryUser(users);
-            app.state_map.fetchingUsers = false;
+            });
+            return deferred.promise();
+        })(), (function() {
+            var deferred = $.Deferred();
+            app.data.getPermissions(app.config.url, '', function(groups) {
+                var key, i, temp_group, group, new_key, groupArr = [];
+                groups = app.utility.processData(groups);
 
-        }),
+                groupArr = $.extend(true, [], groups);
 
-        app.data.getPermissions(app.config.url, '', function(groups) {
-            var key, i, temp_group, group, new_key, groupArr = [];
-            groups = app.utility.processData(groups);
-
-            groupArr = $.extend(true, [], groups);
-
-            app.GroupCollection = new app.LibraryGroup(groups);
-            app.GroupAvailCollection = new app.LibraryGroup(groupArr);
-            app.GroupSelectedCollection = new app.LibraryGroup([]);
-            app.state_map.fetchingGroups = false;
-        })
+                app.GroupCollection = new app.LibraryGroup(groups);
+                app.GroupAvailCollection = new app.LibraryGroup(groupArr);
+                app.GroupSelectedCollection = new app.LibraryGroup([]);
+                app.state_map.fetchingGroups = false;
+            });
+            return deferred.promise();
+        })()
     ).then(function() {
         app.DataFetched();
     });
