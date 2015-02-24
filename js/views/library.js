@@ -56,6 +56,11 @@ app.LibraryView = Backbone.View.extend({
                 childView.onClose();
             }
         });
+
+        Backbone.pubSub.off('library:search');
+        Backbone.pubSub.off('add');
+        Backbone.pubSub.off('remove');
+        Backbone.pubSub.off('view:reset');
     },
     renderItems: function(modelsArr, index, currentSearchNum, highlightSearch, regex) {;
         if (this.searchNum != currentSearchNum) {

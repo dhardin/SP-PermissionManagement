@@ -62,6 +62,9 @@ app.UserPermissions = Backbone.View.extend({
                 childView.onClose();
             }
         });
+        Backbone.pubSub.off('user:permissions-fetched');
+        Backbone.pubSub.off('user:selected');
+        Backbone.pubSub.off('user:save-permissions');
     },
     onSearchClear: function(e) {
         var $search = $(e.currentTarget).siblings('.search');

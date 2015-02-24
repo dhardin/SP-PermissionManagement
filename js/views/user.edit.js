@@ -18,6 +18,7 @@ app.UserEditView = Backbone.View.extend({
 
     initialize: function(options) {
         Backbone.pubSub.on('user:selected-permissions-fetched', this.onSelectedPermissionsFetched, this);
+        Backbone.pubSub.on('user:select', this.userSelect, this);
         this.state_map = {
             user_permissions: null,
             pendingSaves: 0,
@@ -66,12 +67,12 @@ app.UserEditView = Backbone.View.extend({
         }
 
 
-        (function(that){
-              $('body').on('click',function(e){
+        (function(that) {
+            $('body').on('click', function(e) {
                 that.onBodyClick(e);
             });
         })(this);
-      
+
 
         this.libraryViewUsers = new app.LibraryUserView({
             el: this.$users[0],
@@ -80,22 +81,25 @@ app.UserEditView = Backbone.View.extend({
         });
 
         this.libraryViewUsers.render();
-         this.childViews.push(this.libraryViewUsers);
+        this.childViews.push(this.libraryViewUsers);
 
-        Backbone.pubSub.on('user:select', this.userSelect, this);
+
         if (this.model.get('id') != '') {
             this.userSelect(this.model, false);
         }
         return this;
     },
-    onClose: function(){
-        _.each(this.childViews, function(childView){
+    onClose: function() {
+        _.each(this.childViews, function(childView) {
             childView.remove();
             childView.unbind();
-            if(childView.onClose){
+            if (childView.onClose) {
                 childView.onClose();
             }
         });
+        Backbone.pubSub.off('user:selected-permissions-fetched');
+        Backbone.pubSub.off('user:select');
+        $('body').off('click');
     },
     search: function() {
         var val = this.$user_search.val(),
@@ -368,7 +372,7 @@ app.UserEditView = Backbone.View.extend({
     },
     userSelect: function(user, options) {
         var name = user.get('name'),
-        loginname = user.get('loginname');
+            loginname = user.get('loginname');
 
         loginname = loginname.replace('/', '\\');
 
@@ -454,8 +458,8 @@ app.UserEditView = Backbone.View.extend({
 
     onSearchFocus: function(e) {
         this.$users.show();
-        if(this.$search.val().length > 0){
-             this.$search_clear.show();
+        if (this.$search.val().length > 0) {
+            this.$search_clear.show();
         }
     }
 });
