@@ -67,7 +67,7 @@ li {
   padding: 1em;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
-
+  display: block;
 }
 
 #permissions .row, #user-select .row {
