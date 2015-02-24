@@ -8,8 +8,8 @@ app.LibraryView = Backbone.View.extend({
         //   }, this);
 
         Backbone.pubSub.on('library:search', this.search, this);
-        Backbone.pubSub.on('add', this.add, this);
-        Backbone.pubSub.on('remove', this.remove, this);
+        Backbone.pubSub.on('add', this.addItems, this);
+        Backbone.pubSub.on('remove', this.removeItems, this);
         Backbone.pubSub.on('view:reset', this.reset, this);
 
         this.search_cache = {};
@@ -139,7 +139,7 @@ app.LibraryView = Backbone.View.extend({
 
         this.render();
     },
-    add: function(models, collection) {
+    addItems: function(models, collection) {
         var index = 0,
             i = 0,
             itemView, model;
@@ -158,7 +158,7 @@ app.LibraryView = Backbone.View.extend({
             this.$el.insertAt(index, itemView.render().el);
         }
     },
-    remove: function(models, collection) {
+    removeItems: function(models, collection) {
         var itemView, model, index = 0, i = 0, arr_length = models.length;
 
         index = index || 0;
