@@ -48,6 +48,7 @@ app.userEditFetchData = function() {
                 app.GroupAvailCollection = new app.LibraryGroup(groupArr);
                 app.GroupSelectedCollection = new app.LibraryGroup([]);
                 app.state_map.fetchingGroups = false;
+                deferred.resolve();
             });
             return deferred.promise();
         })()
