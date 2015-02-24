@@ -63,32 +63,41 @@ app.groupEditFetchData = function() {
     app.state_map.fetchingGroups = true;
 
     $.when(
-        //fetch user data and once complete, set user list.
-        app.data.getUsers(app.config.url, function(users) {
-            var key, i, temp_user, user, new_key, userArr = [];
-            users = app.utility.processData(users);
+        (function() {
+            var deferred = $.Deferred();
+            //fetch user data and once complete, set user list.
+            app.data.getUsers(app.config.url, function(users) {
+                var key, i, temp_user, user, new_key, userArr = [];
+                users = app.utility.processData(users);
 
-            userArr = $.extend(true, [], users);
-            //initialize data
-            app.UserCollection = new app.LibraryUser(users);
-            app.UserAvailCollection = new app.LibraryGroup(userArr);
-            users.forEach(function(model, index) {
-                model.active = false;
+                userArr = $.extend(true, [], users);
+                //initialize data
+                app.UserCollection = new app.LibraryUser(users);
+                app.UserAvailCollection = new app.LibraryGroup(userArr);
+                users.forEach(function(model, index) {
+                    model.active = false;
+                });
+                app.UsersSelectedCollection = new app.LibraryUser(users);
+                app.state_map.fetchingUsers = false;
+                deferred.resolve();
+
             });
-            app.UsersSelectedCollection = new app.LibraryUser(users);
-            app.state_map.fetchingUsers = false;
-        }),
-        //fetch group data and once complete, set group listings
-        app.data.getPermissions(app.config.url, '', function(groups) {
-            var key, i, temp_group, group, new_key, groupArr = [];
-            groups = app.utility.processData(groups);
+            return deferred.promise();
+        })(), (function() {
+            var deferred = $.Deferred();
+            //fetch group data and once complete, set group listings
+            app.data.getPermissions(app.config.url, '', function(groups) {
+                var key, i, temp_group, group, new_key, groupArr = [];
+                groups = app.utility.processData(groups);
 
-            app.GroupCollection = new app.LibraryGroup(groups);
+                app.GroupCollection = new app.LibraryGroup(groups);
 
 
-            app.state_map.fetchingGroups = false;
-
-        })
+                app.state_map.fetchingGroups = false;
+                deferred.resolve();
+            });
+            return deferred.promise();
+        })()
     ).then(function() {
         app.DataFetched();
     });
