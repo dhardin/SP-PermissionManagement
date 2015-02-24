@@ -422,7 +422,7 @@ app.UserEditView = Backbone.View.extend({
                     permissions: results
                 });
 
-                this.state_map.fetchingData[loginname] = false;
+                that.state_map.fetchingData[loginname] = false;
                 //endable edit buttons
                 that.toggleButtons(true);
                 //publish results globally 
