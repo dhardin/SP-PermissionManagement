@@ -59,7 +59,7 @@ var Router = Backbone.Router.extend({
 
                 app.router.AppView.showView(editUserPermissionView);
             };
-        } else if (loginname) {
+        } /*else if (loginname) {
                     
                     user = app.UserCollection.findWhere({
                         loginname: app.state_map.fetchId
@@ -79,7 +79,7 @@ var Router = Backbone.Router.extend({
             });
 
             this.AppView.showView(editUserPermissionView);
-        }
+        }*/
     },
     editGroup: function(name) {
         app.state_map.fetchId = (name != null ? name : "");
