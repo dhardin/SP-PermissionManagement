@@ -35,7 +35,8 @@ app.UserEditView = Backbone.View.extend({
                 remove: [],
                 purge: []
             }
-        }
+        };
+        this.childViews = [];
 
     },
 
@@ -79,6 +80,7 @@ app.UserEditView = Backbone.View.extend({
         });
 
         this.libraryViewUsers.render();
+         this.childViews.push(this.libraryViewUsers);
 
         Backbone.pubSub.on('user:select', this.userSelect, this);
         if (this.model.get('id') != '') {
@@ -86,7 +88,15 @@ app.UserEditView = Backbone.View.extend({
         }
         return this;
     },
-
+    onClose: function(){
+        _.each(this.childViews, function(childView){
+            childView.remove();
+            childView.unbind();
+            if(childView.onClose){
+                childView.onClose();
+            }
+        });
+    },
     search: function() {
         var val = this.$user_search.val(),
             options,

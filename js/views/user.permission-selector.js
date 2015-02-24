@@ -20,6 +20,7 @@ app.UserPermissions = Backbone.View.extend({
         Backbone.pubSub.on('user:permissions-fetched', this.onPermissionFetched, this);
         Backbone.pubSub.on('user:selected', this.onUserSelect, this);
         Backbone.pubSub.on('user:save-permissions', this.onUserPermissionsSave, this);
+        this.childViews = [];
     },
 
     render: function() {
@@ -48,7 +49,19 @@ app.UserPermissions = Backbone.View.extend({
         this.libraryViewGroupSelected.render();
         this.libraryViewGroupAvailable.render();
 
+        this.childViews.push(this.libraryViewGroupSelected);
+        this.childViews.push(this.libraryViewGroupAvailable);
+
         return this;
+    },
+    onClose: function(){
+        _.each(this.childViews, function(childView){
+            childView.remove();
+            childView.unbind();
+            if(childView.onClose){
+                childView.onClose();
+            }
+        });
     },
     onSearchClear: function(e) {
         var $search = $(e.currentTarget).siblings('.search');

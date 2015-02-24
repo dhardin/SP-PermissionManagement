@@ -48,7 +48,15 @@ app.LibraryView = Backbone.View.extend({
 
         return this;
     },
-
+    onClose: function(){
+        _.each(this.childViews, function(childView){
+            childView.remove();
+            childView.unbind();
+            if(childView.onClose){
+                childView.onClose();
+            }
+        });
+    },
     renderItems: function(modelsArr, index, currentSearchNum, highlightSearch, regex) {;
         if (this.searchNum != currentSearchNum) {
             return;
