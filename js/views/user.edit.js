@@ -34,7 +34,8 @@ app.UserEditView = Backbone.View.extend({
                 add: [],
                 remove: [],
                 purge: []
-            }
+            },
+            fetchingData: {}
         }
 
     },
@@ -360,7 +361,15 @@ app.UserEditView = Backbone.View.extend({
         var name = user.get('name'),
         loginname = user.get('loginname');
 
+    
+
+         //return if already fetching current user
+        if(this.state_map.fetchingData[loginname]){
+            return;
+        }
+        this.state_map.fetchingData[loginname] = true;
         loginname = loginname.replace('/', '\\');
+
         if (!user.hasOwnProperty('attributes')) {
             return;
         }
@@ -377,6 +386,8 @@ app.UserEditView = Backbone.View.extend({
 
         this.$search.val(name);
         this.$search_clear.show();
+
+
 
 
         //fetch user permissions
@@ -410,6 +421,8 @@ app.UserEditView = Backbone.View.extend({
                 that.model.set({
                     permissions: results
                 });
+
+                this.state_map.fetchingData[loginname] = false;
                 //endable edit buttons
                 that.toggleButtons(true);
                 //publish results globally 

@@ -59,27 +59,7 @@ var Router = Backbone.Router.extend({
 
                 app.router.AppView.showView(editUserPermissionView);
             };
-        } /*else if (loginname) {
-                    
-                    user = app.UserCollection.findWhere({
-                        loginname: app.state_map.fetchId
-                    });
-                    if (!user) {
-                        app.router.navigate('edit/user/', true);
-                        user = new app.User();
-                    }
-                editUserPermissionView = new app.EditUserPermissionsView({
-                    model: user
-                });
-
-            app.router.AppView.showView(editUserPermissionView);
-        } else {
-            editUserPermissionView = new app.EditUserPermissionsView({
-                model: new app.User()
-            });
-
-            this.AppView.showView(editUserPermissionView);
-        }*/
+        } 
     },
     editGroup: function(name) {
         app.state_map.fetchId = (name != null ? name : "");
