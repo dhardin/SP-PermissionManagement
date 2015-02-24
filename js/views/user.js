@@ -5,7 +5,7 @@ app.UserView = Backbone.View.extend({
 	tagName: 'li',
 
 	events: {
-		'click': 'select'
+		'click a': 'select'
 	},
 
 	initialize: function (options) {
