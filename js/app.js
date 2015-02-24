@@ -1,20 +1,17 @@
 var app = app || {};
 
 app.state_map = {
-    fetchingUsers: false,
-    fetchingGroups: false,
     fetchingData: false,
     dataLoadCallback: false,
     filterOptions: false
 };
 
 app.DataFetched = function() {
-    if (!app.state_map.fetchingUsers && !app.state_map.fetchingGroups) {
-        app.state_map.fetchingData = false;
-        if (app.state_map.dataLoadCallback) {
-            app.state_map.dataLoadCallback();
-        }
+    app.state_map.fetchingData = false;
+    if (app.state_map.dataLoadCallback) {
+        app.state_map.dataLoadCallback();
     }
+    
 };
 
 app.userEditFetchData = function() {
@@ -28,10 +25,9 @@ app.userEditFetchData = function() {
             app.data.getUsers(app.config.url, function(users) {
                 var key, i, temp_user, user, new_key, userArr = [];
                 users = app.utility.processData(users);
-
+                app.Users = users;
                 //initialize data
                 app.UserCollection = new app.LibraryUser(users);
-                app.state_map.fetchingUsers = false;
                 deferred.resolve();
 
             });
@@ -41,13 +37,12 @@ app.userEditFetchData = function() {
             app.data.getPermissions(app.config.url, '', function(groups) {
                 var key, i, temp_group, group, new_key, groupArr = [];
                 groups = app.utility.processData(groups);
-
+                app.Groups = groups;
                 groupArr = $.extend(true, [], groups);
 
                 app.GroupCollection = new app.LibraryGroup(groups);
                 app.GroupAvailCollection = new app.LibraryGroup(groupArr);
                 app.GroupSelectedCollection = new app.LibraryGroup([]);
-                app.state_map.fetchingGroups = false;
                 deferred.resolve();
             });
             return deferred.promise();
@@ -72,6 +67,7 @@ app.groupEditFetchData = function() {
 
                 userArr = $.extend(true, [], users);
                 //initialize data
+                app.Users = users;
                 app.UserCollection = new app.LibraryUser(users);
                 app.UserAvailCollection = new app.LibraryGroup(userArr);
                 users.forEach(function(model, index) {
@@ -89,7 +85,7 @@ app.groupEditFetchData = function() {
             app.data.getPermissions(app.config.url, '', function(groups) {
                 var key, i, temp_group, group, new_key, groupArr = [];
                 groups = app.utility.processData(groups);
-
+                app.Groups = groups;
                 app.GroupCollection = new app.LibraryGroup(groups);
 
 
