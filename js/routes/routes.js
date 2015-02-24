@@ -30,7 +30,7 @@ var Router = Backbone.Router.extend({
         app.state_map.fetchId = (loginname != null ? loginname.replace('\\', '/') : "");
         if (app.config.isTesting) {
             app.setTestData('user');
-        } else {
+        } else if (!app.state_map.fetched.editUser) {
             app.userEditFetchData();
             return;
         }
@@ -68,7 +68,7 @@ var Router = Backbone.Router.extend({
         app.state_map.fetchId = (name != null ? name : "");
         if (app.config.isTesting) {
             app.setTestData('group');
-        } else {
+        } else if (!app.state_map.fetched.editGroup) {
             app.groupEditFetchData();
             return;
         }

@@ -3,7 +3,11 @@ var app = app || {};
 app.state_map = {
     fetchingData: false,
     dataLoadCallback: false,
-    filterOptions: false
+    filterOptions: false,
+    fetched: {
+        editUser: false,
+        editGroup: false
+    }
 };
 
 app.DataFetched = function() {
@@ -48,6 +52,7 @@ app.userEditFetchData = function() {
             return deferred.promise();
         })()
     ).then(function() {
+        app.state_map.fetched.editUser = true;
         app.DataFetched();
     });
 };
@@ -95,6 +100,7 @@ app.groupEditFetchData = function() {
             return deferred.promise();
         })()
     ).then(function() {
+        app.state_map.fetched.editGroup = true;
         app.DataFetched();
     });
 };
