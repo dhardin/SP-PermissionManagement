@@ -16,7 +16,6 @@ app.UserView = Backbone.View.extend({
 		e.stopPropagation();
 		Backbone.pubSub.trigger('user:select', this.model);
 	},
-
 	edit: function(e){
 		var username = this.model.get('loginname');
 		app_router.navigate('edit/user/' + username, { trigger: false });

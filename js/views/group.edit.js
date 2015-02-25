@@ -7,7 +7,6 @@ app.GroupEditView = Backbone.View.extend({
 
     events: {
         'keyup .search': 'onGroupsKeyUp',
-        'click #groups-select-btn': 'onGroupSelectBtnClick',
         'click .save-changes-btn': 'onSaveClick',
         'click #clear-console': 'onClearConsoleClick',
         'click .export-users': 'onExportBtnClick',
@@ -18,6 +17,7 @@ app.GroupEditView = Backbone.View.extend({
 
     initialize: function(options) {
         Backbone.pubSub.on('group:selected-users-fetched', this.onSelectedUsersFetched, this);
+        Backbone.pubSub.on('group:select', this.groupSelect, this);
         this.state_map = {
             group_users: null,
             pendingSaves: 0,
@@ -36,6 +36,7 @@ app.GroupEditView = Backbone.View.extend({
                 purge: []
             }
         };
+        this.childViews = [];
 
     },
 
@@ -45,6 +46,7 @@ app.GroupEditView = Backbone.View.extend({
         this.$group_search_container = this.$('.search-container');
         this.$group_search = this.$('.search');
         this.$group_attributes = this.$('.group-attr');
+        this.$group_info = this.$('#group-info');
         this.$name = this.$('#name');
         this.$name_container = this.$('#name-container');
         this.$messages = this.$('.messages');
@@ -78,14 +80,25 @@ app.GroupEditView = Backbone.View.extend({
         });
 
         this.libraryViewGroups.render();
+        this.childViews.push(this.libraryViewGroups);
 
-        Backbone.pubSub.on('group:select', this.groupSelect, this);
         if (this.model.get('id') != '') {
             this.groupSelect(this.model, false);
         }
         return this;
     },
-
+    onClose: function() {
+        _.each(this.childViews, function(childView) {
+            childView.remove();
+            childView.unbind();
+            if (childView.onClose) {
+                childView.onClose();
+            }
+        });
+        Backbone.pubSub.off('group:selected-users-fetched');
+        Backbone.pubSub.off('group:select');
+        $('body').off('click');
+    },
     search: function() {
         var val = this.$group_search.val(),
             options,
@@ -124,7 +137,7 @@ app.GroupEditView = Backbone.View.extend({
                 if (!that.$groups.is(':visible') || $currentTarget[0] === that.$group_search[0]) {
                     return;
                 }
-                if (document.activeElement === that.$user_info[0]) {
+                if (document.activeElement === that.$group_info[0]) {
                     return;
                 } else {
                     that.$groups.hide();
@@ -224,7 +237,7 @@ app.GroupEditView = Backbone.View.extend({
             app.router.navigate('edit/group/' + name, false);
             Backbone.pubSub.trigger('group:selected');
         } else {
-            app.router.navigate('edit/group/' +name, false);
+            app.router.navigate('edit/group/' + name, false);
             Backbone.pubSub.trigger('group:selected');
         }
         Backbone.pubSub.trigger('breadcrumbs');

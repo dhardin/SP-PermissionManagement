@@ -48,6 +48,8 @@ app.UserPermissions = Backbone.View.extend({
         //append views to elements
         this.libraryViewGroupSelected.render();
         this.libraryViewGroupAvailable.render();
+        //clear up any residule permissions
+        this.clearPermissions();
 
         this.childViews.push(this.libraryViewGroupSelected);
         this.childViews.push(this.libraryViewGroupAvailable);

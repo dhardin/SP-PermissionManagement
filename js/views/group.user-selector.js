@@ -20,6 +20,7 @@ app.GroupUsers = Backbone.View.extend({
         Backbone.pubSub.on('group:users-fetched', this.onUsersFetched, this);
         Backbone.pubSub.on('group:selected', this.onGroupSelect, this);
         Backbone.pubSub.on('group:save-users', this.onGroupUsersSave, this);
+        this.childViews = [];
     },
 
     render: function() {
@@ -46,7 +47,24 @@ app.GroupUsers = Backbone.View.extend({
         this.libraryViewUsersSelected.render();
         this.libraryViewUsersAvailable.render();
 
+        this.childViews.push(this.libraryViewUsersSelected);
+        this.childViews.push(this.libraryViewUsersAvailable);
+        //clear up any residule permissions
+        this.clearUsers();
+
         return this;
+    },
+    onClose: function() {
+        _.each(this.childViews, function(childView) {
+            childView.remove();
+            childView.unbind();
+            if (childView.onClose) {
+                childView.onClose();
+            }
+        });
+        Backbone.pubSub.off('group:users-fetched');
+        Backbone.pubSub.off('group:selected');
+        Backbone.pubSub.off('group:save-users');
     },
 
     onUsersFetched: function(users) {
@@ -157,7 +175,7 @@ app.GroupUsers = Backbone.View.extend({
         Backbone.pubSub.trigger('view:reset', this.libraryViewUsersAvailable);
     },
     setUsers: function(from_collection, target_collection, models, setSelected) {
-       var i = 0;
+        var i = 0;
 
         for (i = 0; i < models.length; i++) {
             models[i].set({
