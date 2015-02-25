@@ -60,12 +60,12 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 - [x] Add ability to manage a group's users
 - [x] Add ability to manage a user's groups
 - [ ] Add abiility to manage permissions at the list/library level
-- [ ] Highlight search results
+- [x] Highlight search results
 - [x] Optimizations
   - [x] Optimize list filtering 
     - Resolved search delay using memoization and built-in underscore utility functions. 
   - [x] Optimize list rendering 
-    - Initial list rendering is cached and queries are cached after fully rendered.
+    - Instead of re-rendering the full collection on an add/remove, we find the correct DOM index and add/remove the element that corresponds to that index using jQuery.  Results in a whole lot of awesomeness.
     - When a user searches, if the query is cached, set the list html to cached value, else render list in asynchronous fashion.
 
 
