@@ -62,7 +62,7 @@ var Router = Backbone.Router.extend({
             model: user
         });
 
-        this.AppView.showView(editGroupUsersView);
+        this.AppView.showView(editUserPermissionView);
     },
     editGroup: function(name) {
         app.state_map.fetchId = (name != null ? name : "");
