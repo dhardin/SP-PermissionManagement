@@ -56,7 +56,7 @@ var Router = Backbone.Router.extend({
                 return;
             }
         } else {
-            user = new User();
+            user = new app.User();
         }
         editUserPermissionView = new app.EditUserPermissionsView({
             model: user
@@ -93,7 +93,7 @@ var Router = Backbone.Router.extend({
                 app.router.navigate('edit/group/', true);
             }
         } else {
-            group = new Group();
+            group = new app.Group();
         }
         var editGroupUsersView = new app.EditGroupUsersView({
             model: group
