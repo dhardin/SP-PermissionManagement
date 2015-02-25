@@ -54,7 +54,7 @@ var Router = Backbone.Router.extend({
           
             loginname = loginname.replace('\\', '/');
             user = app.UserCollection.findWhere({
-                loginname: app.state_map.fetchId
+                loginname: loginname
             });
             if (!user) {
                 app.router.navigate('edit/group/', true);
@@ -76,12 +76,10 @@ var Router = Backbone.Router.extend({
         } else if (!app.state_map.fetched.editGroup) {
             app.groupEditFetchData();
         }
-
+        app.state_map.fetchId = name || "";
         if (app.state_map.fetchingData) {
-            var fetchingDataView = new app.FetchingDataView();
-
-            this.AppView.showView(fetchingDataView);
-
+          
+app.router.navigate('fetch', true);
             app.state_map.dataLoadCallback = function() {
                 if (app.state_map.fetchId) {
                     app.router.navigate('edit/group/' + app.state_map.fetchId, true);
@@ -92,7 +90,7 @@ var Router = Backbone.Router.extend({
               return;
         } else if (name) {
             group = app.GroupCollection.findWhere({
-                name: app.state_map.fetchId
+                name: name
             });
             if (!group) {
                 app.router.navigate('edit/group/', true);
