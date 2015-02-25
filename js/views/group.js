@@ -4,12 +4,12 @@ app.GroupView = Backbone.View.extend({
 	template: _.template($('#group-list-item-template').html()),
 
 	events: {
-		'click': 'select'
+		'click a': 'select'
 	},
 
 	initialize: function (options) {
 		this.model.on('change', this.render, this);
-		Backbone.pubSub.on('group:select', this.select, this);
+		//Backbone.pubSub.on('group:select', this.select, this);
 	},
 	select: function(e){
 		e.stopPropagation();
