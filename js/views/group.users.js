@@ -3,7 +3,7 @@ var app = app || {};
 app.EditGroupUsersView = Backbone.View.extend({
     template: _.template($('#group-template').html()),
     initialize: function() {
-
+            this.childViews = [];
     },
     render: function() {
         this.$el.html(this.template((this.model ? this.model.toJSON() : {})));
@@ -22,7 +22,18 @@ app.EditGroupUsersView = Backbone.View.extend({
 
         this.GroupEditView.render();
         this.GroupUsersView.render();
+        this.childViews.push(this.GroupEditView);
+        this.childViews.push(this.GroupUsersView);
 
         return this;
+    },
+    onClose: function(){
+        _.each(this.childViews, function(childView){
+            childView.remove();
+            childView.unbind();
+            if(childView.onClose){
+                childView.onClose();
+            }
+        });
     }
 });

@@ -5,7 +5,7 @@ app.UserView = Backbone.View.extend({
 	tagName: 'li',
 
 	events: {
-		'click': 'select'
+		'click a': 'select'
 	},
 
 	initialize: function (options) {
@@ -13,9 +13,9 @@ app.UserView = Backbone.View.extend({
 	},
 
 	select: function(e){
-		 Backbone.pubSub.trigger('user:select', this.model);
+		e.stopPropagation();
+		Backbone.pubSub.trigger('user:select', this.model);
 	},
-
 	edit: function(e){
 		var username = this.model.get('loginname');
 		app_router.navigate('edit/user/' + username, { trigger: false });

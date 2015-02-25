@@ -13,18 +13,14 @@ app.UserPermissions = Backbone.View.extend({
         'keyup .permissions_available .search': 'onSearch',
         'keyup .permissions_selected .search': 'onSearch',
         'click #user-search-button': 'onUserSearchClick',
-        'click .search-clear': 'onSearchClear',
-        'click .clearSelected': 'onClearSelectedClick'
+        'click .search-clear': 'onSearchClear'
     },
 
     initialize: function(options) {
         Backbone.pubSub.on('user:permissions-fetched', this.onPermissionFetched, this);
         Backbone.pubSub.on('user:selected', this.onUserSelect, this);
         Backbone.pubSub.on('user:save-permissions', this.onUserPermissionsSave, this);
-    },
-
-    select: function(e) {
-        Backbone.pubSub.trigger('user:select', this.model);
+        this.childViews = [];
     },
 
     render: function() {
@@ -34,7 +30,9 @@ app.UserPermissions = Backbone.View.extend({
         this.$groupAvailable = this.$('#group-available');
         this.$groupSelected = this.$('#group-selected');
         this.$buttons = this.$('.control-btn');
+
         this.toggleButtons(false);
+
 
         this.libraryViewGroupSelected = new app.LibraryPermissionsSelectedView({
             el: this.$groupSelected[0],
@@ -43,15 +41,32 @@ app.UserPermissions = Backbone.View.extend({
         });
         this.libraryViewGroupAvailable = new app.LibraryPermissionsAvailableView({
             el: this.$groupAvailable[0],
-            collection: app.GroupCollection,
+            collection: app.GroupAvailCollection,
             itemView: app.GroupView
         });
 
         //append views to elements
         this.libraryViewGroupSelected.render();
         this.libraryViewGroupAvailable.render();
+        //clear up any residule permissions
+        this.clearPermissions();
+
+        this.childViews.push(this.libraryViewGroupSelected);
+        this.childViews.push(this.libraryViewGroupAvailable);
 
         return this;
+    },
+    onClose: function(){
+        _.each(this.childViews, function(childView){
+            childView.remove();
+            childView.unbind();
+            if(childView.onClose){
+                childView.onClose();
+            }
+        });
+        Backbone.pubSub.off('user:permissions-fetched');
+        Backbone.pubSub.off('user:selected');
+        Backbone.pubSub.off('user:save-permissions');
     },
     onSearchClear: function(e) {
         var $search = $(e.currentTarget).siblings('.search');
@@ -62,12 +77,17 @@ app.UserPermissions = Backbone.View.extend({
         //Backbone.pubSub.trigger('group:select', $(el));
     },
     onPermissionFetched: function(permissions) {
-        var tempCollection,
+        var models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
         this.toggleButtons(true);
+       
 
+        //return if no permissions to set
+        if (permissions.length == 0 || !(permissions instanceof Array)) {
+            return;
+        }
         //select permissions in available permissions collection
         permissions.forEach(function(obj) {
             availablePermissionCollection.get(obj.id).set({
@@ -76,36 +96,33 @@ app.UserPermissions = Backbone.View.extend({
         });
 
         //set collection to matching permissions array
-        tempCollection = availablePermissionCollection
+        models = availablePermissionCollection
             .where({
                 selected: true
             });
 
         //set permissions and don't select (i.e., hightlight) set permissions
-        this.setPermissions(tempCollection, selectedPermissionsCollection, false);
+        this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
     },
     onUserSelect: function(e) {
-
         if (this.libraryViewGroupSelected) {
+            //clear permissions for current user
             this.clearPermissions();
-             this.toggleButtons(false);
+            this.toggleButtons(false);
         }
     },
     onUserPermissionsSave: function(e) {
         //disable edit buttons until save is complete
         this.toggleButtons(false);
-        var selectedPermissionsCollection = this.libraryViewGroupSelected.collection.where({
-                active: true
-            }),
-            selectedPermissionsArr = selectedPermissionsCollection.map(function(model) {
-                return model.get('name');
-            });
+        var selectedPermissionsArr = this.libraryViewGroupSelected.collection.models.map(function(model) {
+            return model.get('name');
+        });
         Backbone.pubSub.trigger('user:selected-permissions-fetched', selectedPermissionsArr);
 
     },
     onAddPermissionClick: function(e) {
         var method = $(e.target).attr('data-method'),
-            tempCollection, collection = [],
+            models = [],
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
@@ -116,53 +133,28 @@ app.UserPermissions = Backbone.View.extend({
         switch (method) {
             case 'single':
                 //fetch all models in the collection that are currently selected
-                tempCollection = availablePermissionCollection
+                models = availablePermissionCollection
                     .where({
                         selected: true
                     });
                 //add each model from the temp collection to the  collection
-                this.setPermissions(tempCollection, selectedPermissionsCollection, false);
+                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
                 break;
             case 'all':
                 //fetch all models that are currently displayed (i.e., "active")
-                tempCollection = availablePermissionCollection
-                    .where({
-                        active: true
-                    });
+                models = availablePermissionCollection.models;
                 //set each model in temp collection to have selected state = true
                 //and add model to collection
-                this.setPermissions(tempCollection, selectedPermissionsCollection, false);
+                this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
                 break;
 
             default:
                 break;
         };
-    },
-    clearPermissions: function() {
-        var tempCollection = this.libraryViewGroupSelected.collection
-            .where({
-                active: true
-            }),
-            availablePermissionCollection = this.libraryViewGroupAvailable.collection;
-
-        this.setPermissions(tempCollection, availablePermissionCollection, false);
-
-    },
-    setPermissions: function(from_collection, target_collection, setSelected) {
-        from_collection.forEach(function(model, index) {
-            model.set({
-                active: false,
-                selected: false
-            });
-            target_collection.get(model.id).set({
-                active: true,
-                selected: setSelected
-            });
-        });
     },
     onRemovePermissionClick: function(e) {
         var method = $(e.target).attr('data-method'),
-            tempCollection, collection = [],
+            models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
             availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
@@ -173,38 +165,55 @@ app.UserPermissions = Backbone.View.extend({
         switch (method) {
             case 'single':
                 //fetch all models in the collection that are currently selected
-                tempCollection = selectedPermissionsCollection
+                models = selectedPermissionsCollection
                     .where({
                         selected: true
                     });
                 //add each model from the temp collection to the  collection
-                this.setPermissions(tempCollection, availablePermissionCollection, false);
+                this.setPermissions(selectedPermissionsCollection, availablePermissionCollection, models, false);
                 break;
             case 'all':
                 //fetch all models that are currently displayed (i.e., "active")
-                tempCollection = selectedPermissionsCollection
-                    .where({
-                        active: true
-                    });
+                models = selectedPermissionsCollection.models;
                 //set each model in temp collection to have selected state = true
                 //and add model to collection
-                this.setPermissions(tempCollection, availablePermissionCollection, false);
+                this.setPermissions(selectedPermissionsCollection, availablePermissionCollection, models, false);
                 break;
             default:
                 break;
-        };
+        }
     },
+    setPermissions: function(from_collection, target_collection, models, setSelected) {
+        var i = 0;
+
+        for (i = 0; i < models.length; i++) {
+            models[i].set({
+                selected: setSelected
+            });
+        }
+
+        Backbone.pubSub.trigger('add', models, target_collection);
+        Backbone.pubSub.trigger('remove', models, from_collection);
+    },
+
+    clearPermissions: function() {
+        this.libraryViewGroupSelected.collection.set([]);
+        this.libraryViewGroupAvailable.collection.set(app.Groups);
+        Backbone.pubSub.trigger('view:reset',  this.libraryViewGroupSelected);
+          Backbone.pubSub.trigger('view:reset',  this.libraryViewGroupAvailable);
+    },
+
+
     onSearch: function(e) {
         var val = $(e.currentTarget).val(),
-            options,
+            type = $(e.currentTarget).attr('data-method'),
+            pubEvent = (type == 'available' ? 'library_permissions_available:search' : 'library_permissions_selected:search'),
             $search_clear = $(e.currentTarget).siblings('.search-clear'),
-            searchAllAttributes = false;
+            searchAllAttributes = false,
+            query;
 
-        if (val.length > 0) {
-            $search_clear.removeClass('hidden');
-        } else {
-            $search_clear.addClass('hidden');
-        }
+        //toggle clear 'x' button
+        $search_clear.toggleClass('hidden', val.length == 0);
 
         //check for search operand character '~'
         if (val.indexOf('~') == 0 && val.length > 1) {
@@ -216,31 +225,38 @@ app.UserPermissions = Backbone.View.extend({
         }
 
 
-        options = (searchAllAttributes ? {
+        query = (searchAllAttributes ? {
             val: val
         } : {
             key: 'name',
             val: val
         });
-        if ($(e.currentTarget).parents('.permissions_available').length) {
-            Backbone.pubSub.trigger('library_permissions_available:search', options);
-        } else {
-            Backbone.pubSub.trigger('library_permissions_selected:search', options);
+
+        this.search({
+            pubEvent: pubEvent,
+            query: query
+        });
+    },
+
+    search: function(settings) {
+        if (!settings.pubEvent || !settings.query) {
+            return;
         }
+
+        Backbone.pubSub.trigger(settings.pubEvent, settings.query);
     },
 
     onClearSelectedClick: function(e) {
         var type = $(e.currentTarget).attr('data-method'),
-            collection = (type == 'available' ? this.libraryViewGroupAvailable.collection : this.libraryViewGroupSelected.collection);
+            pubEvent = (type == 'available' ? 'library_permissions_available:search' : 'library_permissions_selected:search');
 
-        collection.where({
-            selected: true
-        }).forEach(function(model) {
-            model.set({
-                selected: false
-            });
+        //we seach instead of just doing a backbone collection search because our search caches queries for quick results
+        this.search({
+            pubEvent: pubEvent,
+            query: ''
         });
     },
+
     toggleButtons: function(enable) {
         this.$buttons.each(function(i, el) {
             if (enable) {

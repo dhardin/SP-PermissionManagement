@@ -7,12 +7,10 @@
     <title>SharePoint Permissions</title>
     <!-- Third Party Style Sheets -->
     <link rel="stylesheet" type="text/css" href="lib/foundation/css/foundation.css">
-    <link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.css">
     <!-- Our Style Sheets -->
     <link rel="stylesheet" href="css/style.css" />
     <!-- Third Party JavaScript -->
     <script src="lib/jquery.js"></script>
-    <script src="lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="lib/underscore.js"></script>
     <script type="text/javascript" src="lib/backbone.js"></script>
     <script type="text/javascript" src="lib/foundation/js/foundation.min.js"></script>
@@ -50,7 +48,8 @@
     </div>
 
     <ul class="breadcrumbs">
-        <li class="home"><a class="current" href="#">Home</a></li>
+        <li class="home"><a class="current" href="#">Home</a>
+        </li>
     </ul>
 
     <div id="main"></div>
@@ -78,22 +77,22 @@
     </script>
 
     <script type="text/template" id="group-list-item-template">
-        <a class="list-group-item">
+        <a class="list-group-item list-item">
             <%=name%>
         </a>
     </script>
     <script type="text/template" id="user-edit-list-item-template">
-        <a class="list-group-item">
+        <a class="list-group-item list-item">
             <%=name%>
         </a>
     </script>
     <script type="text/template" id="user-list-item-template">
-        <a class="user" role="menuitem" tabindex="-1">
+        <a class="user list-item" role="menuitem" tabindex="-1">
             <%=name%>
         </a>
     </script>
     <script type="text/template" id="group-select-list-item-template">
-        <a class="group" role="menuitem" tabindex="-1">
+        <a class="group list-item" role="menuitem" tabindex="-1">
             <%=name%>
         </a>
     </script>
@@ -103,22 +102,15 @@
 
     <script type="text/template" id="user-edit-template">
 
-        <div class="row" data-equalizer>
-            <div id="user-info" class="small-12 medium-6 columns" data-equalizer-watch>
-                <button data-dropdown="users-dropdown" aria-controls="users-dropdown" aria-expanded="false" class="button dropdown small info" id="user-select-btn">Select a User</button>
-                <br>
-                <ul id="users-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-                    <li>
-                        <div class="search-container">
-                            <input class="search" type="text" />
-                            <a class="search-clear hidden">X</a>
-                        </div>
-                        <ul id="users"></ul>
-                    </li>
-                </ul>
+        <div class="row">
+            <div id="user-info" class="small-12 medium-6 columns">
+                <div class="search-container">
+                    <input class="search" type="text" />
+                    <a class="search-clear hidden">X</a>
+                    <ul id="users"></ul>
+                </div>
 
                 <label>
-
                     <input class="user-attr" type="text" id="name" value="<%=name%>" disabled/>
                 </label>
                 <label>Login Name
@@ -128,14 +120,14 @@
                     <input class="user-attr" type="text" id="email" value="<%=email%>" disabled/>
                 </label>
             </div>
-            <div id="console" class="small-12 medium-6 columns" data-equalizer-watch>
+            <div id="console" class="small-12 medium-6 columns">
                 <label id="console-label">Console<a id="clear-console" class="right">Clear Console</a>
                     <div class="messages"></div>
                 </label>
                 <div class="progress small-0 large-100 text-center">
-                <span class="meter" style="width:0%"></span>
+                    <span class="meter" style="width:0%"></span>
                     <span class="current-progress">0%</span>
-                    
+
                 </div>
             </div>
         </div>
@@ -178,17 +170,11 @@
 
         <div class="row" data-equalizer>
             <div id="group-info" class="small-12 medium-6 columns" data-equalizer-watch>
-                <button data-dropdown="groups-dropdown" aria-controls="groups-dropdown" aria-expanded="false" class="button dropdown small info" id="groups-select-btn">Select a Group</button>
-                <br>
-                <ul id="groups-dropdown" data-dropdown-content class="f-dropdown medium" aria-hidden="true" tabindex="-1">
-                    <li>
-                        <div class="search-container">
-                            <input class="search" type="text" />
-                            <a class="search-clear hidden">X</a>
-                        </div>
-                        <ul id="groups"></ul>
-                    </li>
-                </ul>
+                <div class="search-container">
+                    <input class="search" type="text" />
+                    <a class="search-clear hidden">X</a>
+                    <ul id="groups"></ul>
+                </div>
                 <label>
 
                     <input class="group-attr" type="text" id="name" value="<%=name%>" />
@@ -241,7 +227,7 @@
                     </li>
                 </ul>
                 <div class="search-container permissions_available">
-                    <input class="search " type="text" />
+                    <input class="search" data-method="available" type="text" />
                     <a class="search-clear hidden">X</a>
                 </div>
                 <div id="group-available" class="list-group"></div>
@@ -259,7 +245,7 @@
                     </li>
                 </ul>
                 <div class="search-container permissions_selected">
-                    <input class="search " type="text" />
+                    <input class="search" data-method="selected" type="text" />
                     <a class="search-clear hidden">X</a>
                 </div>
                 <div id="group-selected" class="list-group"></div>
@@ -332,13 +318,14 @@
     <script src="js/views/user.edit.js"></script>
     <script src="js/views/user.permissions.js"></script>
     <script src="js/views/user.permission-selector.js"></script>
+    <script src="js/views/user.list-item.js"></script>
 
     <script src="js/views/group.js"></script>
     <script src="js/views/group.users.js"></script>
     <script src="js/views/group.edit.js"></script>
     <script src="js/views/group.user-selector.js"></script>
-    <script src="js/views/group-user.js"></script>
-    <script src="js/views/group-select.js"></script>
+
+    <script src="js/views/group.list-item.js"></script>
 
     <script src="js/views/library.js"></script>
     <script src="js/views/library.permissions_available.js"></script>

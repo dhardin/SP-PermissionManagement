@@ -5,7 +5,7 @@ app.GroupSelectView = Backbone.View.extend({
 	tagName: 'li',
 
 	events: {
-		'click': 'select'
+		'click a': 'select'
 	},
 
 	initialize: function (options) {
@@ -13,6 +13,7 @@ app.GroupSelectView = Backbone.View.extend({
 	},
 
 	select: function(e){
+		e.stopPropagation();
 		 Backbone.pubSub.trigger('group:select', this.model);
 	},
 

@@ -3,11 +3,14 @@ var app = app || {};
 app.LibraryView = Backbone.View.extend({
 
     initialize: function(options) {
-        this.collection.on('add reset remove', function() {
-            this.render(this.collection);
-        }, this);
+        // this.collection.on('add reset remove', function() {
+        //      this.render(this.collection);
+        //   }, this);
 
         Backbone.pubSub.on('library:search', this.search, this);
+        Backbone.pubSub.on('add', this.addItems, this);
+        Backbone.pubSub.on('remove', this.removeItems, this);
+        Backbone.pubSub.on('view:reset', this.reset, this);
 
         this.search_cache = {};
         this.searchNum = 0;
@@ -19,13 +22,16 @@ app.LibraryView = Backbone.View.extend({
     },
 
     render: function(collection) {
-        var active;
-        
+        var active_items_arr;
+
         this.el_html = [];
 
         this.$el.html('');
         collection = collection || this.collection;
-
+        active_items_arr = collection.where({
+            active: true
+        });
+        collection = new Backbone.Collection(active_items_arr);
 
         if (collection.length > 0) {
             (function(that) {
@@ -42,17 +48,36 @@ app.LibraryView = Backbone.View.extend({
 
         return this;
     },
+    onClose: function(){
+        _.each(this.childViews, function(childView){
+            childView.remove();
+            childView.unbind();
+            if(childView.onClose){
+                childView.onClose();
+            }
+        });
 
-    renderItems: function(modelsArr, index, currentSearchNum) {
+        Backbone.pubSub.off('library:search');
+        Backbone.pubSub.off('add');
+        Backbone.pubSub.off('remove');
+        Backbone.pubSub.off('view:reset');
+    },
+    renderItems: function(modelsArr, index, currentSearchNum, highlightSearch, regex) {;
         if (this.searchNum != currentSearchNum) {
             return;
         }
+
         if (index < modelsArr.length) {
-            this.renderItem(modelsArr[index]);
+            if (highlightSearch && regex) {
+                this.renderItem(modelsArr[index], highlightSearch, regex);
+            } else {
+                this.renderItem(modelsArr[index]);
+            }
+
             (function(that) {
                 setTimeout(function() {
                     index++;
-                    that.renderItems(modelsArr, index, currentSearchNum);
+                    that.renderItems(modelsArr, index, currentSearchNum, highlightSearch, regex);
                 }, 1);
             })(this);
         } else {
@@ -65,24 +90,37 @@ app.LibraryView = Backbone.View.extend({
         });
         this.el_html.push(itemView.render().el);
     },
-    renderItem: function(item) {
+    renderItem: function(item, highlightSearch, regex) {
         var itemView = new this.itemView({
-            model: item
-        });
+                model: item
+            }),
+            itemViewEl = itemView.render().el,
+            $searchEl = $(itemViewEl).find('.list-item');
 
-        this.$el.append(itemView.render().el);
+        if (highlightSearch && regex) {
+            (function(that) {
+                $searchEl.each(function() {
+                    that.highlightSearchPhrase($(this), that.searchQuery, regex);
+                });
+            })(this);
+        }
+
+        this.$el.append(itemViewEl);
     },
     renderFiltered: function(collection) {
         var numActiveItems = 0,
             totalItems = 0,
-            numItemsDisplayed = 0;
+            numItemsDisplayed = 0,
+            active_items_arr,
+            regex;
 
         collection = collection || this.collection;
-
-        //get the total number of active items
-        numActiveItems = this.collection.where({
+        active_items_arr = collection.where({
             active: true
-        }).length;
+        });
+        collection = new Backbone.Collection(active_items_arr);
+        //get the total number of active items
+        numActiveItems = this.collection.length;
         totalItems = numActiveItems;
         numItemsDisplayed = collection.length;
         if (collection.length == this.collection.length) {
@@ -95,8 +133,68 @@ app.LibraryView = Backbone.View.extend({
 
         if (collection.length > 0) {
             this.searchNum++;
-            this.renderItems(collection.models, 0, this.searchNum);
+            regex = new RegExp(this.searchQuery, 'gi');
+            this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
+    },
+    reset: function(view){
+        if (view !== this){
+            return;
+        }
+
+        this.render();
+    },
+    addItems: function(models, collection) {
+        var index = 0,
+            i = 0,
+            itemView, model;
+
+        if (collection != this.collection) {
+            return;
+        }
+
+        for (i = 0; i < models.length; i++) {
+            model = models[i];
+            this.collection.add(model);
+            itemView = new this.itemView({
+                model: model
+            });
+            index = this.collection.indexOf(model);
+            this.$el.insertAt(index, itemView.render().el);
+        }
+    },
+    removeItems: function(models, collection) {
+        var itemView, model, index = 0, i = 0, arr_length = models.length;
+
+        index = index || 0;
+
+        if (collection != this.collection) {
+            return;
+        }
+
+        for (i = 0; i < arr_length; i++) {
+            model = models.length < arr_length ? models[0] : models[i];
+            index = collection.indexOf(model);
+            this.$el.children().eq(index).remove();
+             this.collection.remove(model);
+        }
+        
+    },
+    highlightSearchPhrase: function($el, phrase, regex) {
+        var content;
+
+        //return if phrase is blank
+        if (!$el || !phrase || phrase.length == 0) {
+            return;
+        }
+
+        content = $el.html();
+
+        content = content.replace(regex || new RegExp(phrase, 'gi'), function(match) {
+            return '<span class="match">' + match + '</span>';
+        });
+
+        $el.html(content);
     },
     onRenderComplete: function(query) {
         this.search_cache[query] = this.search_cache[query] || {};
@@ -114,7 +212,7 @@ app.LibraryView = Backbone.View.extend({
             this.render();
         } else {
             key = options.key;
-            val = options.val;
+            val = options.val.toLowerCase();
 
             //check to see if we already searched for this
             this.search_cache[val] = this.search_cache[val] || {};
@@ -123,53 +221,17 @@ app.LibraryView = Backbone.View.extend({
             if (!results) {
                 (function(that) {
                     results = that.collection.filter(function(item) {
-                        var attributeVal = '',
-                            vals = val.split(' '),
-                            attributeVals,
-                            i = 0,
-                            j = 0,
-                            rank = 0,
-                            isExact = false;
-                        attributeVal = item.get(key).toLowerCase();
-                        for (i = 0; i < vals.length; i++) {
-                            if (attributeVal.indexOf(vals[i]) > -1) {
-                                isExact = false;
-                                attributeVals = attributeVal.split(' ');
-                                for (j = 0; j < attributeVals.length; j++) {
-                                    if (attributeVals[j] == vals[i]) {
-                                        isExact = true;
-                                    }
-                                }
-                                rank += that._rankMatch(isExact, i, vals.length);
-                            }
-                            item.set({
-                                rank: rank
-                            });
-                            //only return result if its at least an 80% match or greater
-                            if (rank != 0 && rank >= (vals.length * 0.8 * 100)) {
-                                return true;
-                            } else {
-                                return false;
-                            }
+                        var attributeVal = item.get(key).toLowerCase();
+                        if (attributeVal.indexOf(val) > -1) {
+                            return true;
                         }
                     });
                 })(this);
 
-                //sort results
-                results.comparator = 'rank';
-                results.sort();
                 //cache results of search
                 this.search_cache[val].results = results;
             }
             this.renderFiltered(new Backbone.Collection(results));
         }
-    },
-    _rankMatch: function(isExact, matchIndex, matchArrTotal) {
-        //returns rank 0 to 100
-        var rank = 0,
-            exactScore = 100,
-            partialScore = 80;
-        rank += (isExact ? (matchArrTotal - matchIndex) * exactScore : (matchArrTotal - matchIndex) * partialScore);
-        return rank;
     }
 });
