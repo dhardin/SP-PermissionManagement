@@ -8,6 +8,7 @@ var Router = Backbone.Router.extend({
         'edit/group/:name': 'editGroup',
         'edit/group/*': 'editGroup',
         'edit/*': 'selectEdit',
+        'fetch': 'fetch',
         '*404': 'error'
     },
 
@@ -24,6 +25,11 @@ var Router = Backbone.Router.extend({
         var errorView = new app.ErrorView();
         app.router.AppView.showView(errorView);
     },
+    fetch: function(){
+        var fetchingDataView = new app.FetchingDataView();
+
+        this.AppView.showView(fetchingDataView);
+    },
     editUser: function(loginname) {
         var fetchingDataView, editUserPermissionView, user;
 
@@ -35,10 +41,7 @@ var Router = Backbone.Router.extend({
         }
 
         if (app.state_map.fetchingData) {
-            fetchingDataView = new app.FetchingDataView();
-
-            this.AppView.showView(fetchingDataView);
-
+            app.router.navigate('fetch', true);
             app.state_map.dataLoadCallback = function() {
                 if (app.state_map.fetchId) {
                     app.router.navigate('edit/user/' + app.state_map.fetchId, true);
