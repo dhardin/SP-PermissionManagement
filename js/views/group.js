@@ -15,6 +15,7 @@ app.GroupView = Backbone.View.extend({
 		e.stopPropagation();
 		var selected = this.model.get('selected');
 		this.model.set('selected', !selected);
+		
 	},
 	
 	render: function () {
