@@ -20,8 +20,6 @@ app.DataFetched = function() {
 
 app.userEditFetchData = function() {
     app.state_map.fetchingData = true;
-    app.state_map.fetchingUsers = true;
-    app.state_map.fetchingGroups = true;
 
     $.when(
         (function() {
@@ -47,6 +45,7 @@ app.userEditFetchData = function() {
                 app.GroupCollection = new app.LibraryGroup(groups);
                 app.GroupAvailCollection = new app.LibraryGroup(groupArr);
                 app.GroupSelectedCollection = new app.LibraryGroup([]);
+
                 deferred.resolve();
             });
             return deferred.promise();
@@ -59,8 +58,6 @@ app.userEditFetchData = function() {
 
 app.groupEditFetchData = function() {
     app.state_map.fetchingData = true;
-    app.state_map.fetchingUsers = true;
-    app.state_map.fetchingGroups = true;
 
     $.when(
         (function() {
@@ -79,7 +76,7 @@ app.groupEditFetchData = function() {
                     model.active = false;
                 });
                 app.UsersSelectedCollection = new app.LibraryUser(users);
-                app.state_map.fetchingUsers = false;
+
                 deferred.resolve();
 
             });
@@ -93,8 +90,6 @@ app.groupEditFetchData = function() {
                 app.Groups = groups;
                 app.GroupCollection = new app.LibraryGroup(groups);
 
-
-                app.state_map.fetchingGroups = false;
                 deferred.resolve();
             });
             return deferred.promise();
