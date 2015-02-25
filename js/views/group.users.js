@@ -22,8 +22,8 @@ app.EditGroupUsersView = Backbone.View.extend({
 
         this.GroupEditView.render();
         this.GroupUsersView.render();
-        this.childViews.push(this.UserEditView);
-        this.childViews.push(this.UserPermissionsView);
+        this.childViews.push(this.GroupEditView);
+        this.childViews.push(this.GroupUsersView);
 
         return this;
     },
