@@ -347,11 +347,11 @@
     <!-- Router -->
     <script src="js/routes/routes.js"></script>
     <script>
-    $(document).foundation({
-        equalizer: {
-            equalize_on_stack: true
-        }
-    });
+    $(document).ready(function(){
+        $('#main').height(function(index, height) {
+            return window.innerHeight - $(this).offset().top;
+        });
+                }).foundation({});
     </script>
 </body>
 

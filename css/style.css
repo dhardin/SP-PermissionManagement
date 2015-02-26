@@ -4,6 +4,7 @@
  }
  #main {
   padding-top: 10px;
+  overflow-y: scroll;
  }
    #logo {
     width: 35px;
