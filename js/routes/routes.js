@@ -57,7 +57,7 @@ var Router = Backbone.Router.extend({
                 loginname: loginname
             });
             if (!user) {
-                app.router.navigate('edit/group/', true);
+                app.router.navigate('edit/user/', true);
                 return;
             }
         } else {

@@ -1,5 +1,4 @@
 #SP-PermissionManagement
-=======================
 
 An intuitive way to alter user permissions in SharePoint.
 
@@ -11,13 +10,14 @@ An intuitive way to alter user permissions in SharePoint.
 - Edit SharePoint user permissions
 - Edit SharePoint group users
 - Edit SharePoint group info
+- Export User Permissions
+- Export Users in a Group
+- Remove a User from SharePoint Site
+  + Removes all permissions, including unique permissions
 - Responsive layout so you can edit on any device (thank you [Foundation](http://foundation.zurb.com))
-- Bookmarkable User/Group edit pages (i.e., bookmark a group and when the application opens to that bookmark, you will be routed to the permissions/users for that user/group)
-- Breadcrumbs
 
 ##Setup
-- Download this github repository
-- Upload repository to a Document Library in your SharePoint site
+- Upload SP-PermissionManagement repository to a Document Library in your SharePoint site
 - Edit config.js
   - SP-PermissionManagement/js/config.js
   - Change url attribute value to your SharePoint site
@@ -52,9 +52,9 @@ The dual list boxes on either edit page allow you to add or remove permissions/u
 
 ##Dependencies
 - jQuery
-- Foundation
-- Backbone
-- Underscore
+- Zurb Foundation
+- Backbone.js
+- Underscore.js
 
 ##Roadmap
 - [x] Add ability to manage a group's users

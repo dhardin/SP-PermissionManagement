@@ -73,9 +73,6 @@ app.UserPermissions = Backbone.View.extend({
         $search.val('');
         $search.trigger('keyup');
     },
-    onPermissionSelect: function(e, el) {
-        //Backbone.pubSub.trigger('group:select', $(el));
-    },
     onPermissionFetched: function(permissions) {
         var models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
