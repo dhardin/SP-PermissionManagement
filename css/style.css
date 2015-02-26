@@ -222,7 +222,7 @@ input::-ms-clear {
 
 .library-message {
   position: absolute;
-  top: 0;
+  top: 76px;
   bottom: 0;
   left: 0;
   right: 0;
@@ -231,5 +231,5 @@ input::-ms-clear {
 .library-message p {
   position: absolute;
   width: 100%;
-  top: 50%;
+  top: 40%;
 }
