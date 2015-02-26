@@ -1,10 +1,16 @@
-  body, div{overflow: none !important;}
- nav{
+
+ .nav{
   max-width: inherit !important;
+ }
+ .top-bar{
+
+ }
+ .breadcrumbs {
+
  }
  #main {
   padding-top: 10px;
-  overflow-y: scroll;
+
  }
    #logo {
     width: 35px;
@@ -212,4 +218,18 @@ input::-ms-clear {
 .match {
   font-weight: bold;
   text-decoration: underline;
+}
+
+.library-message {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.library-message p {
+  position: absolute;
+  width: 100%;
+  top: 50%;
 }

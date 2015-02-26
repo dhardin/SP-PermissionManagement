@@ -19,7 +19,7 @@
 </head>
 
 <body>
-    <div class="contain-to-grid sticky">
+    <div class="nav contain-to-grid sticky">
         <nav class="top-bar" data-topbar role="navigation">
             <ul class="title-area">
                 <li class="name">
@@ -347,11 +347,7 @@
     <!-- Router -->
     <script src="js/routes/routes.js"></script>
     <script>
-    $(document).ready(function(){
-        $('#main').height(function(index, height) {
-            return window.innerHeight - $(this).offset().top;
-        });
-                }).foundation({});
+    $(document).foundation({});
     </script>
 </body>
 
