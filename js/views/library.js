@@ -135,6 +135,13 @@ app.LibraryView = Backbone.View.extend({
 
         this.render();
     },
+    modifyItems: function(options){
+        add_settings = options.add || {};
+        remove_settings = options.remove || {};
+        this.addItems(add_settings.models, add_settings.collection);
+        this.removeItems(remove_settings.models, remove_settings.collection);
+        Backbone.pubSub.trigger('modify-complete');
+    },
     addItems: function(models, collection) {
         var index = 0,
             i = 0,
@@ -153,6 +160,7 @@ app.LibraryView = Backbone.View.extend({
             index = this.collection.indexOf(model);
             this.$el.insertAt(index, itemView.render().el);
         }
+      
     },
     removeItems: function(models, collection) {
         var itemView, model, index = 0, i = 0, arr_length = models.length;
@@ -169,7 +177,6 @@ app.LibraryView = Backbone.View.extend({
             this.$el.children().eq(index).remove();
              this.collection.remove(model);
         }
-        
     },
     highlightSearchPhrase: function($el, phrase, regex) {
         var content;

@@ -20,6 +20,7 @@ app.UserPermissions = Backbone.View.extend({
         Backbone.pubSub.on('user:permissions-fetched', this.onPermissionFetched, this);
         Backbone.pubSub.on('user:selected', this.onUserSelect, this);
         Backbone.pubSub.on('user:save-permissions', this.onUserPermissionsSave, this);
+        Backbone.pubSub.on('modify-complete', this.resetSearch, this);
         this.childViews = [];
     },
 
@@ -78,12 +79,10 @@ app.UserPermissions = Backbone.View.extend({
     onPermissionFetched: function(permissions) {
         var models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
-            availablePermissionCollection = this.libraryViewGroupAvailable.collection,
-            search_available_val = this.$search_available.val(),
-            search_selected_val = this.$search_selected.val();
+            availablePermissionCollection = this.libraryViewGroupAvailable.collection;
 
         this.toggleButtons(true);
-        this.$search_clear.click();
+
 
         //return if no permissions to set
         if (permissions.length == 0 || !(permissions instanceof Array)) {
@@ -104,14 +103,20 @@ app.UserPermissions = Backbone.View.extend({
 
         //set permissions and don't select (i.e., hightlight) set permissions
         this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
+    },
+    resetSearch: function() {
+        var search_available_val = this.$search_available.val(),
+            search_selected_val = this.$search_selected.val();
+
+        this.$search_clear.click();
 
         //set searches based on previous values
         this.$search_available
-                .val(search_available_val)
-                .trigger('keyup');
+            .val(search_available_val)
+            .trigger('keyup');
         this.$search_selected
-                .val(search_selected_val)
-                .trigger('keyup');
+            .val(search_selected_val)
+            .trigger('keyup');
     },
     onUserSelect: function(e) {
         if (this.libraryViewGroupSelected) {
@@ -199,9 +204,10 @@ app.UserPermissions = Backbone.View.extend({
                 selected: setSelected
             });
         }
-
-        Backbone.pubSub.trigger('add', models, target_collection);
-        Backbone.pubSub.trigger('remove', models, from_collection);
+        Backbone.pubSub.trigger('modify', {
+            add: {models: models, collection: target_collection},
+            remove: {models: models, collection: from_collection}
+        });
     },
 
     clearPermissions: function() {
