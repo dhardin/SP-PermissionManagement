@@ -30,7 +30,9 @@ app.UserPermissions = Backbone.View.extend({
         this.$groupAvailable = this.$('#group-available');
         this.$groupSelected = this.$('#group-selected');
         this.$buttons = this.$('.control-btn');
-
+        this.$search_clear = this.$('.search-clear');
+        this.$search_available = this.$('.permissions_available .search');
+        this.$search_selected = this.$('.permissions_selected .search');
         this.toggleButtons(false);
 
 
@@ -56,11 +58,11 @@ app.UserPermissions = Backbone.View.extend({
 
         return this;
     },
-    onClose: function(){
-        _.each(this.childViews, function(childView){
+    onClose: function() {
+        _.each(this.childViews, function(childView) {
             childView.remove();
             childView.unbind();
-            if(childView.onClose){
+            if (childView.onClose) {
                 childView.onClose();
             }
         });
@@ -76,10 +78,12 @@ app.UserPermissions = Backbone.View.extend({
     onPermissionFetched: function(permissions) {
         var models,
             selectedPermissionsCollection = this.libraryViewGroupSelected.collection,
-            availablePermissionCollection = this.libraryViewGroupAvailable.collection;
+            availablePermissionCollection = this.libraryViewGroupAvailable.collection,
+            search_available_val = this.$search_available.val(),
+            search_selected_val = this.$search_selected.val();
 
         this.toggleButtons(true);
-       
+        this.$search_clear.click();
 
         //return if no permissions to set
         if (permissions.length == 0 || !(permissions instanceof Array)) {
@@ -100,6 +104,14 @@ app.UserPermissions = Backbone.View.extend({
 
         //set permissions and don't select (i.e., hightlight) set permissions
         this.setPermissions(availablePermissionCollection, selectedPermissionsCollection, models, false);
+
+        //set searches based on previous values
+        this.$search_available
+                .val(search_available_val)
+                .trigger('keyup');
+        this.$search_selected
+                .val(search_selected_val)
+                .trigger('keyup');
     },
     onUserSelect: function(e) {
         if (this.libraryViewGroupSelected) {
@@ -115,7 +127,6 @@ app.UserPermissions = Backbone.View.extend({
             return model.get('name');
         });
         Backbone.pubSub.trigger('user:selected-permissions-fetched', selectedPermissionsArr);
-
     },
     onAddPermissionClick: function(e) {
         var method = $(e.target).attr('data-method'),
@@ -147,7 +158,7 @@ app.UserPermissions = Backbone.View.extend({
 
             default:
                 break;
-        };
+        }
     },
     onRemovePermissionClick: function(e) {
         var method = $(e.target).attr('data-method'),
@@ -196,8 +207,8 @@ app.UserPermissions = Backbone.View.extend({
     clearPermissions: function() {
         this.libraryViewGroupSelected.collection.set([]);
         this.libraryViewGroupAvailable.collection.set(app.Groups);
-        Backbone.pubSub.trigger('view:reset',  this.libraryViewGroupSelected);
-          Backbone.pubSub.trigger('view:reset',  this.libraryViewGroupAvailable);
+        Backbone.pubSub.trigger('view:reset', this.libraryViewGroupSelected);
+        Backbone.pubSub.trigger('view:reset', this.libraryViewGroupAvailable);
     },
 
 

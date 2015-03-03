@@ -28,10 +28,6 @@ app.LibraryView = Backbone.View.extend({
 
         this.$el.html('');
         collection = collection || this.collection;
-        active_items_arr = collection.where({
-            active: true
-        });
-        collection = new Backbone.Collection(active_items_arr);
 
         if (collection.length > 0) {
             (function(that) {
@@ -115,15 +111,10 @@ app.LibraryView = Backbone.View.extend({
             regex;
 
         collection = collection || this.collection;
-        active_items_arr = collection.where({
-            active: true
-        });
-        collection = new Backbone.Collection(active_items_arr);
         //get the total number of active items
-        numActiveItems = this.collection.length;
-        totalItems = numActiveItems;
+        totalItems = this.collection.length;
         numItemsDisplayed = collection.length;
-        if (collection.length == this.collection.length) {
+        if (totalItems == numItemsDisplayed) {
             return this;
         }
         this.$el.html('');
