@@ -60,7 +60,8 @@ app.LibraryView = Backbone.View.extend({
         Backbone.pubSub.off('view:reset');
         Backbone.pubSub.off('modify');
     },
-    renderItems: function(modelsArr, index, currentSearchNum, highlightSearch, regex) {;
+    renderItems: function(modelsArr, index, currentSearchNum, highlightSearch, regex) {
+        console.log('searchNum: ' + this.searchNum + ', currentSearchNum: ' + currentSearchNum);
         if (this.searchNum != currentSearchNum) {
             return;
         }
