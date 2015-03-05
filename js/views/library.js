@@ -124,9 +124,9 @@ app.LibraryView = Backbone.View.extend({
         if (numItemsDisplayed < totalItems) {
             this.$el.append('<div>Displaying ' + numItemsDisplayed + ' out of ' + totalItems + '</div>');
         }
-
+         this.searchNum++;
         if (collection.length > 0) {
-            this.searchNum++;
+           
             regex = new RegExp(this.searchQuery, 'gi');
             this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
