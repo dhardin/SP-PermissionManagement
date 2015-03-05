@@ -2,8 +2,8 @@ var app = app || {};
 
 app.LibraryUser = Backbone.Collection.extend({
     model: app.User,
-    comparator: function (property) {
-        return selectedStrategy.apply(myModel.get(property));
+       comparator: function (model) {
+        return model.get('name');
     },
     strategies: {
         name: function (group) { return group.get("name"); }
@@ -13,7 +13,6 @@ app.LibraryUser = Backbone.Collection.extend({
         this.trigger('sortList');
     },
     initialize: function () {
-        this.changeSort("name"); 
     },
     search: function (options) {
         var regex,

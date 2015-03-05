@@ -8,6 +8,7 @@ var Router = Backbone.Router.extend({
         'edit/group/:name': 'editGroup',
         'edit/group/*': 'editGroup',
         'edit/*': 'selectEdit',
+        'fetch': 'fetch',
         '*404': 'error'
     },
 
@@ -24,118 +25,84 @@ var Router = Backbone.Router.extend({
         var errorView = new app.ErrorView();
         app.router.AppView.showView(errorView);
     },
+    fetch: function(){
+        var fetchingDataView = new app.FetchingDataView();
+
+        this.AppView.showView(fetchingDataView);
+    },
     editUser: function(loginname) {
         var fetchingDataView, editUserPermissionView, user;
 
-        app.state_map.fetchId = (loginname != null ? loginname.replace('\\', '/') : "");
+          app.state_map.fetchId = loginname || "";
         if (app.config.isTesting) {
             app.setTestData('user');
-        } else {
+        } else if (!app.state_map.fetched.editUser) {
             app.userEditFetchData();
         }
 
         if (app.state_map.fetchingData) {
-            fetchingDataView = new app.FetchingDataView();
-
-            this.AppView.showView(fetchingDataView);
-
+            app.router.navigate('fetch', true);
             app.state_map.dataLoadCallback = function() {
-
                 if (app.state_map.fetchId) {
-                    user = app.UserCollection.findWhere({
-                        loginname: app.state_map.fetchId
-                    });
-                    if (!user) {
-                        app.router.navigate('edit/user/', true);
-                        user = new app.User();
-                    }
+                    app.router.navigate('edit/user/' + app.state_map.fetchId, true);
                 } else {
                     app.router.navigate('edit/user/', true);
-                    user = new app.User();
                 }
-                editUserPermissionView = new app.EditUserPermissionsView({
-                    model: user
-                });
-
-                app.router.AppView.showView(editUserPermissionView);
             };
+            return;
         } else if (loginname) {
-                    
-                    user = app.UserCollection.findWhere({
-                        loginname: app.state_map.fetchId
-                    });
-                    if (!user) {
-                        app.router.navigate('edit/user/', true);
-                        user = new app.User();
-                    }
-                editUserPermissionView = new app.EditUserPermissionsView({
-                    model: user
-                });
-
-            app.router.AppView.showView(editUserPermissionView);
-        } else {
-            editUserPermissionView = new app.EditUserPermissionsView({
-                model: new app.User()
+          
+            loginname = loginname.replace('\\', '/');
+            user = app.UserCollection.findWhere({
+                loginname: loginname
             });
-
-            this.AppView.showView(editUserPermissionView);
+            if (!user) {
+                app.router.navigate('edit/user/', true);
+                return;
+            }
+        } else {
+            user = new app.User();
         }
+        editUserPermissionView = new app.EditUserPermissionsView({
+            model: user
+        });
+
+        this.AppView.showView(editUserPermissionView);
     },
     editGroup: function(name) {
         app.state_map.fetchId = (name != null ? name : "");
         if (app.config.isTesting) {
             app.setTestData('group');
-
-        } else {
+        } else if (!app.state_map.fetched.editGroup) {
             app.groupEditFetchData();
         }
-
+        app.state_map.fetchId = name || "";
         if (app.state_map.fetchingData) {
-            var fetchingDataView = new app.FetchingDataView();
-
-            this.AppView.showView(fetchingDataView);
-
+          
+app.router.navigate('fetch', true);
             app.state_map.dataLoadCallback = function() {
-                var group, editGroupUsersView;
                 if (app.state_map.fetchId) {
-                    group = app.GroupCollection.findWhere({
-                        name: app.state_map.fetchId
-                    });
-                    if (!group) {
-                        app.router.navigate('edit/group/', true);
-                        group = new app.Group();
-                    }
+                    app.router.navigate('edit/group/' + app.state_map.fetchId, true);
                 } else {
                     app.router.navigate('edit/group/', true);
-                    group = new app.Group();
                 }
-
-                editGroupUsersView = new app.EditGroupUsersView({
-                    model: group
-                });
-
-                app.router.AppView.showView(editGroupUsersView);
             };
+              return;
         } else if (name) {
-              group = app.GroupCollection.findWhere({
-                        name: app.state_map.fetchId
-                    });
-                    if (!group) {
-                        app.router.navigate('edit/group/', true);
-                        group = new app.Group();
-                    }
-                editGroupUsersView = new app.EditGroupUsersView({
-                    model: group
-                });
-
-            app.router.AppView.showView(editGroupUsersView);
-        } else {
-            var editGroupUsersView = new app.EditGroupUsersView({
-                model: new app.Group()
+            group = app.GroupCollection.findWhere({
+                name: name
             });
-
-            this.AppView.showView(editGroupUsersView);
+            if (!group) {
+                app.router.navigate('edit/group/', true);
+            }
+        } else {
+            group = new app.Group();
         }
+        var editGroupUsersView = new app.EditGroupUsersView({
+            model: group
+        });
+
+        this.AppView.showView(editGroupUsersView);
     },
 
     onRouteChange: function(route, params) {

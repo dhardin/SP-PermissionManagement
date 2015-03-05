@@ -7,17 +7,18 @@ app.UserEditView = Backbone.View.extend({
 
     events: {
         'keyup .search': 'onUsersKeyUp',
-        'click #user-select-btn': 'onUserSelectBtnClick',
         'click .save-permissions-btn': 'onSaveClick',
         'click #clear-console': 'onClearConsoleClick',
         'click .export-permissions': 'onExportBtnClick',
         'click .purge-user-btn': 'onPurgeBtnClick',
         'click .search-clear': 'onSearchClear',
-        'click .search': 'onSearchClick'
+        'click .search': 'onSearchClick',
+        'focus .search': 'onSearchFocus'
     },
 
     initialize: function(options) {
         Backbone.pubSub.on('user:selected-permissions-fetched', this.onSelectedPermissionsFetched, this);
+        Backbone.pubSub.on('user:select', this.userSelect, this);
         this.state_map = {
             user_permissions: null,
             pendingSaves: 0,
@@ -35,17 +36,15 @@ app.UserEditView = Backbone.View.extend({
                 remove: [],
                 purge: []
             }
-        }
+        };
+        this.childViews = [];
 
-    },
-
-    select: function(e) {
-        Backbone.pubSub.trigger('user:select', this.model);
     },
 
     render: function() {
         this.$el.html(this.template(this.model.toJSON()));
         this.$users = this.$('#users');
+        this.$user_info = this.$('#user-info');
         this.$user_search_container = this.$('.search-container');
         this.$user_search = this.$('.search');
         this.$user_attributes = this.$('.user-attr');
@@ -67,6 +66,14 @@ app.UserEditView = Backbone.View.extend({
             this.toggleButtons(false);
         }
 
+
+        (function(that) {
+            $('body').on('click', function(e) {
+                that.onBodyClick(e);
+            });
+        })(this);
+
+
         this.libraryViewUsers = new app.LibraryUserView({
             el: this.$users[0],
             collection: app.UserCollection,
@@ -74,14 +81,26 @@ app.UserEditView = Backbone.View.extend({
         });
 
         this.libraryViewUsers.render();
+        this.childViews.push(this.libraryViewUsers);
 
-        Backbone.pubSub.on('user:select', this.userSelect, this);
+
         if (this.model.get('id') != '') {
             this.userSelect(this.model, false);
         }
         return this;
     },
-
+    onClose: function() {
+        _.each(this.childViews, function(childView) {
+            childView.remove();
+            childView.unbind();
+            if (childView.onClose) {
+                childView.onClose();
+            }
+        });
+        Backbone.pubSub.off('user:selected-permissions-fetched');
+        Backbone.pubSub.off('user:select');
+        $('body').off('click');
+    },
     search: function() {
         var val = this.$user_search.val(),
             options,
@@ -113,11 +132,22 @@ app.UserEditView = Backbone.View.extend({
 
         Backbone.pubSub.trigger('library_users:search', options);
     },
-    onUserSelectBtnClick: function(e) {
+    onBodyClick: function(e) {
+        var $currentTarget = $(e.currentTarget);
+
         (function(that) {
             setTimeout(function() {
-                that.$user_search.focus();
-            }, 25);
+                //return if users are not visible or the current target is the user search bar
+                if (!that.$users.is(':visible') || $currentTarget[0] === that.$user_search[0]) {
+                    return;
+                }
+                if (document.activeElement === that.$user_info[0]) {
+                    return;
+                } else {
+                    that.$users.hide();
+                }
+
+            }, 10);
         })(this);
     },
     onSearchClear: function(e) {
@@ -194,7 +224,7 @@ app.UserEditView = Backbone.View.extend({
     },
 
     onSaveClick: function(e) {
-        if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
         this.resetStateMap();
@@ -215,12 +245,15 @@ app.UserEditView = Backbone.View.extend({
             msie = ua.indexOf("MSIE "),
             permissionsElement;
 
-        if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
 
         if (msie > 0) { // If Internet Explorer, return version number
             permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
+            permissionsElement += '<div>' + this.model.get('name') + '</div>';
+            permissionsElement += '<div>' + this.model.get('loginname') + '</div>';
+            permissionsElement += '<div>' + this.model.get('email') + '</div>';
 
             if (permissions.length > 1) {
                 permissionsElement += permissions.reduce(function(memo, obj) {
@@ -241,7 +274,7 @@ app.UserEditView = Backbone.View.extend({
     onPurgeBtnClick: function(e) {
         var user = (this.model ? this.model.attributes : false);
 
-         if($(e.currentTarget).hasClass('disabled')) {
+        if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
 
@@ -263,7 +296,7 @@ app.UserEditView = Backbone.View.extend({
             name = this.model.get('name'),
             message = '';
 
-        
+
 
         if (type != 'error') {
             message = 'Succesfully removed ' + name + ' from site.';
@@ -338,9 +371,15 @@ app.UserEditView = Backbone.View.extend({
         this.state_map.success.purge = [];
     },
     userSelect: function(user, options) {
+        var name = user.get('name'),
+            loginname = user.get('loginname');
+
+        loginname = loginname.replace('/', '\\');
+
         if (!user.hasOwnProperty('attributes')) {
             return;
         }
+        this.$users.hide();
         this.model = user;
         this.$user_attributes.each(function(i, el) {
             $(el).val(user.attributes[el.id]);
@@ -351,12 +390,17 @@ app.UserEditView = Backbone.View.extend({
             return false;
         }
 
+        this.$search.val(name);
+        this.$search_clear.show();
+
+
+
 
         //fetch user permissions
         this.getUserPermissions(user.attributes.loginname);
 
         //update message
-        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Fetching [' + this.model.get('name') + ']\'s permissions</div>');
+        this.$messages.append('<span class="console-date">' + app.utility.getDateTime() + '</span><div>Fetching [' + name + ']\'s permissions</div>');
         this.$messages.scrollTop(this.$messages[0].scrollHeight);
         //update progress bar
         this.$progress_meter.width('0%');
@@ -364,11 +408,11 @@ app.UserEditView = Backbone.View.extend({
         //publish user selected event
         //set router
         if (options && options.route) {
-            app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
+            app.router.navigate('edit/user/' + loginname, false);
 
             Backbone.pubSub.trigger('user:selected');
         } else {
-            app.router.navigate('edit/user/' + user.attributes.loginname.replace('/', '\\'), false);
+            app.router.navigate('edit/user/' + loginname, false);
             Backbone.pubSub.trigger('user:selected');
         }
         Backbone.pubSub.trigger('breadcrumbs');
@@ -383,6 +427,7 @@ app.UserEditView = Backbone.View.extend({
                 that.model.set({
                     permissions: results
                 });
+
                 //endable edit buttons
                 that.toggleButtons(true);
                 //publish results globally 
@@ -394,8 +439,8 @@ app.UserEditView = Backbone.View.extend({
             });
         })(this);
     },
-    toggleButtons: function(enable){
-        if(enable){
+    toggleButtons: function(enable) {
+        if (enable) {
             this.$save_btn.removeClass('disabled');
             this.$purge_btn.removeClass('disabled');
             this.$export_btn.removeClass('disabled');
@@ -405,9 +450,16 @@ app.UserEditView = Backbone.View.extend({
             this.$export_btn.addClass('disabled');
         }
     },
-    clearInfo: function(enable){
-         this.$user_attributes.each(function(i, el) {
+    clearInfo: function(enable) {
+        this.$user_attributes.each(function(i, el) {
             $(el).val('');
-         });
+        });
+    },
+
+    onSearchFocus: function(e) {
+        this.$users.show();
+        if (this.$search.val().length > 0) {
+            this.$search_clear.show();
+        }
     }
 });

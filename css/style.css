@@ -1,9 +1,16 @@
-  body, div{overflow: none !important;}
- nav{
+
+ .nav{
   max-width: inherit !important;
+ }
+ .top-bar{
+
+ }
+ .breadcrumbs {
+
  }
  #main {
   padding-top: 10px;
+
  }
    #logo {
     width: 35px;
@@ -53,13 +60,21 @@ li {
   overflow-y: scroll;
   margin-left: 0;
   max-height: 20em;
+  display: none;
+  position: absolute;
+  background: #fff;
+  z-index: 9999;
+  width: 100%;
 }
 #users li, #groups li{
   cursor: pointer;
+}
+
+#users li a, #groups li a{
   padding: 1em;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
-
+  display: block;
 }
 
 #permissions .row, #user-select .row {
@@ -86,7 +101,6 @@ li {
   background-color: #a0d3e8;
   border-color: #61b6d9;
 }
-
 
 
 #users-dropdown, #groups-dropdown{
@@ -118,7 +132,7 @@ li {
   bottom: 0;
 }
 #console{
-  min-height: 100px;
+  height: 300px;
 }
 
 #console-label {
@@ -160,12 +174,12 @@ li {
 .search {
   padding-right: 2.5em !important;
   display: inline-block !important;
-}
+} 
 
 .search-clear {
   position: absolute;
   right: 1em;
-  top: 0.1em;
+  top: 0.5em;
   display: inline-block !important;
   color: #008cba !important;
 }
@@ -204,4 +218,18 @@ input::-ms-clear {
 .match {
   font-weight: bold;
   text-decoration: underline;
+}
+
+.library-message {
+  position: absolute;
+  top: 76px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.library-message p {
+  position: absolute;
+  width: 100%;
+  top: 40%;
 }

@@ -4,18 +4,22 @@ app.GroupUserView = Backbone.View.extend({
 	template: _.template($('#user-edit-list-item-template').html()),
 
 	events: {
-		'click': 'select'
+		'click a': 'select'
 	},
 
 	initialize: function (options) {
 		this.model.on('change', this.render, this);
-		Backbone.pubSub.on('user:select', this.select, this);
+		//Backbone.pubSub.on('user:select', this.select, this);
 	},
 	select: function(e){
+		e.stopPropagation();
 		var selected = this.model.get('selected');
 		this.model.set('selected', !selected);
 	},
-	
+	onClose: function(){
+		this.model.off('change');
+		Backbone.pubSub.off('user:select');
+	},
 	render: function () {
 		this.$el.html(this.template(this.model.toJSON()));
 		this.applyStyling();
