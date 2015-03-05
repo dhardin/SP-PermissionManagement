@@ -11,6 +11,7 @@ app.LibraryView = Backbone.View.extend({
         Backbone.pubSub.on('add', this.addItems, this);
         Backbone.pubSub.on('remove', this.removeItems, this);
         Backbone.pubSub.on('view:reset', this.reset, this);
+        Backbone.pubSub.on('modify', this.modifyItems, this);
 
         this.search_cache = {};
         this.searchNum = 0;
@@ -44,11 +45,11 @@ app.LibraryView = Backbone.View.extend({
 
         return this;
     },
-    onClose: function(){
-        _.each(this.childViews, function(childView){
+    onClose: function() {
+        _.each(this.childViews, function(childView) {
             childView.remove();
             childView.unbind();
-            if(childView.onClose){
+            if (childView.onClose) {
                 childView.onClose();
             }
         });
@@ -57,6 +58,7 @@ app.LibraryView = Backbone.View.extend({
         Backbone.pubSub.off('add');
         Backbone.pubSub.off('remove');
         Backbone.pubSub.off('view:reset');
+        Backbone.pubSub.off('modify');
     },
     renderItems: function(modelsArr, index, currentSearchNum, highlightSearch, regex) {;
         if (this.searchNum != currentSearchNum) {
@@ -128,14 +130,14 @@ app.LibraryView = Backbone.View.extend({
             this.renderItems(collection.models, 0, this.searchNum, true, regex);
         }
     },
-    reset: function(view){
-        if (view !== this){
+    reset: function(view) {
+        if (view !== this) {
             return;
         }
 
         this.render();
     },
-    modifyItems: function(options){
+    modifyItems: function(options) {
         add_settings = options.add || {};
         remove_settings = options.remove || {};
         this.addItems(add_settings.models, add_settings.collection);
@@ -160,10 +162,12 @@ app.LibraryView = Backbone.View.extend({
             index = this.collection.indexOf(model);
             this.$el.insertAt(index, itemView.render().el);
         }
-      
+
     },
     removeItems: function(models, collection) {
-        var itemView, model, index = 0, i = 0, arr_length = models.length;
+        var itemView, model, index = 0,
+            i = 0,
+            arr_length = models.length;
 
         index = index || 0;
 
@@ -175,7 +179,7 @@ app.LibraryView = Backbone.View.extend({
             model = models.length < arr_length ? models[0] : models[i];
             index = collection.indexOf(model);
             this.$el.children().eq(index).remove();
-             this.collection.remove(model);
+            this.collection.remove(model);
         }
     },
     highlightSearchPhrase: function($el, phrase, regex) {
