@@ -31,7 +31,7 @@ app.GroupUsers = Backbone.View.extend({
         this.$usersAvailable = this.$('#users-available');
         this.$usersSelected = this.$('#users-selected');
         this.$buttons = this.$('.control-btn');
-         this.$search_clear = this.$('.search-clear');
+        this.$search_clear = this.$('.search-clear');
         this.$search_available = this.$('.permissions_available .search');
         this.$search_selected = this.$('.permissions_selected .search');
         this.toggleButtons(false);
@@ -60,18 +60,23 @@ app.GroupUsers = Backbone.View.extend({
     },
     ,
     resetSearch: function() {
-        var search_available_val = this.$search_available.val(),
-            search_selected_val = this.$search_selected.val();
-
         this.$search_clear.click();
 
-        //set searches based on previous values
-        this.$search_available
-            .val(search_available_val)
-            .trigger('keyup');
-        this.$search_selected
-            .val(search_selected_val)
-            .trigger('keyup');
+        (function(that) {
+            setTimeout(function() {
+                var search_available_val = this.$search_available.val(),
+                    search_selected_val = this.$search_selected.val();
+                //set searches based on previous values
+                that.$search_available
+                    .val(search_available_val)
+                    .trigger('keyup');
+                that.$search_selected
+                    .val(search_selected_val)
+                    .trigger('keyup');
+            }, 100);
+        })(this);
+
+
     },
     onClose: function() {
         _.each(this.childViews, function(childView) {
