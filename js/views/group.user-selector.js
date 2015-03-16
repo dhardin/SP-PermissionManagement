@@ -20,6 +20,7 @@ app.GroupUsers = Backbone.View.extend({
         Backbone.pubSub.on('group:users-fetched', this.onUsersFetched, this);
         Backbone.pubSub.on('group:selected', this.onGroupSelect, this);
         Backbone.pubSub.on('group:save-users', this.onGroupUsersSave, this);
+        Backbone.pubSub.on('modify-complete', this.resetSearch, this);
         this.childViews = [];
     },
 
@@ -30,6 +31,9 @@ app.GroupUsers = Backbone.View.extend({
         this.$usersAvailable = this.$('#users-available');
         this.$usersSelected = this.$('#users-selected');
         this.$buttons = this.$('.control-btn');
+         this.$search_clear = this.$('.search-clear');
+        this.$search_available = this.$('.permissions_available .search');
+        this.$search_selected = this.$('.permissions_selected .search');
         this.toggleButtons(false);
 
         this.libraryViewUsersSelected = new app.LibraryUsersSelectedView({
@@ -53,6 +57,21 @@ app.GroupUsers = Backbone.View.extend({
         this.clearUsers();
 
         return this;
+    },
+    ,
+    resetSearch: function() {
+        var search_available_val = this.$search_available.val(),
+            search_selected_val = this.$search_selected.val();
+
+        this.$search_clear.click();
+
+        //set searches based on previous values
+        this.$search_available
+            .val(search_available_val)
+            .trigger('keyup');
+        this.$search_selected
+            .val(search_selected_val)
+            .trigger('keyup');
     },
     onClose: function() {
         _.each(this.childViews, function(childView) {
