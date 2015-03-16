@@ -10,6 +10,7 @@ app.EditItemView = Backbone.View.extend({
 		this.itemListView = options.itemListView || false;
 
 	},
+
 	render: function () {
 		this.$el.html(this.template((this.model ? this.model.toJSON() : {})));
 		this.$item = this.$('#item');
@@ -36,6 +37,7 @@ app.EditItemView = Backbone.View.extend({
 		this.childViews.push(this.ItemListView);
 		return this;
 	},
+	
     onClose: function(){
         _.each(this.childViews, function(childView){
             childView.remove();
