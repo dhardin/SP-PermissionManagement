@@ -207,7 +207,7 @@ app.LibraryView = Backbone.View.extend({
     search: function(options) {
         var collection = (options && options.collection ? options.collection : this.collection),
             results = [],
-            key, val;
+            key, val, collection;
 
         this.searchQuery = options.val || '';
 
@@ -219,7 +219,15 @@ app.LibraryView = Backbone.View.extend({
 
             //check to see if we already searched for this
             this.search_cache[val] = this.search_cache[val] || {};
-            results = this.search_cache[val].results;
+            this.search_cache[val].collection = this.search_cache[val].collection || this.collection;
+            collection = this.search_cache[val].collection;
+            //check to see if current collection is different from cached collection
+            if (collection !==  this.collection){
+                this.search_cache[val].collection = this.collection;
+                results = false;
+            } else {
+                results = this.search_cache[val].results;
+            }
             //if key isn't cached, go ahead and build a collection
             if (!results) {
                 (function(that) {
