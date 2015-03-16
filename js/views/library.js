@@ -207,7 +207,7 @@ app.LibraryView = Backbone.View.extend({
     search: function(options) {
         var collection = (options && options.collection ? options.collection : this.collection),
             results = [],
-            key, val, models;
+            key, val, models, newQuery = true;
 
         this.searchQuery = options.val || '';
 
@@ -219,10 +219,11 @@ app.LibraryView = Backbone.View.extend({
 
             //check to see if we already searched for this
             this.search_cache[val] = this.search_cache[val] || {};
+            newQuery = !this.search_cache[val].models ? true : false;
             this.search_cache[val].models = this.search_cache[val].models || $.extend([], this.collection.models);
             models = this.search_cache[val].models;
             //check to see if current collection is different from cached collection
-            if (_.intersection(models,  this.collection.models)){
+            if (!newQuery && _.intersection(models,  this.collection.models)){
                 this.search_cache[val].models = this.collection.models;
                 results = false;
             } else {
