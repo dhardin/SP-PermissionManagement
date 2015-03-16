@@ -223,7 +223,7 @@ app.LibraryView = Backbone.View.extend({
             this.search_cache[val].models = this.search_cache[val].models || $.extend([], this.collection.models);
             models = this.search_cache[val].models;
             //check to see if current collection is different from cached collection
-            if (!newQuery && _.intersection(models,  this.collection.models)){
+            if (!newQuery && _.intersection(models,  this.collection.models).length != models.length){
                 this.search_cache[val].models = this.collection.models;
                 results = false;
             } else {
