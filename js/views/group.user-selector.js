@@ -58,7 +58,6 @@ app.GroupUsers = Backbone.View.extend({
 
         return this;
     },
-    ,
     resetSearch: function() {
         this.$search_clear.click();
 
