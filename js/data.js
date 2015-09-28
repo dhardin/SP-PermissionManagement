@@ -10,7 +10,7 @@
 //
 var app = app || {};
 
-if(app.config.testing){
+if(!app.config.testing){
 app.data = (function() {
     var stateMap = {
             dataArr: [],
