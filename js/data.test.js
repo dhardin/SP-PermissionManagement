@@ -2,7 +2,7 @@ var data = {};
 data.test = {};
 data.test.groups = [];
 
-app = app || {};
+var app = app || {};
 app.config = app.config || {};
  app.config.testing = app.config.testing || false;
 

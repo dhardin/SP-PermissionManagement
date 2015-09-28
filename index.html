@@ -29,7 +29,6 @@
                 <li class="toggle-topbar menu-icon"><a><span>Menu</span></a>
                 </li>
             </ul>
-
             <section class="top-bar-section">
                 <!-- Right Nav Section -->
                 <ul class="right">
@@ -46,14 +45,11 @@
             </section>
         </nav>
     </div>
-
     <ul class="breadcrumbs show-for-medium-up">
         <li class="home"><a class="current" href="#">Home</a>
         </li>
     </ul>
-
     <div id="main"></div>
-
     <!-- TEMPLATES -->
     <script type="text/template" id="main-template">
         <ul class="button-group stack">
@@ -63,19 +59,14 @@
             </li>
         </ul>
     </script>
-
-
-
     <script type="text/template" id="user-template">
         <div id="user"></div>
         <div id="permissions"></div>
     </script>
-
     <script type="text/template" id="group-template">
         <div id="group"></div>
         <div id="user-select"></div>
     </script>
-
     <script type="text/template" id="group-list-item-template">
         <a class="list-group-item list-item">
             <%=name%>
@@ -96,12 +87,9 @@
             <%=name%>
         </a>
     </script>
-
     <script type="text/template" id="collection-template">
     </script>
-
     <script type="text/template" id="user-edit-template">
-
         <div class="row">
             <div id="user-info" class="small-12 medium-6 columns">
                 <div class="search-container">
@@ -109,7 +97,6 @@
                     <a class="search-clear hidden">X</a>
                     <ul id="users"></ul>
                 </div>
-
                 <label>
                     <input class="user-attr" type="text" id="name" value="<%=name%>" disabled/>
                 </label>
@@ -127,7 +114,6 @@
                 <div class="progress small-0 large-100 text-center">
                     <span class="meter" style="width:0%"></span>
                     <span class="current-progress">0%</span>
-
                 </div>
             </div>
         </div>
@@ -165,9 +151,7 @@
             </ul>
         </div>
     </script>
-
     <script type="text/template" id="group-edit-template">
-
         <div class="row" data-equalizer>
             <div id="group-info" class="small-12 medium-6 columns" data-equalizer-watch>
                 <div class="search-container">
@@ -176,7 +160,6 @@
                     <ul id="groups"></ul>
                 </div>
                 <label>
-
                     <input class="group-attr" type="text" id="name" value="<%=name%>" />
                 </label>
                 <label>Description
@@ -210,10 +193,8 @@
             </ul>
         </div>
     </script>
-
     <script type="text/template" id="user-permission-select-template">
         <div class="row">
-
             <div class="small-12 large-6 columns permission-controls">
                 <div class="text-center">
                     <h3>Available Permissions</h3>
@@ -252,7 +233,6 @@
             </div>
         </div>
     </script>
-
     <script type="text/template" id="group-user-select-template">
         <div class="row">
             <div class="small-12 large-6 columns user-controls">
@@ -268,7 +248,7 @@
                     </li>
                 </ul>
                 <div class="search-container users_available">
-                        <input class="search" data-method="available" type="text" />
+                    <input class="search" data-method="available" type="text" />
                     <a class="search-clear hidden">X</a>
                 </div>
                 <div id="users-available" class="list-group"></div>
@@ -286,7 +266,7 @@
                     </li>
                 </ul>
                 <div class="search-container users_selected">
-                       <input class="search" data-method="selected" type="text" />
+                    <input class="search" data-method="selected" type="text" />
                     <a class="search-clear hidden">X</a>
                 </div>
                 <div id="users-selected" class="list-group"></div>
@@ -304,12 +284,8 @@
             <h1 class="subheader">Sorry, but the requested page does not exist :(</h1>
         </div>
     </script>
-
     <script type="text/javascript" id="noItemsTemplate">
     </script>
-
-    <!-- Test Data -->
-    <script src="js/data.test.js"></script>
     <!-- Models -->
     <script src="js/models/user.js"></script>
     <script src="js/models/group.js"></script>
@@ -321,14 +297,11 @@
     <script src="js/views/user.permissions.js"></script>
     <script src="js/views/user.permission-selector.js"></script>
     <script src="js/views/user.list-item.js"></script>
-
     <script src="js/views/group.js"></script>
     <script src="js/views/group.users.js"></script>
     <script src="js/views/group.edit.js"></script>
     <script src="js/views/group.user-selector.js"></script>
-
     <script src="js/views/group.list-item.js"></script>
-
     <script src="js/views/library.js"></script>
     <script src="js/views/library.permissions_available.js"></script>
     <script src="js/views/library.permissions_selected.js"></script>
@@ -336,7 +309,6 @@
     <script src="js/views/library.users_selected.js"></script>
     <script src="js/views/library.users.js"></script>
     <script src="js/views/library.groups.js"></script>
-
     <script src="js/views/fetchingData.js"></script>
     <script src="js/views/error.js"></script>
     <script src="js/views/selectEdit.js"></script>
@@ -346,6 +318,8 @@
     <script src="js/utility.js"></script>
     <script src="js/config.js"></script>
     <script src="js/app.js"></script>
+    <!-- Test Data -->
+    <script src="js/data.test.js"></script>
     <!-- Router -->
     <script src="js/routes/routes.js"></script>
     <script>
