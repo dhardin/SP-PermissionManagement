@@ -2,6 +2,10 @@ var data = {};
 data.test = {};
 data.test.groups = [];
 
+app = app || {};
+app.config = app.config || {};
+ app.config.testing = app.config.testing || false;
+
 data.test.users = !app.config.testing ? [] :[{
     "id": 0,
     "nameData": {
