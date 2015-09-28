@@ -6,5 +6,6 @@ app.LibraryUserView = app.LibraryView.extend({
 	initialize: function (options){
 		Backbone.pubSub.on('library_users:search', this.search, this);
 		app.LibraryView.prototype.initialize.apply(this, [options]); 
+		
 	}
 });
