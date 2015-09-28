@@ -83,6 +83,7 @@ app.LibraryView = Backbone.View.extend({
             this.onRenderComplete(this.searchQuery);
         }
     },
+    
     renderItemHtml: function(item) {
         var itemView = new this.itemView({
             model: item
@@ -135,6 +136,7 @@ app.LibraryView = Backbone.View.extend({
         if (view !== this) {
             return;
         }
+        this.search_cache = {};
 
         this.render();
     },

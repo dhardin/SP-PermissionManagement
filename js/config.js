@@ -3,6 +3,7 @@ var app = app || {};
 app.config = {
 	url: 'url to your SharePoint top level site goes here...',
 	tryCount: 3,
+	testing: false,
 	property_map: {
 		user: {
 			ows_name: 'name',

@@ -10,6 +10,7 @@
 //
 var app = app || {};
 
+
 app.data = (function() {
     var stateMap = {
             dataArr: [],
@@ -636,3 +637,92 @@ app.data = (function() {
         getCurrentUser: getCurrentUser
     };
 })();
+} else {
+    app.data = (function() {
+    var stateMap = {
+            dataArr: [],
+            currentDataArrIndex: 0
+        },
+        getPermissions, getUsers, addUserToGroup, removeUserFromGroup, modifyPermissions, removeUserFromWeb;
+
+
+    // Begin Utility Method /getPermissions/
+    //returns an object of all permissions and
+    //their values equal to whether or not the user has
+    //the permission
+    getPermissions = function(url, username, callback) {
+        return app.UserCollection.fineWhere({loginname: userName});
+    };
+    // End Utility Method /getPermissions/
+
+    // Begin Utility Method /getUsers/
+    //returns a list of users from a site
+    getUsers = function(url, callback) {
+        return app.UserCollection.models;
+    };
+    // End Utility Method /getUsers/
+
+    // Begin utility method /getUsersFromGroup/
+    // Begin Utility Method /getUsers/
+    //returns a list of users from a site
+    getUsersFromGroup = function(url, group, callback) {
+        return app.GroupCollection.findWhere({name: group});
+    };
+    // End Utility Method /getUsers/
+    // End utility method /getUsersFromGroup/
+    // Begin Utility Method /modifyPermissions/
+    modifyPermissions = function(permissionArr, index, user, url, operation, callback) {
+
+    };
+    // End Utility method /modifyPermissions/
+
+    // Begin Utility Method /modifyUsers/
+    modifyUsers = function(userArr, index, group, url, operation, callback) {
+
+    };
+    // End Utility method /modifyUsers/
+
+    // Begin Utility Method /addUserToGroup/
+    addUserToGroup = function(url, groupName, user, callback) {
+
+    };
+    // End Utility Method /addUserToGroup/
+
+    // Begin utility method /removeUserFromGroup/
+    removeUserFromGroup = function(url, groupName, user, callback) {
+
+    };
+    // End Utility Method /removeUserFromGroup/
+
+    // Begin utility method /removeUserFromWeb/
+    removeUserFromWeb = function(url, user, callback) {
+
+    };
+    // End Utility Method /removeUserFromWeb/
+
+    // Begin utility method /updateGroupInfo/
+    updateGroupInfo = function(url, options, callback) {
+
+    };
+    // End utility method /updateGroupInfo/
+
+    // Begin utility method /getCurrentUser/
+    getCurrentUser = function(url, callback) {
+    };
+    // End utility method /getCurrentUser/
+
+  
+    return {
+        getPermissions: getPermissions,
+        getUsers: getUsers,
+        getUsersFromGroup: getUsersFromGroup,
+        addUserToGroup: addUserToGroup,
+        removeUserFromGroup: removeUserFromGroup,
+        removeUserFromWeb: removeUserFromWeb,
+        modifyPermissions: modifyPermissions,
+        modifyUsers: modifyUsers,
+        updateGroupInfo: updateGroupInfo,
+        getCurrentUser: getCurrentUser
+    };
+})();
+}

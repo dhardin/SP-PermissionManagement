@@ -41,6 +41,7 @@ app.GroupUsers = Backbone.View.extend({
             collection: app.UsersSelectedCollection,
             itemView: app.GroupUserView
         });
+
         this.libraryViewUsersAvailable = new app.LibraryUsersAvailableView({
             el: this.$usersAvailable[0],
             collection: app.UserAvailCollection,
@@ -74,9 +75,8 @@ app.GroupUsers = Backbone.View.extend({
                     .trigger('keyup');
             }, 100);
         })(this);
-
-
     },
+    
     onClose: function() {
         _.each(this.childViews, function(childView) {
             childView.remove();
