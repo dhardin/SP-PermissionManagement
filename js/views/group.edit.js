@@ -464,7 +464,7 @@ app.GroupEditView = Backbone.View.extend({
 
             usersElement = '<h1>' + this.model.get('name') + '\'s Users</h1></ul>';
 
-            if (permissions.length > 1) {
+            if (users.length > 1) {
                 usersElement += users.reduce(function(memo, obj) {
                     return (typeof memo == "string" ? memo : '<li>' + memo.name + '</li>') + '<li>' + obj.name + '</li>';
                 });
