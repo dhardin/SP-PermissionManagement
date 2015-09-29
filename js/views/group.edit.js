@@ -454,15 +454,14 @@ app.GroupEditView = Backbone.View.extend({
 
     onExportBtnClick: function(e) {
         var users = (this.model ? this.model.get('users') : false),
-            ua = window.navigator.userAgent,
-            msie = ua.indexOf("MSIE "),
             usersElement;
 
         if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
 
-        if (msie > 0) { // If Internet Explorer, return version number
+         if(navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
+
             usersElement = '<h1>' + this.model.get('name') + '\'s Users</h1></ul>';
 
             if (permissions.length > 1) {

@@ -241,15 +241,14 @@ app.UserEditView = Backbone.View.extend({
 
     onExportBtnClick: function(e) {
         var permissions = (this.model ? this.model.get('permissions') : false),
-            ua = window.navigator.userAgent,
-            msie = ua.indexOf("MSIE "),
             permissionsElement;
 
         if ($(e.currentTarget).hasClass('disabled')) {
             return;
         }
 
-        if (msie > 0) { // If Internet Explorer, return version number
+        if(navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
+
             permissionsElement = '<h1>' + this.model.get('name') + '\'s Permissions</h1></ul>';
             permissionsElement += '<div>' + this.model.get('name') + '</div>';
             permissionsElement += '<div>' + this.model.get('loginname') + '</div>';
