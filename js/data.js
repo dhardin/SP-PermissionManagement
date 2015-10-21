@@ -10,7 +10,6 @@
 //
 var app = app || {};
 
-if(!app.config.testing){
 app.data = (function() {
     var stateMap = {
             dataArr: [],
@@ -145,7 +144,6 @@ app.data = (function() {
     // End Utility Method /getUsers/
 
     // Begin utility method /getUsersFromGroup/
-    // Begin Utility Method /getUsers/
     //returns a list of users from a site
     getUsersFromGroup = function(url, group, callback) {
         var results = [],
@@ -155,7 +153,7 @@ app.data = (function() {
             '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\
                 <soap:Body>\
                    <GetUserCollectionFromGroup xmlns="http://schemas.microsoft.com/sharepoint/soap/directory/">\
-                    <groupName>' + group + '</groupName>\
+                    <groupName>' + app.browser_util.encodeXml(group) + '</groupName>\
                   </GetUserCollectionFromGroup>\
               </soap:Body>\
             </soap:Envelope>';
@@ -201,8 +199,8 @@ app.data = (function() {
             contentType: "text/xml; charset=\"utf-8\""
         });
     };
-    // End Utility Method /getUsers/
     // End utility method /getUsersFromGroup/
+    
     // Begin Utility Method /modifyPermissions/
     modifyPermissions = function(permissionArr, index, user, url, operation, callback) {
         var permission;
@@ -298,7 +296,7 @@ app.data = (function() {
     // Begin Utility Method /addUserToGroup/
     addUserToGroup = function(url, groupName, user, callback) {
         var results = [],
-            groupName = groupName,
+            groupName = app.browser_util.encodeXml(groupName),
             name = user.name,
             login = user.loginname.replace('/', '\\'),
             email = user.email,
@@ -357,7 +355,7 @@ app.data = (function() {
     // Begin utility method /removeUserFromGroup/
     removeUserFromGroup = function(url, groupName, user, callback) {
         var results = [],
-            groupName = groupName,
+            groupName = app.browser_util.encodeXml(groupName),
             login = user.loginname.replace('/', '\\'),
             // Create the SOAP request
             soapEnv =
@@ -471,7 +469,7 @@ app.data = (function() {
             return false;
         }
 
-        updates += '<oldGroupName>' + options.oldGroupName + '</oldGroupName>' + '<groupName>' + options.name + '</groupName>' + '<ownerIdentifier>' + options.ownerIdentifier + '</ownerIdentifier>' + '<ownerType>' + options.ownerType + '</ownerType>' + '<description>' + options.description + '</description>';
+        updates += '<oldGroupName>' + app.browser_util.encodeXml(options.oldGroupName) + '</oldGroupName>' + '<groupName>' + app.browser_util.encodeXml(options.name) + '</groupName>' + '<ownerIdentifier>' + options.ownerIdentifier + '</ownerIdentifier>' + '<ownerType>' + options.ownerType + '</ownerType>' + '<description>' + options.description + '</description>';
 
         // Create the SOAP request
         soapEnv =
@@ -637,92 +635,71 @@ app.data = (function() {
         getCurrentUser: getCurrentUser
     };
 })();
-} else {
-    app.data = (function() {
-    var stateMap = {
-            dataArr: [],
-            currentDataArrIndex: 0
+
+
+app.browser_util = (function(){
+    var configMap = {
+            regex_encode_html: /[&"'><]/g,
+            regex_encode_noamp: /["'><]/g,
+            html_encode_map: {
+                '&': '&#38;',
+                '"': '&#34;',
+                "'": '&#39;',
+                '>': '&#62;',
+                '<': '&#60;'
+            }
         },
-        getPermissions, getUsers, addUserToGroup, removeUserFromGroup, modifyPermissions, removeUserFromWeb;
+        decodeHtml, encodeHtml, encodeXml;
 
-
-    // Begin Utility Method /getPermissions/
-    //returns an object of all permissions and
-    //their values equal to whether or not the user has
-    //the permission
-    getPermissions = function(url, username, callback) {
-        return app.UserCollection.fineWhere({loginname: userName});
+    configMap.encode_noamp_map = $.extend({}, configMap.html_encode_map);
+    // Begin decodeHtml
+    // Decodes HTML entities in a browser-friendly way
+    // See http://stackoverflow.com/questions/1912501/\
+    // unescape-html-entities-in-javascript
+    //
+    decodeHtml = function (str) {
+        return $('<div/>').html(str || '').text();
     };
-    // End Utility Method /getPermissions/
+    // End decodeHtml
 
-    // Begin Utility Method /getUsers/
-    //returns a list of users from a site
-    getUsers = function(url, callback) {
-        return app.UserCollection.models;
+    // Begin encodeHtml
+    // This is single pass encoder for html entities and handles
+    // an arbitrary number of characters
+    //
+    encodeHtml = function (input_arg_str, exclude_amp) {
+        var
+            input_str = String(input_arg_str),
+            regex, lookup_map
+        ;
+
+        if (exclude_amp) {
+            lookup_map = configMap.encode_noamp_map;
+            regex = configMap.regex_encode_noamp;
+        }
+        else {
+            lookup_map = configMap.html_encode_map;
+            regex = configMap.regex_encode_html;
+        }
+        return input_str.replace(regex,
+                function (match, name) {
+                    return lookup_map[match] || '';
+                }
+            );
     };
-    // End Utility Method /getUsers/
+    // End encodeHtml
 
-    // Begin utility method /getUsersFromGroup/
-    // Begin Utility Method /getUsers/
-    //returns a list of users from a site
-    getUsersFromGroup = function(url, group, callback) {
-        return app.GroupCollection.findWhere({name: group});
+    // Begin encodeXml
+    encodeXml = function (string) {
+        if (typeof string !== "string") {
+            return string;
+        }
+        return string.replace(/\&/g, '&' + 'amp;').replace(/</g, '&' + 'lt;').replace(/>/g, '&' + 'gt;').replace(/\'/g, '&' + 'apos;').replace(/\"/g, '&' + 'quot;');
     };
-    // End Utility Method /getUsers/
-    // End utility method /getUsersFromGroup/
-    // Begin Utility Method /modifyPermissions/
-    modifyPermissions = function(permissionArr, index, user, url, operation, callback) {
+    // End encodeXml
 
-    };
-    // End Utility method /modifyPermissions/
-
-    // Begin Utility Method /modifyUsers/
-    modifyUsers = function(userArr, index, group, url, operation, callback) {
-
-    };
-    // End Utility method /modifyUsers/
-
-    // Begin Utility Method /addUserToGroup/
-    addUserToGroup = function(url, groupName, user, callback) {
-
-    };
-    // End Utility Method /addUserToGroup/
-
-    // Begin utility method /removeUserFromGroup/
-    removeUserFromGroup = function(url, groupName, user, callback) {
-
-    };
-    // End Utility Method /removeUserFromGroup/
-
-    // Begin utility method /removeUserFromWeb/
-    removeUserFromWeb = function(url, user, callback) {
-
-    };
-    // End Utility Method /removeUserFromWeb/
-
-    // Begin utility method /updateGroupInfo/
-    updateGroupInfo = function(url, options, callback) {
-
-    };
-    // End utility method /updateGroupInfo/
-
-    // Begin utility method /getCurrentUser/
-    getCurrentUser = function(url, callback) {
-    };
-    // End utility method /getCurrentUser/
-
-  
     return {
-        getPermissions: getPermissions,
-        getUsers: getUsers,
-        getUsersFromGroup: getUsersFromGroup,
-        addUserToGroup: addUserToGroup,
-        removeUserFromGroup: removeUserFromGroup,
-        removeUserFromWeb: removeUserFromWeb,
-        modifyPermissions: modifyPermissions,
-        modifyUsers: modifyUsers,
-        updateGroupInfo: updateGroupInfo,
-        getCurrentUser: getCurrentUser
-    };
+        encodeXml: encodeXml,
+        encodeHtml: encodeHtml,
+        decodeHtml: decodeHtml
+    }
 })();
-}
