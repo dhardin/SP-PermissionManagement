@@ -193,7 +193,7 @@ app.LibraryView = Backbone.View.extend({
             return;
         }
 
-        content = $el.html();
+        content = $el.text();
 
         content = content.replace(regex || new RegExp(phrase, 'gi'), function(match) {
             return '<span class="match">' + match + '</span>';
