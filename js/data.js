@@ -75,7 +75,24 @@ app.data = (function() {
                 }
             },
             complete: function(xData, status) {
+                var i, j, group, attribute, decode_property_map = {name: true, description: true};
                 results = $(xData.responseText).find("group");
+
+                //decode xml in each resulting name & description
+                for(i = 0; i < results.length; i++){
+                    group = results[i];
+
+                    if(group.attributes){
+                        for(j =0; j < group.attributes.length; j++){
+                            attribute = group.attributes[j];
+                            if(decode_property_map[attribute.nodeName])
+                            {
+                                attribute.nodeValue = app.browser_util.decodeHtml(attribute.nodeValue);
+                            }
+                        }
+                    }
+
+                }
 
                 if (callback) {
                     callback(results);
