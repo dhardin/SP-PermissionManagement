@@ -120,18 +120,22 @@
         <div class="row">
             <ul class="button-group even-3 small-12 columns">
                 <li>
+                    <span data-tooltip aria-haspopup="true" class="has-tip" title="Save selected permissions to the user's profile.">
                     <a class="button save-permissions-btn">
                         <span class="show-for-medium-up">Save Permissions</span>
-                        <span class="show-for-small-only">Save</br>Permissions</span>
+                    <span class="show-for-small-only">Save</br>Permissions</span>
                     </a>
+                    </span>
                 </li>
                 <li>
+                    <span data-tooltip aria-haspopup="true" class="has-tip" title="Removes the current user from site collection, groups, lists, libraries, and version history">
                     <a class="button alert purge-btn" data-dropdown="purge-drop">
                         <span class="show-for-medium-up">
                         <span class="icon icon-skull invert"></span> Purge User
-                        </span>
-                        <span class="show-for-small-only">Purge</br>User</span>
+                    </span>
+                    <span class="show-for-small-only">Purge</br>User</span>
                     </a>
+                    </span>
                     <ul id="purge-drop" class="content f-dropdown" data-dropdown-content>
                         <li>
                             <h6>Are you sure?</h6>
@@ -143,10 +147,12 @@
                     </ul>
                 </li>
                 <li>
+                    <span data-tooltip aria-haspopup="true" class="has-tip" title="Export all of the user's permissions.">
                     <a class="button info export-permissions">
                         <span class="show-for-medium-up">Export Permissions</span>
-                        <span class="show-for-small-only">Export</br>Permissions</span>
+                    <span class="show-for-small-only">Export</br>Permissions</span>
                     </a>
+                    </span>
                 </li>
             </ul>
         </div>
@@ -179,16 +185,20 @@
         <div class="row">
             <ul class="button-group even-2 small-12 columns">
                 <li>
+                    <span data-tooltip aria-haspopup="true" class="has-tip" title="Save selected users to the group's profile.">
                     <a class="button save-changes-btn">
                         <span class="show-for-medium-up">Save Changes</span>
-                        <span class="show-for-small-only">Save</br>Changes</span>
+                    <span class="show-for-small-only">Save</br>Changes</span>
                     </a>
+                    </span>
                 </li>
                 <li>
+                    <span data-tooltip aria-haspopup="true" class="has-tip" title="Export all of the group's users.">
                     <a class="button info export-users">
                         <span class="show-for-medium-up">Export Users</span>
-                        <span class="show-for-small-only">Export</br>Users</span>
+                    <span class="show-for-small-only">Export</br>Users</span>
                     </a>
+                    </span>
                 </li>
             </ul>
         </div>
@@ -314,11 +324,10 @@
     <script src="js/views/selectEdit.js"></script>
     <script src="js/views/app.js"></script>
     <!-- Application -->
-        <script src="js/config.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/data.js"></script>
     <script src="js/utility.js"></script>
     <script src="js/app.js"></script>
-
     <!-- Router -->
     <script src="js/routes/routes.js"></script>
     <script>
