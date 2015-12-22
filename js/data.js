@@ -486,7 +486,7 @@ app.data = (function() {
             return false;
         }
 
-        updates += '<oldGroupName>' + app.browser_util.encodeXml(options.oldGroupName) + '</oldGroupName>' + '<groupName>' + app.browser_util.encodeXml(options.name) + '</groupName>' + '<ownerIdentifier>' + options.ownerIdentifier + '</ownerIdentifier>' + '<ownerType>' + options.ownerType + '</ownerType>' + '<description>' + options.description + '</description>';
+        updates += '<oldGroupName>' + app.browser_util.encodeXml(options.oldGroupName) + '</oldGroupName>' + '<groupName>' + app.browser_util.encodeXml(options.name) + '</groupName>' + '<ownerIdentifier>' + options.ownerIdentifier + '</ownerIdentifier>' + '<ownerType>' + options.ownerType + '</ownerType>' + '<description>' + app.browser_util.encodeXml(options.description) + '</description>';
 
         // Create the SOAP request
         soapEnv =

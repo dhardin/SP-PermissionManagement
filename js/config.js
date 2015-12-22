@@ -10,5 +10,9 @@ app.config = {
 	    	ows_username: 'username',
 	    	ows_email: 'email'
     	}
-	}
+	}//,
+  //  groupOwner: {
+  //      type: 'group or user',
+  //        name: 'name of group/username here'
+    }
 };

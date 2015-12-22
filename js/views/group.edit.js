@@ -276,7 +276,7 @@ app.GroupEditView = Backbone.View.extend({
             updates = {},
             attribute, val,
             group = this.model,
-            ownerid, user;
+            ownerid, user, ownername;
 
 
         this.$group_attributes.each(function(i, el) {
@@ -291,11 +291,22 @@ app.GroupEditView = Backbone.View.extend({
 
         updates['oldGroupName'] = group.get('name');
         updates['name'] = updates['name'] || updates['oldGroupName'];
-        updates['ownerType'] = (group.get('ownerisuser') ? 'user' : 'group');
-        ownerid = group.get('ownerid');
+        //check if group owner property exists
+        if((app.config.groupOwner && app.config.groupOwner.type)
+             &&  (app.config.groupOwner.type == 'user' || app.config.groupOwner.type == "group")
+             && (app.config.groupOwner.name)){
+            updates['ownerType'] = app.config.groupOwner.type;
+             ownername = app.config.groupOwner.name || false;
+             ownerid = app.config.groupOwner.id || false;
+
+        } else {
+            updates['ownerType'] = (group.get('ownerisuser') ? 'user' : 'group');
+            ownerid = group.get('ownerid');
+        }
+
         if (updates['ownerType'] == 'user') { //owner is user
             user = app.UserCollection.findWhere({
-                id: group.get('ownerid')
+                id: ownerid
             });
             //check and see if user exists
             //if not, then set the owner as the current user
@@ -320,9 +331,14 @@ app.GroupEditView = Backbone.View.extend({
                 updates['ownerIdentifier'] = user.get('loginname').replace('/', '\\');
             }
         } else { //owner is group
-            updates['ownerIdentifier'] = app.GroupCollection.findWhere({
-                id: ownerid
-            }).get('name');
+            if(ownerid){
+                 updates['ownerIdentifier'] = app.GroupCollection.findWhere({
+                    id: ownerid
+                }).get('name');
+            } else {
+                 updates['ownerIdentifier'] = ownername;
+            }
+           
         }
         this.updateGroupInfo(updates);
     },
