@@ -34,9 +34,7 @@ var Router = Backbone.Router.extend({
         var fetchingDataView, editUserPermissionView, user;
 
           app.state_map.fetchId = loginname || "";
-        if (app.config.isTesting) {
-            app.setTestData('user');
-        } else if (!app.state_map.fetched.editUser) {
+      if (!app.state_map.fetched.editUser) {
             app.userEditFetchData();
         }
 
