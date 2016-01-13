@@ -69,9 +69,7 @@ var Router = Backbone.Router.extend({
     },
     editGroup: function(name) {
         app.state_map.fetchId = (name != null ? name : "");
-        if (app.config.isTesting) {
-            app.setTestData('group');
-        } else if (!app.state_map.fetched.editGroup) {
+       if (!app.state_map.fetched.editGroup) {
             app.groupEditFetchData();
         }
         app.state_map.fetchId = name || "";
