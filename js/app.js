@@ -20,21 +20,7 @@ app.DataFetched = function() {
 app.userEditFetchData = function() {
     app.state_map.fetchingData = true;
 
-    if (app.config.testing) {
-        var users = data.test.users,
-        groups = data.test.groups;
-        app.Users = users;
-        app.UserCollection = new app.LibraryUser(users);
-
-        app.Groups = groups;
-        groupArr = $.extend(true, [], groups);
-        app.GroupCollection = new app.LibraryGroup(groups);
-        app.GroupAvailCollection = new app.LibraryGroup(groupArr);
-        app.GroupSelectedCollection = new app.LibraryGroup([]);
-
-        app.state_map.fetched.editUser = true;
-        app.DataFetched();
-    } else {
+    
         $.when(
             (function() {
                 var deferred = $.Deferred();
@@ -68,30 +54,13 @@ app.userEditFetchData = function() {
             app.state_map.fetched.editUser = true;
             app.DataFetched();
         });
-    }
+    
 };
 
 app.groupEditFetchData = function() {
     app.state_map.fetchingData = true;
 
-    if (app.config.testing) {
-        var users = data.test.users,
-        groups = data.test.groups;
-        userArr = $.extend(true, [], users);
-        //initialize data
-        app.Users = users;
-        app.UserCollection = new app.LibraryUser(users);
-        app.UserAvailCollection = new app.LibraryGroup(userArr);
-        users.forEach(function(model, index) {
-            model.active = false;
-        });
-        app.UsersSelectedCollection = new app.LibraryUser(users);
-        app.Groups = groups;
-        app.GroupCollection = new app.LibraryGroup(groups);
-
-        app.state_map.fetched.editGroup = true;
-        app.DataFetched();
-    } else {
+   
 
 
         $.when(
@@ -134,7 +103,7 @@ app.groupEditFetchData = function() {
             app.DataFetched();
 
         });
-    }
+    
 };
 
 $.fn.insertAt = function(index, element) {
