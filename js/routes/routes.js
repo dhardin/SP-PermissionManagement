@@ -25,16 +25,21 @@ var Router = Backbone.Router.extend({
         var errorView = new app.ErrorView();
         app.router.AppView.showView(errorView);
     },
-    fetch: function(){
-        var fetchingDataView = new app.FetchingDataView();
+    fetch: function() {
+        var fetchingDataView;
+        if (!app.state_map.fetchingData) {
+            app.router.navigate('', true);
+            return;
+        }
+        fetchingDataView = new app.FetchingDataView();
 
         this.AppView.showView(fetchingDataView);
     },
     editUser: function(loginname) {
         var fetchingDataView, editUserPermissionView, user;
 
-          app.state_map.fetchId = loginname || "";
-      if (!app.state_map.fetched.editUser) {
+        app.state_map.fetchId = loginname || "";
+        if (!app.state_map.fetched.editUser) {
             app.userEditFetchData();
         }
 
@@ -49,7 +54,7 @@ var Router = Backbone.Router.extend({
             };
             return;
         } else if (loginname) {
-          
+
             loginname = loginname.replace('\\', '/');
             user = app.UserCollection.findWhere({
                 loginname: loginname
@@ -69,13 +74,13 @@ var Router = Backbone.Router.extend({
     },
     editGroup: function(name) {
         app.state_map.fetchId = (name != null ? name : "");
-       if (!app.state_map.fetched.editGroup) {
+        if (!app.state_map.fetched.editGroup) {
             app.groupEditFetchData();
         }
         app.state_map.fetchId = name || "";
         if (app.state_map.fetchingData) {
-          
-app.router.navigate('fetch', true);
+
+            app.router.navigate('fetch', true);
             app.state_map.dataLoadCallback = function() {
                 if (app.state_map.fetchId) {
                     app.router.navigate('edit/group/' + app.state_map.fetchId, true);
@@ -83,7 +88,7 @@ app.router.navigate('fetch', true);
                     app.router.navigate('edit/group/', true);
                 }
             };
-              return;
+            return;
         } else if (name) {
             group = app.GroupCollection.findWhere({
                 name: name
