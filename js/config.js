@@ -14,5 +14,5 @@ app.config = {
   //  groupOwner: {
   //      type: 'group or user',
   //        name: 'name of group/username here'
-    }
+    //}
 };
