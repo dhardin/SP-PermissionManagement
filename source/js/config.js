@@ -1,7 +1,7 @@
 var app = app || {};
 
 app.config = {
-	url: 'url to your SharePoint top level site goes here...',
+	url: '',
 	tryCount: 3,
 	testing: false,
 	property_map: {
@@ -10,9 +10,5 @@ app.config = {
 	    	ows_username: 'username',
 	    	ows_email: 'email'
     	}
-	}//,
-  //  groupOwner: {
-  //      type: 'group or user',
-  //        name: 'name of group/username here'
-    //}
+	}
 };

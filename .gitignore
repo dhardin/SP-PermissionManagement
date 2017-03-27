@@ -1,0 +1,8 @@
+# Node generated files
+node_modules/
+
+# gulp staging generated files
+staging/
+
+# gulp development generated files
+development/
