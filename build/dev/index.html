@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet"/>
+  <!-- inject:css -->
+  <link rel="stylesheet" href="lib/vuetify.min.css"></script>
+  <link rel="stylesheet" href="css/style.css"></script>
+  <!-- endinject -->
+  <!-- inject:lib-js -->
+  <script src="lib/es5-shim.min.js"></script>
+  <script src="lib/vue.js"></script>
+  <script src="lib/vuetify.js"></script>
+  <script src="lib/vue-router.js"></script>
+  <script src="lib/es6-shim.min.js"></script>
+  <script src="lib/axios.min.js"></script>
+  <script src="lib/jquery.min.js"></script>
+  <script src="lib/lodash.js"></script>
+  <!-- endinject -->
+</head>
+<body>
+  <v-app id="app" v-cloak>
+    <v-navigation-drawer app  :clipped="true" v-model="drawer" hide-overlay dark>
+      <v-list class="pt-0" dense>
+        <v-divider></v-divider>
+        <v-list-tile v-for="item in menuItems" :key="item.title" @click="">
+          <router-link :to="item.path">
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar app :clipped-left="true" color="blue-grey" dark>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title >SharePoint Permissions</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-xs">
+        <v-select @change="changeSiteCollection" :items="siteCollections" label="Select"  item-value="title" item-text="title" single-line autocomplete return-object clearable attach  :disabled="isSaving || isLoading"></v-select>
+        <v-spacer></v-spacer>
+        <v-btn-toggle v-model="toggle_select" :light="false" class="toggle-select" mandatory>
+          <v-btn flat large @click="changeType" :disabled="isSaving || isLoading">
+            Users
+          </v-btn>
+          <v-btn flat large @click="changeType" :disabled="isSaving || isLoading">
+            Groups
+          </v-btn>
+        </v-btn-toggle>
+      </v-toolbar-items>
+    </v-toolbar>
+    <v-content>
+
+
+        <router-view class="view"  @site-collection-selected="siteCollectionSelected" :type="type" :site-collection="siteCollection" :is-site-collection-selected="isSiteCollectionSelected"></router-view>
+
+    </v-content>
+  </v-app>
+  <!-- inject:templates -->
+  <template id="about">
+<h1>About</h1>
+</template>
+
+  <template id="console">
+  <v-card height="100%" class="flexcard" >
+    <v-card-title primary-title>
+      <h3 class="grey--text text--darken-2">Console</h3>
+    </v-card-title>
+    <v-card-text class="grow">
+      <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-flex xs12 align-end flexbox>
+            <div class="console blue-grey darken-4" ref="consoleMessages">
+             <span> To start, please select a site collection. <span v-if="messages.length == 0" class="blinking-cursor">|</span></span>
+              <v-list dark class="blue-grey darken-4">
+                <template v-for="(item, index) in messages">
+                  <v-list-tile-content>
+                    <div>[{{item.date.getHours()}}:{{item.date.getMinutes()}}:{{item.date.getSeconds()}}] <span :class="getClassObject(item)">{{item.verb}}</span> <span class="purple--text text--accent-1">{{item.text}}</span> <span>{{item.preposition ? item.preposition : "from"}}</span> <span class="cyan--text text--accent-1">{{item.target}}</span><span v-if="item.url"> @ </span><span v-if="item.url" class="pink--text text--lighten-4">{{item.url}}</span>  <span class="blinking-cursor" v-if="(isLoading || isSaving) && index == messages.length - 1">|</span></div>
+                     <div v-if="item.hasError" class="red--text text--accent-1">Error: {{item.error}}</div>
+                  </v-list-tile-content>
+                </template>
+                <span class="blinking-cursor" v-if="!isLoading && !isSaving && messages.length > 0">|</span>
+              </v-list>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-flex xs12 align-end flexbox>
+            <v-progress-linear v-model="saveProgress" :color="saveProgress >= 100 ? 'success' : 'info'"></v-progress-linear>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn flat color="pink" @click="clear" :disabled="isSaving || messages.length == 0">Clear</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+  <template id="info">
+  <v-card class="flexcard" height="100%">
+    <v-card-title primary-title>
+    </v-card-title>
+    <v-card-text class="grow">
+      <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-flex xs12 align-end flexbox>
+            <v-form>
+              <v-select :disabled="isSaving || isLoading || !isSiteCollectionSelected" @change="itemChanged" :items="items" item-value="displayName" return-object item-text="displayName" label="Select Item" single-line autocomplete clearable attach ></v-select>
+              <v-text-field label="Login Name" readonly disabled v-model="selectedItem.loginname"></v-text-field>
+              <v-text-field label="E-mail" readonly disabled v-model="selectedItem.email"></v-text-field>
+            </v-form>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card-text>
+
+    <v-card-actions>
+      <v-btn flat color="pink" @click="save" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || newItems.length == 0 || selectedItem.displayName.length == 0">Save</v-btn>
+      <v-btn flat color="pink" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || selectedItem.displayName.length == 0">Copy</v-btn>
+      <v-btn flat color="pink" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || selectedItem.displayName.length == 0">Purge</v-btn>
+      <v-btn flat color="pink":disabled="isSaving || isLoading  || !isSiteCollectionSelected || selectedItem.displayName.length == 0" @click="exportData" >Export</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+  <template id="select-assigned">
+  <v-card height="100%" class="flexcard" >
+    <v-card-title primary-title>
+      <h4 class="grey--text text--darken-2">Current {{type}}</h4>
+      <v-text-field
+      v-model="searchAssigned"
+      append-icon="search"
+      label="Search"
+      full-width
+      hide-details
+      ></v-text-field>
+    </v-card-title>
+    <v-card-text class="grow">
+      <v-data-iterator :items="assignedItems" :search="searchAssigned" class="items" must-sort :rows-per-page-items="[{'text':'All', 'value': -1}]" >
+        <v-flex slot="item"slot-scope="props" xs12>
+              <v-btn block :ripple="false" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || !selectedItem" @click="selectItem(props.item, props.index)" :color="props.item.selected ? 'blue-grey lighten-4' : 'undefined'" :outline="!props.item.selected" depressed> {{  props.item.title }} </v-btn>
+        </flex>
+      </v-data-iterator>
+    </v-card-text>
+    <v-card-actions>
+     <v-btn block color="red darken-4" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || !selectedItem" :dark="!isSaving || !isLoading  || !isSiteCollectionSelected || !selectedItem" @click="giveAll">Remove All</v-btn>    <v-btn block :disabled="isSaving || isLoading || !isSiteCollectionSelected || !selectedItem" color="red darken-4" :dark="!isSaving || !isLoading  || !isSiteCollectionSelected || !selectedItem" @click="giveSelected">Remove Selected</v-btn>   <v-btn block :disabled="isSaving || isLoading  || !isSiteCollectionSelected || !selectedItem" color="red darken-1" :dark="!isSaving || !isLoading  || !isSiteCollectionSelected || !selectedItem" @click="clearSelected">Clear Selected</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+  <template id="select-available">
+  <v-card height="100%" class="flexcard" >
+    <v-card-title primary-title>
+      <h4 class="grey--text text--darken-2">Available {{type}}</h4>
+      <v-text-field
+      v-model="searchAvailable"
+      append-icon="search"
+      label="Search"
+      full-width
+      hide-details
+      ></v-text-field>
+    </v-card-title>
+    <v-card-text class="grow">
+      <v-data-iterator :items="availableItems" :search="searchAvailable" class="items" must-sort :rows-per-page-items="[{'text':'All', 'value': -1}]">
+        <v-flex slot="item"slot-scope="props" xs12>
+          <v-btn block :disabled="isSaving || isLoading  || !isSiteCollectionSelected || !selectedItem" :ripple="false" @click="selectItem(props.item, props.index)" :color="props.item.selected ? 'blue-grey lighten-4' : 'undefined'" :outline="!props.item.selected" depressed>  {{  props.item.title }} </v-btn>
+        </flex>
+      </v-data-iterator>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn block color="blue-grey darken-1" :dark="!isSaving || !isLoading  || !isSiteCollectionSelected || !selectedItem" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || !selectedItem" @click="clearSelected">Clear Selected</v-btn>  <v-btn block :disabled="isSaving || isLoading || !isSiteCollectionSelected || !selectedItem" color="blue-grey darken-3" :dark="!isSaving || !isLoading  || !isSiteCollectionSelected || !selectedItem" @click="giveSelected">Give Selected</v-btn> <v-btn block :disabled="isSaving || isLoading || !isSiteCollectionSelected || !selectedItem" color="blue-grey darken-3" :dark="!isSaving || !isLoading  || !isSiteCollectionSelected || !selectedItem" @click="giveAll">Give All</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+  <template id="user-group-management">
+<v-container fluid grid-list-md>
+  <v-layout row wrap>
+    <v-flex xs6>
+      <info :is-saving="isSaving" :is-loading="isLoading" :site-collection:="siteCollection" :is-site-collection-selected="isSiteCollectionSelected" :items="items" :assigned-items="assignedItems" :new-items="newItems"  @save="save" @item-changed="itemChanged"></info>
+    </v-flex>
+    <v-flex xs6>
+      <console :is-saving="isSaving" :is-loading="isLoading" :save-progress="saveProgress" :is-site-collection-selected="isSiteCollectionSelected" :messages="messages" @clear-console="clearConsole"></console>
+    </v-flex>
+    <v-flex xs6>
+      <select-available :selected-item="selectedItem" :is-saving="isSaving" :is-loading="isLoading" :is-site-collection-selected="isSiteCollectionSelected" :available-items="availableItems" @give-all="giveAll" @give-selected="giveSelected" @clear-selected="clearSelected" @select-item="selectItem"></select-available>
+    </v-flex>
+    <v-flex xs6>
+      <select-assigned :selected-item="selectedItem" :is-saving="isSaving" :is-loading="isLoading" :is-site-collection-selected="isSiteCollectionSelected" :assigned-items="assignedItems" @give-all="giveAll" @give-selected="giveSelected" @clear-selected="clearSelected" @select-item="selectItem"></select-assigned>
+    </v-flex>
+  </v-layout>
+  <v-snackbar :timeout="snackbar.timeout" :top="snackbar.y === 'top'" :bottom="snackbar.y === 'bottom'" :right="snackbar.x === 'right'" :left="snackbar.x === 'left'" :multi-line="snackbar.mode === 'multi-line'" :vertical="snackbar.mode === 'vertical'" v-model="snackbar.show">
+    {{ snackbar.text }}
+    <v-btn flat color="pink" @click.native="snackbar.show = false">Close</v-btn>
+  </v-snackbar>
+</v-container>
+</template>
+
+  <!-- endinject -->
+  <!-- inject:js -->
+  <script src="js/data.js"></script>
+  <script src="js/helper.js"></script>
+  <script src="js/select-helper.js"></script>
+  <script src="js/components/about.js"></script>
+  <script src="js/components/console.js"></script>
+  <script src="js/components/info.js"></script>
+  <script src="js/components/select-assigned.js"></script>
+  <script src="js/components/select-available.js"></script>
+  <script src="js/components/user-group-management.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+  <!-- endinject -->
+</body>
+</html>

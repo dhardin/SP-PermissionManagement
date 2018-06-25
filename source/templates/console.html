@@ -1,0 +1,37 @@
+<template id="console">
+  <v-card height="100%" class="flexcard" >
+    <v-card-title primary-title>
+      <h3 class="grey--text text--darken-2">Console</h3>
+    </v-card-title>
+    <v-card-text class="grow">
+      <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-flex xs12 align-end flexbox>
+            <div class="console blue-grey darken-4" ref="consoleMessages">
+             <span> To start, please select a site collection. <span v-if="messages.length == 0" class="blinking-cursor">|</span></span>
+              <v-list dark class="blue-grey darken-4">
+                <template v-for="(item, index) in messages">
+                  <v-list-tile-content>
+                    <div>[{{item.date.getHours()}}:{{item.date.getMinutes()}}:{{item.date.getSeconds()}}] <span :class="getClassObject(item)">{{item.verb}}</span> <span class="purple--text text--accent-1">{{item.text}}</span> <span>{{item.preposition ? item.preposition : "from"}}</span> <span class="cyan--text text--accent-1">{{item.target}}</span><span v-if="item.url"> @ </span><span v-if="item.url" class="pink--text text--lighten-4">{{item.url}}</span>  <span class="blinking-cursor" v-if="(isLoading || isSaving) && index == messages.length - 1">|</span></div>
+                     <div v-if="item.hasError" class="red--text text--accent-1">Error: {{item.error}}</div>
+                  </v-list-tile-content>
+                </template>
+                <span class="blinking-cursor" v-if="!isLoading && !isSaving && messages.length > 0">|</span>
+              </v-list>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-flex xs12 align-end flexbox>
+            <v-progress-linear v-model="saveProgress" :color="saveProgress >= 100 ? 'success' : 'info'"></v-progress-linear>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn flat color="pink" @click="clear" :disabled="isSaving || messages.length == 0">Clear</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>

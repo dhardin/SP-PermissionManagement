@@ -1,0 +1,60 @@
+.toolbar .input-group--single-line:not(.input-group--solo)  {
+  padding-top: 15px;
+  min-width: 150px;
+}
+.btn-toggle.toggle-select {
+  background-color: transparent;
+}
+.btn-toggle--selected.toggle-select {
+  box-shadow: none;
+}
+.toolbar .toggle-select .btn{
+  width: 80px;
+}
+.toolbar .input-group--focused.input-group--select.primary--text {
+  color: white !important;
+}
+
+.toolbar .menu__content--select {
+  top: 50px !important;
+}
+
+.progress-linear.hide {
+
+}
+
+.progress-linear {
+
+}
+
+.input-group input:disabled {
+  color: rgba(0,0,0,.9) !important;
+}
+.container.shrink {
+
+}
+.console {
+  width: 100%;
+  height: 200px;
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+  padding: 1em;
+  color: #CFD8DC;
+  overflow-y: auto;
+  font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;s
+}
+.console.large {
+
+}
+.flexcard {
+  display: flex;
+  flex-direction: column;
+}
+
+.items .flex {
+  padding: 0 !important;
+
+}
+.items .btn {
+  margin: 0;
+  border: none;
+}

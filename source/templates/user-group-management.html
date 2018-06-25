@@ -1,0 +1,22 @@
+<template id="user-group-management">
+<v-container fluid grid-list-md>
+  <v-layout row wrap>
+    <v-flex xs6>
+      <info :is-saving="isSaving" :is-loading="isLoading" :site-collection:="siteCollection" :is-site-collection-selected="isSiteCollectionSelected" :items="items" :assigned-items="assignedItems" :new-items="newItems"  @save="save" @item-changed="itemChanged"></info>
+    </v-flex>
+    <v-flex xs6>
+      <console :is-saving="isSaving" :is-loading="isLoading" :save-progress="saveProgress" :is-site-collection-selected="isSiteCollectionSelected" :messages="messages" @clear-console="clearConsole"></console>
+    </v-flex>
+    <v-flex xs6>
+      <select-available :selected-item="selectedItem" :is-saving="isSaving" :is-loading="isLoading" :is-site-collection-selected="isSiteCollectionSelected" :available-items="availableItems" @give-all="giveAll" @give-selected="giveSelected" @clear-selected="clearSelected" @select-item="selectItem"></select-available>
+    </v-flex>
+    <v-flex xs6>
+      <select-assigned :selected-item="selectedItem" :is-saving="isSaving" :is-loading="isLoading" :is-site-collection-selected="isSiteCollectionSelected" :assigned-items="assignedItems" @give-all="giveAll" @give-selected="giveSelected" @clear-selected="clearSelected" @select-item="selectItem"></select-assigned>
+    </v-flex>
+  </v-layout>
+  <v-snackbar :timeout="snackbar.timeout" :top="snackbar.y === 'top'" :bottom="snackbar.y === 'bottom'" :right="snackbar.x === 'right'" :left="snackbar.x === 'left'" :multi-line="snackbar.mode === 'multi-line'" :vertical="snackbar.mode === 'vertical'" v-model="snackbar.show">
+    {{ snackbar.text }}
+    <v-btn flat color="pink" @click.native="snackbar.show = false">Close</v-btn>
+  </v-snackbar>
+</v-container>
+</template>

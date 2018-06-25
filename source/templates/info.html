@@ -1,0 +1,26 @@
+<template id="info">
+  <v-card class="flexcard" height="100%">
+    <v-card-title primary-title>
+    </v-card-title>
+    <v-card-text class="grow">
+      <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-flex xs12 align-end flexbox>
+            <v-form>
+              <v-select :disabled="isSaving || isLoading || !isSiteCollectionSelected" @change="itemChanged" :items="items" item-value="displayName" return-object item-text="displayName" label="Select Item" single-line autocomplete clearable attach ></v-select>
+              <v-text-field label="Login Name" readonly disabled v-model="selectedItem.loginname"></v-text-field>
+              <v-text-field label="E-mail" readonly disabled v-model="selectedItem.email"></v-text-field>
+            </v-form>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card-text>
+
+    <v-card-actions>
+      <v-btn flat color="pink" @click="save" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || newItems.length == 0 || selectedItem.displayName.length == 0">Save</v-btn>
+      <v-btn flat color="pink" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || selectedItem.displayName.length == 0">Copy</v-btn>
+      <v-btn flat color="pink" :disabled="isSaving || isLoading  || !isSiteCollectionSelected || selectedItem.displayName.length == 0">Purge</v-btn>
+      <v-btn flat color="pink":disabled="isSaving || isLoading  || !isSiteCollectionSelected || selectedItem.displayName.length == 0" @click="exportData" >Export</v-btn>
+    </v-card-actions>
+  </v-card>
+</template>

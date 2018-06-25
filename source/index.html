@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet"/>
+  <!-- inject:css -->
+  <!-- endinject -->
+  <!-- inject:lib-js -->
+  <!-- endinject -->
+</head>
+<body>
+  <v-app id="app" v-cloak>
+    <v-navigation-drawer app  :clipped="true" v-model="drawer" hide-overlay dark>
+      <v-list class="pt-0" dense>
+        <v-divider></v-divider>
+        <v-list-tile v-for="item in menuItems" :key="item.title" @click="">
+          <router-link :to="item.path">
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar app :clipped-left="true" color="blue-grey" dark>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title >SharePoint Permissions</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-xs">
+        <v-select @change="changeSiteCollection" :items="siteCollections" label="Select"  item-value="title" item-text="title" single-line autocomplete return-object clearable attach  :disabled="isSaving || isLoading"></v-select>
+        <v-spacer></v-spacer>
+        <v-btn-toggle v-model="toggle_select" :light="false" class="toggle-select" mandatory>
+          <v-btn flat large @click="changeType" :disabled="isSaving || isLoading">
+            Users
+          </v-btn>
+          <v-btn flat large @click="changeType" :disabled="isSaving || isLoading">
+            Groups
+          </v-btn>
+        </v-btn-toggle>
+      </v-toolbar-items>
+    </v-toolbar>
+    <v-content>
+
+
+        <router-view class="view"  @site-collection-selected="siteCollectionSelected" :type="type" :site-collection="siteCollection" :is-site-collection-selected="isSiteCollectionSelected"></router-view>
+
+    </v-content>
+  </v-app>
+  <!-- inject:templates -->
+  <!-- endinject -->
+  <!-- inject:js -->
+  <!-- endinject -->
+</body>
+</html>
